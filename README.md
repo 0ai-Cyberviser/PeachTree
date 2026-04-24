@@ -83,3 +83,17 @@ peachtree build --source data/raw/hancock.jsonl --dataset data/datasets/hancock-
 - v0.3.0: dependency graph across Hancock, PeachFuzz, PeachTree
 - v0.4.0: model exporter profiles for ChatML, Alpaca, ShareGPT
 - v0.5.0: CI scheduled dataset update PRs
+
+
+## Owned GitHub connector
+
+PeachTree v0.2.0 adds a review-first owned GitHub connector.
+
+```bash
+peachtree github-owned --owner 0ai-Cyberviser --limit 25 --output data/manifests/owned.jsonl
+peachtree github-plan --inventory data/manifests/owned.jsonl
+bash scripts/clone_owned_repos.sh
+bash scripts/build_owned_datasets.sh
+```
+
+The connector inventories access-authorized repositories and generates reviewable scripts. Public GitHub-wide collection remains disabled by default.

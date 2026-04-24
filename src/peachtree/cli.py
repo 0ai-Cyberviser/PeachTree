@@ -9,6 +9,7 @@ from .models import SourceDocument
 from .planner import RecursiveLearningTree
 from .repo_ingest import iter_local_documents
 from .safety import SafetyGate
+from .github_owned import OwnedGitHubConnector
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -64,6 +65,31 @@ def run_policy(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def run_github_owned(args: argparse.Namespace) -> int:
+    connector = OwnedGitHubConnector()
+    if args.from_json:
+        repos = connector.from_gh_json(Path(args.from_json).read_text(encoding="utf-8"))
+    else:
+        repos = connector.list_with_gh(owner=args.owner, limit=args.limit)
+    repos = connector.filter_repos(
+        repos,
+        include_private=args.include_private,
+        include_archived=args.include_archived,
+    )
+    inventory = connector.write_inventory(repos, args.output)
+    print(json.dumps({"output": str(inventory), "repositories": len(repos)}, indent=2, sort_keys=True))
+    return 0
+
+
+def run_github_plan(args: argparse.Namespace) -> int:
+    connector = OwnedGitHubConnector()
+    repos = connector.read_inventory(args.inventory)
+    plan = connector.write_scripts(repos, args.clone_root, args.clone_script, args.dataset_script)
+    print(plan.to_json())
+    return 0
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -94,6 +120,22 @@ def make_parser() -> argparse.ArgumentParser:
     audit.add_argument("--dataset", required=True)
     audit.add_argument("--domain", default="general")
     audit.set_defaults(func=run_audit)
+
+    github_owned = sub.add_parser("github-owned", help="inventory owned/access-authorized GitHub repositories")
+    github_owned.add_argument("--owner", help="GitHub owner/org for gh repo list")
+    github_owned.add_argument("--limit", type=int, default=25)
+    github_owned.add_argument("--from-json", help="read gh repo list JSON from file instead of calling gh")
+    github_owned.add_argument("--output", default="data/manifests/github-owned-repos.jsonl")
+    github_owned.add_argument("--include-private", action="store_true", default=True)
+    github_owned.add_argument("--include-archived", action="store_true")
+    github_owned.set_defaults(func=run_github_owned)
+
+    github_plan = sub.add_parser("github-plan", help="create reviewable clone and dataset scripts from owned repo inventory")
+    github_plan.add_argument("--inventory", required=True)
+    github_plan.add_argument("--clone-root", default="data/repos")
+    github_plan.add_argument("--clone-script", default="scripts/clone_owned_repos.sh")
+    github_plan.add_argument("--dataset-script", default="scripts/build_owned_datasets.sh")
+    github_plan.set_defaults(func=run_github_plan)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

@@ -12,6 +12,7 @@ from .safety import SafetyGate
 from .github_owned import OwnedGitHubConnector
 from .dependency_graph import DependencyGraphBuilder
 from .lineage import DatasetLineageBuilder
+from .exporters import ModelExporter, export_format_names
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -150,6 +151,25 @@ def run_ecosystem(args: argparse.Namespace) -> int:
     _print_or_write(content, args.output)
     return 0
 
+
+
+def run_export_formats(args: argparse.Namespace) -> int:
+    print(json.dumps({"formats": list(export_format_names())}, indent=2, sort_keys=True))
+    return 0
+
+
+def run_export(args: argparse.Namespace) -> int:
+    exporter = ModelExporter(system_prompt=args.system_prompt, include_metadata=not args.no_metadata)
+    stats = exporter.export_file(args.source, args.output, args.format, limit=args.limit)
+    print(stats.to_json())
+    return 0 if stats.records_written > 0 else 1
+
+
+def run_validate_export(args: argparse.Namespace) -> int:
+    report = ModelExporter().validate_export(args.path, args.format)
+    print(report.to_json())
+    return 0 if report.ok else 1
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -218,6 +238,23 @@ def make_parser() -> argparse.ArgumentParser:
     ecosystem.add_argument("--manifest-dir", default="data/manifests")
     ecosystem.add_argument("--output")
     ecosystem.set_defaults(func=run_ecosystem)
+
+    export_formats = sub.add_parser("export-formats", help="list supported model export formats")
+    export_formats.set_defaults(func=run_export_formats)
+
+    export = sub.add_parser("export", help="export PeachTree dataset JSONL to a model training schema")
+    export.add_argument("--source", required=True, help="PeachTree dataset JSONL")
+    export.add_argument("--output", required=True, help="output JSONL path")
+    export.add_argument("--format", choices=list(export_format_names()), required=True)
+    export.add_argument("--system-prompt", default="You are a helpful, safe, and precise AI assistant.")
+    export.add_argument("--limit", type=int)
+    export.add_argument("--no-metadata", action="store_true")
+    export.set_defaults(func=run_export)
+
+    validate_export = sub.add_parser("validate-export", help="validate exported model JSONL")
+    validate_export.add_argument("--path", required=True)
+    validate_export.add_argument("--format", choices=list(export_format_names()), required=True)
+    validate_export.set_defaults(func=run_validate_export)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

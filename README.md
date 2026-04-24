@@ -110,3 +110,16 @@ peachtree ecosystem --inventory data/manifests/owned.jsonl --output reports/ecos
 ```
 
 These commands read local inventory, datasets, and manifests. They do not contact GitHub or train models.
+
+
+## Model exporter profiles
+
+PeachTree v0.4.0 exports reviewed PeachTree datasets into ChatML, Alpaca, and ShareGPT JSONL.
+
+```bash
+peachtree export-formats
+peachtree export --source data/datasets/peachfuzz-instruct.jsonl --format chatml --output data/exports/peachfuzz-chatml.jsonl
+peachtree validate-export --format chatml --path data/exports/peachfuzz-chatml.jsonl
+```
+
+Exporters are local-only and preserve provenance metadata by default.

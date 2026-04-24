@@ -20,7 +20,7 @@
 - Hancock/PeachFuzz/PeachTree lineage maps
 
 ## v0.4.0
-- Exporters: ChatML, Alpaca, ShareGPT
+- Exporters: ChatML, Alpaca, ShareGPT ✅
 
 ## v0.5.0
 - GitHub Actions scheduled dataset update PR workflow

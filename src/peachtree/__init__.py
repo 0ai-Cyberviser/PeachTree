@@ -16,6 +16,9 @@ from .registry import DatasetRegistryBuilder, DatasetRegistry, RegistryArtifact
 from .signing import ArtifactSigner, SignatureEnvelope
 from .sbom import SBOMGenerator, SBOMDocument
 from .release_bundle import ReleaseBundleBuilder, ReleaseBundleReport
+from .trainer_handoff import TrainerHandoffBuilder, TrainerHandoffManifest
+from .lora_job import LoraJobCardBuilder, LoraJobCard, LoraHyperparameters
+from .training_plan import DryRunTrainingPlanner, DryRunTrainingPlan
 from .safety import SafetyGate
 
 __all__ = [
@@ -57,6 +60,13 @@ __all__ = [
     "SBOMDocument",
     "ReleaseBundleBuilder",
     "ReleaseBundleReport",
+    "TrainerHandoffBuilder",
+    "TrainerHandoffManifest",
+    "LoraJobCardBuilder",
+    "LoraJobCard",
+    "LoraHyperparameters",
+    "DryRunTrainingPlanner",
+    "DryRunTrainingPlan",
 ]
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"

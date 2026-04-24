@@ -44,3 +44,9 @@
 - Artifact signing metadata ✅
 - SBOM/provenance manifests ✅
 - Release bundles ✅
+
+
+## v0.9.0
+- Trainer handoff manifests ✅
+- LoRA job cards ✅
+- Dry-run training launch plans ✅

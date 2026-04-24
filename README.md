@@ -175,3 +175,16 @@ peachtree bundle data/datasets/example.jsonl reports/model-card.md --output dist
 ```
 
 These commands are local-only and do not train models, upload datasets, or scrape public GitHub.
+
+
+## Trainer handoff manifests
+
+PeachTree v0.9.0 adds trainer handoff manifests, LoRA job cards, and dry-run training launch plans.
+
+```bash
+peachtree handoff --dataset data/exports/example-chatml.jsonl --model-name Example-Lora --base-model mistralai/Mistral-7B-Instruct-v0.3 --output reports/handoff.json
+peachtree lora-card --dataset data/exports/example-chatml.jsonl --job-name example-lora --base-model mistralai/Mistral-7B-Instruct-v0.3 --output-dir outputs/example --output reports/lora-job-card.json
+peachtree train-plan --job-card reports/lora-job-card.json --output reports/dry-run-training-plan.json
+```
+
+These commands are dry-run only and do not launch training.

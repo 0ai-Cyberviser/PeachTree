@@ -25,3 +25,9 @@
 ## v0.5.0
 - GitHub Actions scheduled dataset update PR workflow ✅
 - Dataset diff review reports ✅
+
+
+## v0.6.0
+- Dataset quality scoring ✅
+- Deterministic deduplication ✅
+- Training readiness gates ✅

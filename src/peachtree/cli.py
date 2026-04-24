@@ -15,6 +15,8 @@ from .lineage import DatasetLineageBuilder
 from .exporters import ModelExporter, export_format_names
 from .diff_review import DatasetDiffReviewer
 from .scheduler import UpdatePlanBuilder
+from .quality import DatasetQualityScorer
+from .dedup import DatasetDeduplicator
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -223,6 +225,78 @@ def run_review_report(args: argparse.Namespace) -> int:
     print(content)
     return 0
 
+
+
+def run_score(args: argparse.Namespace) -> int:
+    scorer = DatasetQualityScorer(
+        min_record_score=args.min_record_score,
+        min_average_score=args.min_average_score,
+        max_failed_ratio=args.max_failed_ratio,
+        min_records=args.min_records,
+    )
+    report = scorer.score_dataset(args.dataset)
+    if args.json_output or args.markdown_output:
+        scorer.write_report(
+            report,
+            args.json_output or "reports/quality-score.json",
+            args.markdown_output,
+        )
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json(include_records=not args.summary_only))
+    return 0 if not args.fail_on_gate or report.gate_passed else 2
+
+
+def run_dedup(args: argparse.Namespace) -> int:
+    deduplicator = DatasetDeduplicator()
+    report = deduplicator.deduplicate(args.source, args.output, write_output=True)
+    if args.report_json or args.report_markdown:
+        deduplicator.write_report(
+            report,
+            args.report_json or "reports/dedup.json",
+            args.report_markdown,
+        )
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    return 0
+
+
+def run_readiness(args: argparse.Namespace) -> int:
+    scorer = DatasetQualityScorer(
+        min_record_score=args.min_record_score,
+        min_average_score=args.min_average_score,
+        max_failed_ratio=args.max_failed_ratio,
+        min_records=args.min_records,
+    )
+    quality_report = scorer.score_dataset(args.dataset)
+    dedup_report = DatasetDeduplicator().analyze(args.dataset)
+    readiness = {
+        "dataset": args.dataset,
+        "ready": quality_report.gate_passed and dedup_report.duplicate_ratio <= args.max_duplicate_ratio,
+        "quality": quality_report.to_dict(include_records=False),
+        "deduplication": dedup_report.to_dict(),
+        "gates": {
+            "quality_gate_passed": quality_report.gate_passed,
+            "max_duplicate_ratio": args.max_duplicate_ratio,
+            "actual_duplicate_ratio": dedup_report.duplicate_ratio,
+            "duplicate_gate_passed": dedup_report.duplicate_ratio <= args.max_duplicate_ratio,
+        },
+        "safety": {
+            "does_not_train_models": True,
+            "does_not_upload_datasets": True,
+            "requires_human_review": True,
+        },
+    }
+    content = json.dumps(readiness, indent=2, sort_keys=True)
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(content + "\n", encoding="utf-8")
+    print(content)
+    return 0 if readiness["ready"] or not args.fail_on_gate else 2
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -331,6 +405,38 @@ def make_parser() -> argparse.ArgumentParser:
     review_report.add_argument("--plan", required=True)
     review_report.add_argument("--output")
     review_report.set_defaults(func=run_review_report)
+
+    score = sub.add_parser("score", help="score a PeachTree dataset for quality")
+    score.add_argument("--dataset", required=True)
+    score.add_argument("--format", choices=["json", "markdown"], default="json")
+    score.add_argument("--json-output")
+    score.add_argument("--markdown-output")
+    score.add_argument("--min-record-score", type=int, default=70)
+    score.add_argument("--min-average-score", type=int, default=80)
+    score.add_argument("--max-failed-ratio", type=float, default=0.10)
+    score.add_argument("--min-records", type=int, default=1)
+    score.add_argument("--summary-only", action="store_true")
+    score.add_argument("--fail-on-gate", action="store_true")
+    score.set_defaults(func=run_score)
+
+    dedup = sub.add_parser("dedup", help="deduplicate a PeachTree dataset")
+    dedup.add_argument("--source", required=True)
+    dedup.add_argument("--output", required=True)
+    dedup.add_argument("--format", choices=["json", "markdown"], default="json")
+    dedup.add_argument("--report-json")
+    dedup.add_argument("--report-markdown")
+    dedup.set_defaults(func=run_dedup)
+
+    readiness = sub.add_parser("readiness", help="evaluate dataset training readiness gates")
+    readiness.add_argument("--dataset", required=True)
+    readiness.add_argument("--output")
+    readiness.add_argument("--min-record-score", type=int, default=70)
+    readiness.add_argument("--min-average-score", type=int, default=80)
+    readiness.add_argument("--max-failed-ratio", type=float, default=0.10)
+    readiness.add_argument("--min-records", type=int, default=1)
+    readiness.add_argument("--max-duplicate-ratio", type=float, default=0.05)
+    readiness.add_argument("--fail-on-gate", action="store_true")
+    readiness.set_defaults(func=run_readiness)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

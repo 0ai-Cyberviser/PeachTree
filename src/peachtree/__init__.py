@@ -7,6 +7,8 @@ from .lineage import DatasetLineageBuilder, DatasetLineage
 from .exporters import ModelExporter, export_format_names
 from .diff_review import DatasetDiffReviewer, DatasetDiff
 from .scheduler import UpdatePlanBuilder, ScheduledUpdatePlan
+from .quality import DatasetQualityScorer, DatasetQualityReport
+from .dedup import DatasetDeduplicator, DedupReport
 from .safety import SafetyGate
 
 __all__ = [
@@ -29,6 +31,10 @@ __all__ = [
     "DatasetDiff",
     "UpdatePlanBuilder",
     "ScheduledUpdatePlan",
+    "DatasetQualityScorer",
+    "DatasetQualityReport",
+    "DatasetDeduplicator",
+    "DedupReport",
 ]
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"

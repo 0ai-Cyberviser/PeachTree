@@ -24,6 +24,9 @@ from .registry import DatasetRegistryBuilder
 from .signing import ArtifactSigner
 from .sbom import SBOMGenerator
 from .release_bundle import ReleaseBundleBuilder
+from .trainer_handoff import TrainerHandoffBuilder
+from .lora_job import LoraJobCardBuilder, LoraHyperparameters
+from .training_plan import DryRunTrainingPlanner
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -445,6 +448,101 @@ def run_bundle(args: argparse.Namespace) -> int:
     return 0
 
 
+
+
+
+def run_handoff(args: argparse.Namespace) -> int:
+    builder = TrainerHandoffBuilder()
+    manifest = builder.build(
+        dataset_path=args.dataset,
+        model_name=args.model_name,
+        base_model=args.base_model,
+        trainer_profile=args.trainer_profile,
+        dataset_format=args.dataset_format,
+        registry_path=args.registry,
+        sbom_path=args.sbom,
+        model_card_path=args.model_card,
+        quality_report_path=args.quality_report,
+        policy_report_path=args.policy_report,
+        license_report_path=args.license_report,
+        release_bundle_path=args.release_bundle,
+        metadata={"generated_for": "trainer_handoff"},
+    )
+    if args.output or args.markdown_output:
+        builder.write(manifest, args.output or "reports/trainer-handoff.json", args.markdown_output)
+    if args.format == "markdown":
+        print(manifest.to_markdown())
+    else:
+        print(manifest.to_json())
+    return 0
+
+
+def run_lora_card(args: argparse.Namespace) -> int:
+    hp = LoraHyperparameters(
+        rank=args.rank,
+        alpha=args.alpha,
+        dropout=args.dropout,
+        learning_rate=args.learning_rate,
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
+        max_seq_length=args.max_seq_length,
+        warmup_ratio=args.warmup_ratio,
+    )
+    card = LoraJobCardBuilder().build(
+        dataset_path=args.dataset,
+        job_name=args.job_name,
+        base_model=args.base_model,
+        output_dir=args.output_dir,
+        trainer_profile=args.trainer_profile,
+        dataset_format=args.dataset_format,
+        hyperparameters=hp,
+        metadata={"generated_for": "lora_job_card"},
+    )
+    if args.output or args.markdown_output:
+        LoraJobCardBuilder().write(card, args.output or "reports/lora-job-card.json", args.markdown_output)
+    if args.format == "markdown":
+        print(card.to_markdown())
+    else:
+        print(card.to_json())
+    return 0
+
+
+def run_train_plan(args: argparse.Namespace) -> int:
+    planner = DryRunTrainingPlanner()
+    if args.job_card:
+        card = planner.read_job_card(args.job_card)
+    else:
+        hp = LoraHyperparameters(
+            rank=args.rank,
+            alpha=args.alpha,
+            dropout=args.dropout,
+            learning_rate=args.learning_rate,
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            gradient_accumulation_steps=args.gradient_accumulation_steps,
+            max_seq_length=args.max_seq_length,
+            warmup_ratio=args.warmup_ratio,
+        )
+        card = LoraJobCardBuilder().build(
+            dataset_path=args.dataset,
+            job_name=args.job_name,
+            base_model=args.base_model,
+            output_dir=args.output_dir,
+            trainer_profile=args.trainer_profile,
+            dataset_format=args.dataset_format,
+            hyperparameters=hp,
+        )
+    plan = planner.build(card)
+    if args.output or args.markdown_output:
+        planner.write(plan, args.output or "reports/dry-run-training-plan.json", args.markdown_output)
+    if args.format == "markdown":
+        print(plan.to_markdown())
+    else:
+        print(plan.to_json())
+    return 0
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -659,6 +757,67 @@ def make_parser() -> argparse.ArgumentParser:
     bundle.add_argument("--report")
     bundle.add_argument("--format", choices=["json", "markdown"], default="json")
     bundle.set_defaults(func=run_bundle)
+
+    handoff = sub.add_parser("handoff", help="create a trainer handoff manifest")
+    handoff.add_argument("--dataset", required=True)
+    handoff.add_argument("--model-name", required=True)
+    handoff.add_argument("--base-model", required=True)
+    handoff.add_argument("--trainer-profile", default="unsloth")
+    handoff.add_argument("--dataset-format", default="chatml")
+    handoff.add_argument("--registry")
+    handoff.add_argument("--sbom")
+    handoff.add_argument("--model-card")
+    handoff.add_argument("--quality-report")
+    handoff.add_argument("--policy-report")
+    handoff.add_argument("--license-report")
+    handoff.add_argument("--release-bundle")
+    handoff.add_argument("--format", choices=["json", "markdown"], default="json")
+    handoff.add_argument("--output")
+    handoff.add_argument("--markdown-output")
+    handoff.set_defaults(func=run_handoff)
+
+    lora_card = sub.add_parser("lora-card", help="create a LoRA job card without launching training")
+    lora_card.add_argument("--dataset", required=True)
+    lora_card.add_argument("--job-name", required=True)
+    lora_card.add_argument("--base-model", required=True)
+    lora_card.add_argument("--output-dir", required=True)
+    lora_card.add_argument("--trainer-profile", default="unsloth")
+    lora_card.add_argument("--dataset-format", default="chatml")
+    lora_card.add_argument("--rank", type=int, default=16)
+    lora_card.add_argument("--alpha", type=int, default=32)
+    lora_card.add_argument("--dropout", type=float, default=0.05)
+    lora_card.add_argument("--learning-rate", type=float, default=2e-4)
+    lora_card.add_argument("--epochs", type=float, default=1.0)
+    lora_card.add_argument("--batch-size", type=int, default=2)
+    lora_card.add_argument("--gradient-accumulation-steps", type=int, default=4)
+    lora_card.add_argument("--max-seq-length", type=int, default=4096)
+    lora_card.add_argument("--warmup-ratio", type=float, default=0.03)
+    lora_card.add_argument("--format", choices=["json", "markdown"], default="json")
+    lora_card.add_argument("--output")
+    lora_card.add_argument("--markdown-output")
+    lora_card.set_defaults(func=run_lora_card)
+
+    train_plan = sub.add_parser("train-plan", help="create a dry-run training launch plan")
+    train_plan.add_argument("--job-card")
+    train_plan.add_argument("--dataset")
+    train_plan.add_argument("--job-name", default="peachtree-lora-job")
+    train_plan.add_argument("--base-model", default="mistralai/Mistral-7B-Instruct-v0.3")
+    train_plan.add_argument("--output-dir", default="outputs/lora")
+    train_plan.add_argument("--trainer-profile", default="unsloth")
+    train_plan.add_argument("--dataset-format", default="chatml")
+    train_plan.add_argument("--rank", type=int, default=16)
+    train_plan.add_argument("--alpha", type=int, default=32)
+    train_plan.add_argument("--dropout", type=float, default=0.05)
+    train_plan.add_argument("--learning-rate", type=float, default=2e-4)
+    train_plan.add_argument("--epochs", type=float, default=1.0)
+    train_plan.add_argument("--batch-size", type=int, default=2)
+    train_plan.add_argument("--gradient-accumulation-steps", type=int, default=4)
+    train_plan.add_argument("--max-seq-length", type=int, default=4096)
+    train_plan.add_argument("--warmup-ratio", type=float, default=0.03)
+    train_plan.add_argument("--format", choices=["json", "markdown"], default="json")
+    train_plan.add_argument("--output")
+    train_plan.add_argument("--markdown-output")
+    train_plan.set_defaults(func=run_train_plan)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

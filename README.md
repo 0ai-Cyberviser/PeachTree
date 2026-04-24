@@ -162,3 +162,16 @@ peachtree model-card --dataset data/datasets/peachfuzz-deduped.jsonl --model-nam
 ```
 
 These commands are local-only and generate review artifacts before downstream model training.
+
+
+## Dataset release bundles
+
+PeachTree v0.8.0 adds dataset registries, artifact signing metadata, SBOM/provenance manifests, and release bundle creation.
+
+```bash
+peachtree registry data/datasets reports --output reports/registry.json
+peachtree sbom --registry reports/registry.json --output reports/sbom.json
+peachtree bundle data/datasets/example.jsonl reports/model-card.md --output dist/example-release.zip
+```
+
+These commands are local-only and do not train models, upload datasets, or scrape public GitHub.

@@ -10,7 +10,7 @@
 - Tests and CI
 
 ## v0.2.0
-- Owned GitHub repo connector
+- Owned GitHub repo connector ✅
 - GitHub App/token support
 - license metadata validation
 - rate-limited repo inventory

@@ -1,24 +1,43 @@
 # PeachTree
 
-**PeachTree** is the recursive learning-tree dataset engine for CyberViser / 0AI projects.
+**PeachTree** is the recursive learning-tree dataset engine for CyberViser / 0AI.
 
-It is designed to become a shared dependency for Hancock, PeachFuzz/CactusFuzz, and future 0AI model-training pipelines.
+It turns owned repositories, documentation, tests, fuzz reports, issue notes, telemetry summaries, and architecture plans into traceable, safe, deduplicated JSONL datasets for model training and security-assurance workflows.
 
-## Mission
+PeachTree is designed as a shared dependency for:
 
-PeachTree turns repositories, docs, tests, fuzz reports, issue notes, and architecture plans into traceable, safe, deduplicated JSONL datasets for model training.
+- [Hancock](https://github.com/0ai-Cyberviser/Hancock) — cybersecurity LLM agent datasets
+- [PeachFuzz](https://github.com/0ai-Cyberviser/peachfuzz) — fuzzing findings, crash triage, and regression corpora
+- [CyberViser AI](https://cyberviserai.com/) — public project hub and documentation surface
+- [0AI](https://0ai-cyberviser.github.io/0ai/) — broader CyberViser / 0AI ecosystem coordination
+- [Hancock public docs/demo](https://cyberviser.github.io/Hancock/) — user-facing Hancock project page
+
+## What PeachTree does
+
+PeachTree provides the review-first data layer between raw project material and downstream model/fuzzing workflows.
 
 ```mermaid
 flowchart TD
     A[Training Goal] --> B[Recursive Learning Tree]
-    B --> C[Source Collection]
+    B --> C[Owned Source Collection]
     C --> D[Safety + License Gate]
     D --> E[Dataset Builder]
     E --> F[JSONL Training Dataset]
     E --> G[Manifest + Provenance]
-    G --> H[Gap Analysis]
-    H --> B
+    E --> H[PeachFuzz Seeds]
+    G --> I[Gap Analysis]
+    I --> B
 ```
+
+## Mission
+
+PeachTree helps CyberViser build datasets that are:
+
+- **traceable** — every record keeps source and provenance metadata
+- **safe** — secrets, tokens, private keys, and unsafe records are blocked or flagged
+- **deduplicated** — deterministic dataset reduction avoids repeated examples
+- **reviewable** — plans, manifests, diffs, model cards, and release bundles are generated before publication
+- **local-first** — no broad public scraping or automatic training launches by default
 
 ## Safety defaults
 
@@ -30,6 +49,7 @@ PeachTree does **not** blindly scrape GitHub.
 - secret/token/private-key patterns are blocked
 - provenance metadata is attached to every record
 - generated datasets are ignored by default until reviewed
+- trainer handoff commands are dry-run unless explicitly promoted outside PeachTree
 
 ## Quick start
 
@@ -47,47 +67,27 @@ peachtree build --source data/raw/peachtree.jsonl --dataset data/datasets/peacht
 peachtree audit --dataset data/datasets/peachtree.jsonl
 ```
 
-## Create the GitHub repo
+## Core workflows
 
-```bash
-cd ~
-unzip PeachTree-v0.1.0.zip
-cd PeachTree-v0.1.0
-
-git init
-git branch -M main
-git add .
-git commit -m "feat: initial PeachTree recursive dataset engine"
-
-gh repo create 0ai-Cyberviser/PeachTree --public --source=. --remote=origin --push
-```
-
-## Integrate with PeachFuzz
+### Integrate with PeachFuzz
 
 ```bash
 peachtree ingest-local --repo ~/peachfuzz --repo-name peachfuzz --output data/raw/peachfuzz.jsonl
 peachtree build --source data/raw/peachfuzz.jsonl --dataset data/datasets/peachfuzz-instruct.jsonl --manifest data/manifests/peachfuzz.json --domain peachfuzz
 ```
 
-## Integrate with Hancock
+Use this path for fuzz harness notes, crash triage reports, minimized reproducers, coverage findings, and safe corpus descriptions.
+
+### Integrate with Hancock
 
 ```bash
 peachtree ingest-local --repo ~/Hancock --repo-name hancock --output data/raw/hancock.jsonl
 peachtree build --source data/raw/hancock.jsonl --dataset data/datasets/hancock-instruct.jsonl --manifest data/manifests/hancock.json --domain hancock
 ```
 
-## Roadmap
+Use this path for Hancock modes, API examples, SOC/PICERL triage records, Sigma/YARA examples, CISO summaries, and fuzzing-specialist training records.
 
-- v0.1.0: local recursive dataset engine
-- v0.2.0: safe GitHub connector for owned repos
-- v0.3.0: dependency graph across Hancock, PeachFuzz, PeachTree
-- v0.4.0: model exporter profiles for ChatML, Alpaca, ShareGPT
-- v0.5.0: CI scheduled dataset update PRs
-
-
-## Owned GitHub connector
-
-PeachTree v0.2.x adds a review-first owned GitHub connector.
+### Build from owned GitHub inventory
 
 ```bash
 peachtree github-owned --owner 0ai-Cyberviser --limit 25 --output data/manifests/owned.jsonl
@@ -98,6 +98,19 @@ bash scripts/build_owned_datasets.sh
 
 The connector inventories access-authorized repositories and generates reviewable scripts. Public GitHub-wide collection remains disabled by default.
 
+## Capability roadmap
+
+| Version | Capability | Status |
+|---|---|---|
+| v0.1.0 | local recursive dataset engine | Complete |
+| v0.2.x | review-first owned GitHub connector | Complete |
+| v0.3.0 | dependency graphs and lineage maps | Complete |
+| v0.4.0 | ChatML, Alpaca, and ShareGPT exporters | Complete |
+| v0.5.0 | scheduled dataset update PR workflow | Complete |
+| v0.6.0 | quality scoring, deduplication, readiness checks | Complete |
+| v0.7.0 | policy packs, license gates, model-card generation | Complete |
+| v0.8.0 | registries, SBOM/provenance, release bundles | Complete |
+| v0.9.0 | trainer handoff manifests and LoRA dry-run plans | Complete |
 
 ## Dependency graphs and lineage maps
 
@@ -111,7 +124,6 @@ peachtree ecosystem --inventory data/manifests/owned.jsonl --output reports/ecos
 
 These commands read local inventory, datasets, and manifests. They do not contact GitHub or train models.
 
-
 ## Model exporter profiles
 
 PeachTree v0.4.0 exports reviewed PeachTree datasets into ChatML, Alpaca, and ShareGPT JSONL.
@@ -123,7 +135,6 @@ peachtree validate-export --format chatml --path data/exports/peachfuzz-chatml.j
 ```
 
 Exporters are local-only and preserve provenance metadata by default.
-
 
 ## Scheduled dataset update PR workflow
 
@@ -137,7 +148,6 @@ peachtree review-report --plan data/manifests/update-plan.json --output reports/
 
 The included GitHub Actions workflow opens pull requests for dataset updates. It does not train models, upload datasets, or push directly to `main`.
 
-
 ## Dataset quality gates
 
 PeachTree v0.6.0 adds quality scoring, deterministic deduplication, and training readiness checks.
@@ -149,7 +159,6 @@ peachtree readiness --dataset data/datasets/peachfuzz-deduped.jsonl --output rep
 ```
 
 These commands are local-only and do not train models or upload datasets.
-
 
 ## Dataset policy packs
 
@@ -163,7 +172,6 @@ peachtree model-card --dataset data/datasets/peachfuzz-deduped.jsonl --model-nam
 
 These commands are local-only and generate review artifacts before downstream model training.
 
-
 ## Dataset release bundles
 
 PeachTree v0.8.0 adds dataset registries, artifact signing metadata, SBOM/provenance manifests, and release bundle creation.
@@ -176,7 +184,6 @@ peachtree bundle data/datasets/example.jsonl reports/model-card.md --output dist
 
 These commands are local-only and do not train models, upload datasets, or scrape public GitHub.
 
-
 ## Trainer handoff manifests
 
 PeachTree v0.9.0 adds trainer handoff manifests, LoRA job cards, and dry-run training launch plans.
@@ -188,3 +195,13 @@ peachtree train-plan --job-card reports/lora-job-card.json --output reports/dry-
 ```
 
 These commands are dry-run only and do not launch training.
+
+## Repository creation reference
+
+```bash
+git init
+git branch -M main
+git add .
+git commit -m "feat: initial PeachTree recursive dataset engine"
+gh repo create 0ai-Cyberviser/PeachTree --public --source=. --remote=origin --push
+```

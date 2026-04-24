@@ -26,7 +26,7 @@ peachtree github-plan --inventory data/manifests/owned.jsonl --clone-root data/r
 Using saved JSON from `gh repo list`:
 
 ```bash
-gh repo list 0ai-Cyberviser --limit 25 --json nameWithOwner,url,visibility,isArchived,defaultBranchRef,licenseInfo,diskUsage > repos.json
+gh repo list 0ai-Cyberviser --limit 25 --json nameWithOwner,url,isPrivate,isArchived,defaultBranchRef,licenseInfo,diskUsage > repos.json
 peachtree github-owned --from-json repos.json --output data/manifests/owned.jsonl
 peachtree github-plan --inventory data/manifests/owned.jsonl
 ```
@@ -42,3 +42,8 @@ bash scripts/build_owned_datasets.sh
 ## Public GitHub
 
 Public GitHub-wide discovery remains disabled by default. Future public search must be explicit, license-aware, rate-limited, provenance-preserving, and reviewable.
+
+
+## v0.2.1 compatibility note
+
+GitHub CLI uses `isPrivate`, not `visibility`, for `gh repo list --json`. Generated scripts now preserve `${CLONE_ROOT}` expansion correctly and should be reviewed before running.

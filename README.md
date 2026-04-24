@@ -87,7 +87,7 @@ peachtree build --source data/raw/hancock.jsonl --dataset data/datasets/hancock-
 
 ## Owned GitHub connector
 
-PeachTree v0.2.0 adds a review-first owned GitHub connector.
+PeachTree v0.2.x adds a review-first owned GitHub connector.
 
 ```bash
 peachtree github-owned --owner 0ai-Cyberviser --limit 25 --output data/manifests/owned.jsonl

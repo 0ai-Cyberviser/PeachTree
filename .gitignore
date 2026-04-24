@@ -10,3 +10,5 @@ data/raw/
 data/datasets/
 data/manifests/
 reports/
+scripts/clone_owned_repos.sh
+scripts/build_owned_datasets.sh

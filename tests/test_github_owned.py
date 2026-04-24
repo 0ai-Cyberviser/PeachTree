@@ -9,7 +9,7 @@ SAMPLE = json.dumps([
     {
         "nameWithOwner": "0ai-Cyberviser/PeachTree",
         "url": "https://github.com/0ai-Cyberviser/PeachTree",
-        "visibility": "PUBLIC",
+        "isPrivate": False,
         "isArchived": False,
         "defaultBranchRef": {"name": "main"},
         "licenseInfo": {"spdxId": "Apache-2.0"},
@@ -18,7 +18,7 @@ SAMPLE = json.dumps([
     {
         "nameWithOwner": "0ai-Cyberviser/PrivateDemo",
         "url": "https://github.com/0ai-Cyberviser/PrivateDemo",
-        "visibility": "PRIVATE",
+        "isPrivate": True,
         "isArchived": False,
         "defaultBranchRef": {"name": "main"},
         "licenseInfo": None,
@@ -27,7 +27,7 @@ SAMPLE = json.dumps([
     {
         "nameWithOwner": "0ai-Cyberviser/Archived",
         "url": "https://github.com/0ai-Cyberviser/Archived",
-        "visibility": "PUBLIC",
+        "isPrivate": False,
         "isArchived": True,
         "defaultBranchRef": {"name": "main"},
         "licenseInfo": {"spdxId": "MIT"},
@@ -41,6 +41,7 @@ def test_from_gh_json_parses_repositories():
     assert len(repos) == 3
     assert repos[0].full_name == "0ai-Cyberviser/PeachTree"
     assert repos[0].clone_url.endswith(".git")
+    assert repos[0].visibility == "public"
 
 
 def test_filter_repos_excludes_archived_by_default():
@@ -104,3 +105,15 @@ def test_cli_github_plan(tmp_path: Path, capsys):
     assert '"repo_count": 1' in capsys.readouterr().out
     assert (tmp_path / "clone.sh").exists()
     assert (tmp_path / "datasets.sh").exists()
+
+
+def test_write_scripts_preserves_clone_root_expansion(tmp_path: Path):
+    connector = OwnedGitHubConnector()
+    repos = [OwnedRepo("0ai-Cyberviser/PeachTree", "https://github.com/0ai-Cyberviser/PeachTree.git", license_id="apache-2.0")]
+    connector.write_scripts(repos, tmp_path / "repos", tmp_path / "clone.sh", tmp_path / "datasets.sh")
+    clone_text = (tmp_path / "clone.sh").read_text(encoding="utf-8")
+    dataset_text = (tmp_path / "datasets.sh").read_text(encoding="utf-8")
+    assert "'${CLONE_ROOT}" not in clone_text
+    assert "'${CLONE_ROOT}" not in dataset_text
+    assert '"${CLONE_ROOT}/0ai-Cyberviser__PeachTree"' in clone_text
+    assert '"${CLONE_ROOT}/0ai-Cyberviser__PeachTree"' in dataset_text

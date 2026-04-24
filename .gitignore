@@ -12,3 +12,10 @@ data/manifests/
 reports/
 scripts/clone_owned_repos.sh
 scripts/build_owned_datasets.sh
+
+# generated clone/runtime artifacts
+${CLONE_ROOT}/
+data/
+reports/
+scripts/clone_owned_repos.sh
+scripts/build_owned_datasets.sh

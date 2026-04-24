@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peachtree-ai"
+version = "0.1.0"
+description = "Recursive learning-tree dataset engine for safe AI model training pipelines"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "CyberViser / 0AI"}]
+keywords = ["ai", "datasets", "training", "github", "provenance", "safety", "llm"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0", "pytest-cov>=5.0.0", "ruff>=0.6.0", "mypy>=1.10.0"]
+
+[project.scripts]
+peachtree = "peachtree.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

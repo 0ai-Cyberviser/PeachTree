@@ -1,0 +1,19 @@
+name: PeachTree Dataset Update Template
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  dataset-update-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "Template only: configure repo checkout + review PR workflow before enabling dataset writes."
+          echo "PeachTree does not auto-push datasets without an explicit repository workflow."

@@ -37,3 +37,10 @@
 - Dataset policy packs ✅
 - License/compliance gates ✅
 - Model-card generator ✅
+
+
+## v0.8.0
+- Dataset registry ✅
+- Artifact signing metadata ✅
+- SBOM/provenance manifests ✅
+- Release bundles ✅

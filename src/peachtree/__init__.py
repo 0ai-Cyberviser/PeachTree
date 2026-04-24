@@ -12,6 +12,10 @@ from .dedup import DatasetDeduplicator, DedupReport
 from .license_gate import LicenseGate, LicenseGateReport
 from .policy_packs import PolicyPackEvaluator, PolicyPackEvaluation
 from .model_card import ModelCardGenerator, ModelCard
+from .registry import DatasetRegistryBuilder, DatasetRegistry, RegistryArtifact
+from .signing import ArtifactSigner, SignatureEnvelope
+from .sbom import SBOMGenerator, SBOMDocument
+from .release_bundle import ReleaseBundleBuilder, ReleaseBundleReport
 from .safety import SafetyGate
 
 __all__ = [
@@ -44,6 +48,15 @@ __all__ = [
     "PolicyPackEvaluation",
     "ModelCardGenerator",
     "ModelCard",
+    "DatasetRegistryBuilder",
+    "DatasetRegistry",
+    "RegistryArtifact",
+    "ArtifactSigner",
+    "SignatureEnvelope",
+    "SBOMGenerator",
+    "SBOMDocument",
+    "ReleaseBundleBuilder",
+    "ReleaseBundleReport",
 ]
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"

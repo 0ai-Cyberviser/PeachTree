@@ -20,6 +20,10 @@ from .dedup import DatasetDeduplicator
 from .license_gate import LicenseGate
 from .policy_packs import PolicyPackEvaluator
 from .model_card import ModelCardGenerator
+from .registry import DatasetRegistryBuilder
+from .signing import ArtifactSigner
+from .sbom import SBOMGenerator
+from .release_bundle import ReleaseBundleBuilder
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -376,6 +380,71 @@ def run_model_card(args: argparse.Namespace) -> int:
     return 0
 
 
+
+
+
+def run_registry(args: argparse.Namespace) -> int:
+    builder = DatasetRegistryBuilder()
+    roots = args.paths or []
+    registry = builder.discover(roots, name=args.name, version=args.version)
+    if args.output or args.markdown_output:
+        builder.write(registry, args.output or "reports/registry.json", args.markdown_output)
+    if args.format == "markdown":
+        print(registry.to_markdown())
+    else:
+        print(registry.to_json())
+    return 0
+
+
+def run_sign(args: argparse.Namespace) -> int:
+    signer = ArtifactSigner()
+    if args.verify:
+        verification = signer.verify_file(args.artifact, args.signature, key=args.key)
+        print(verification.to_json())
+        return 0 if verification.valid else 2
+    envelope = signer.sign_file(args.artifact, key=args.key, key_id=args.key_id)
+    if args.output:
+        signer.write_signature(envelope, args.output)
+    print(envelope.to_json())
+    return 0
+
+
+def run_sbom(args: argparse.Namespace) -> int:
+    generator = SBOMGenerator()
+    if args.registry:
+        registry = generator.read_registry(args.registry)
+        sbom = generator.from_registry(registry, source_registry=args.registry)
+    else:
+        sbom = generator.from_paths(args.paths or [], name=args.name, version=args.version)
+    if args.output or args.markdown_output:
+        generator.write(sbom, args.output or "reports/sbom.json", args.markdown_output)
+    if args.format == "markdown":
+        print(sbom.to_markdown())
+    else:
+        print(sbom.to_json())
+    return 0
+
+
+def run_bundle(args: argparse.Namespace) -> int:
+    builder = ReleaseBundleBuilder()
+    report = builder.build(
+        artifact_paths=args.artifacts,
+        output_path=args.output,
+        name=args.name,
+        version=args.version,
+        signing_key=args.signing_key,
+        signing_key_id=args.signing_key_id,
+    )
+    if args.report:
+        Path(args.report).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.report).write_text(report.to_json() + "\n", encoding="utf-8")
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    return 0
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -551,6 +620,45 @@ def make_parser() -> argparse.ArgumentParser:
     model_card.add_argument("--policy-report")
     model_card.add_argument("--intended-use", default="Safe downstream AI model training review.")
     model_card.set_defaults(func=run_model_card)
+
+    registry = sub.add_parser("registry", help="build a local dataset/release artifact registry")
+    registry.add_argument("paths", nargs="*", help="files or directories to register")
+    registry.add_argument("--name", default="peachtree-release")
+    registry.add_argument("--version", default="0.8.0")
+    registry.add_argument("--format", choices=["json", "markdown"], default="json")
+    registry.add_argument("--output")
+    registry.add_argument("--markdown-output")
+    registry.set_defaults(func=run_registry)
+
+    sign = sub.add_parser("sign", help="sign or verify an artifact using local HMAC-SHA256 metadata")
+    sign.add_argument("--artifact", required=True)
+    sign.add_argument("--key", required=True, help="local signing key; prefer CI secret or local env var expansion")
+    sign.add_argument("--key-id", default="local-dev-key")
+    sign.add_argument("--output")
+    sign.add_argument("--verify", action="store_true")
+    sign.add_argument("--signature")
+    sign.set_defaults(func=run_sign)
+
+    sbom = sub.add_parser("sbom", help="generate a PeachTree SBOM/provenance manifest")
+    sbom.add_argument("paths", nargs="*", help="files to include when no registry is supplied")
+    sbom.add_argument("--registry")
+    sbom.add_argument("--name", default="peachtree-release")
+    sbom.add_argument("--version", default="0.8.0")
+    sbom.add_argument("--format", choices=["json", "markdown"], default="json")
+    sbom.add_argument("--output")
+    sbom.add_argument("--markdown-output")
+    sbom.set_defaults(func=run_sbom)
+
+    bundle = sub.add_parser("bundle", help="create a PeachTree release zip bundle")
+    bundle.add_argument("artifacts", nargs="+")
+    bundle.add_argument("--output", required=True)
+    bundle.add_argument("--name", default="peachtree-release")
+    bundle.add_argument("--version", default="0.8.0")
+    bundle.add_argument("--signing-key")
+    bundle.add_argument("--signing-key-id", default="local-dev-key")
+    bundle.add_argument("--report")
+    bundle.add_argument("--format", choices=["json", "markdown"], default="json")
+    bundle.set_defaults(func=run_bundle)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

@@ -1,6 +1,6 @@
 # PeachTree
 
-**PeachTree** is the recursive learning-tree dataset engine for CyberViser / 0AI projects.
+**PeachTree** is the recursive "learning-tree" dataset engine for CyberViser / 0AI projects.
 
 It is designed to become a shared dependency for Hancock, PeachFuzz/CactusFuzz, and future 0AI model-training pipelines.
 

@@ -31,3 +31,9 @@
 - Dataset quality scoring ✅
 - Deterministic deduplication ✅
 - Training readiness gates ✅
+
+
+## v0.7.0
+- Dataset policy packs ✅
+- License/compliance gates ✅
+- Model-card generator ✅

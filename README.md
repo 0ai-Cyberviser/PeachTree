@@ -149,3 +149,16 @@ peachtree readiness --dataset data/datasets/peachfuzz-deduped.jsonl --output rep
 ```
 
 These commands are local-only and do not train models or upload datasets.
+
+
+## Dataset policy packs
+
+PeachTree v0.7.0 adds policy-pack evaluation, license/compliance gates, and model-card generation.
+
+```bash
+peachtree policy-pack --list
+peachtree license-gate --dataset data/datasets/peachfuzz-deduped.jsonl --markdown-output reports/license-gate.md
+peachtree model-card --dataset data/datasets/peachfuzz-deduped.jsonl --model-name PeachFuzz-Dataset-v1 --output reports/model-card.md
+```
+
+These commands are local-only and generate review artifacts before downstream model training.

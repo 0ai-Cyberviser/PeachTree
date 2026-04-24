@@ -17,6 +17,9 @@ from .diff_review import DatasetDiffReviewer
 from .scheduler import UpdatePlanBuilder
 from .quality import DatasetQualityScorer
 from .dedup import DatasetDeduplicator
+from .license_gate import LicenseGate
+from .policy_packs import PolicyPackEvaluator
+from .model_card import ModelCardGenerator
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -297,6 +300,82 @@ def run_readiness(args: argparse.Namespace) -> int:
     print(content)
     return 0 if readiness["ready"] or not args.fail_on_gate else 2
 
+
+
+
+def _split_csv(value: str | None) -> set[str] | None:
+    if not value:
+        return None
+    return {item.strip() for item in value.split(",") if item.strip()}
+
+
+def run_policy_pack(args: argparse.Namespace) -> int:
+    evaluator = PolicyPackEvaluator()
+    if args.list:
+        packs = {"packs": [pack.to_dict() for pack in evaluator.list_packs()]}
+        print(json.dumps(packs, indent=2, sort_keys=True))
+        return 0
+    if args.show:
+        pack = evaluator.get_pack(args.show)
+        if args.format == "markdown":
+            print(f"# PeachTree Policy Pack\n\n```json\n{json.dumps(pack.to_dict(), indent=2, sort_keys=True)}\n```")
+        else:
+            print(json.dumps(pack.to_dict(), indent=2, sort_keys=True))
+        return 0
+
+    if not args.dataset:
+        raise SystemExit("policy-pack requires --dataset unless --list or --show is used")
+
+    evaluation = evaluator.evaluate(args.dataset, args.pack)
+    if args.json_output or args.markdown_output:
+        evaluator.write_report(
+            evaluation,
+            args.json_output or "reports/policy-pack.json",
+            args.markdown_output,
+        )
+    if args.format == "markdown":
+        print(evaluation.to_markdown())
+    else:
+        print(evaluation.to_json())
+    return 0 if evaluation.passed or not args.fail_on_gate else 2
+
+
+def run_license_gate(args: argparse.Namespace) -> int:
+    gate = LicenseGate(
+        allowed_licenses=_split_csv(args.allow),
+        denied_licenses=_split_csv(args.deny),
+        allow_unknown=args.allow_unknown,
+    )
+    report = gate.evaluate(args.dataset)
+    if args.json_output or args.markdown_output:
+        gate.write_report(
+            report,
+            args.json_output or "reports/license-gate.json",
+            args.markdown_output,
+        )
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json(include_findings=not args.summary_only))
+    return 0 if report.passed or not args.fail_on_gate else 2
+
+
+def run_model_card(args: argparse.Namespace) -> int:
+    generator = ModelCardGenerator()
+    card = generator.generate(
+        dataset_path=args.dataset,
+        model_name=args.model_name,
+        manifest_path=args.manifest,
+        quality_report_path=args.quality_report,
+        license_report_path=args.license_report,
+        policy_report_path=args.policy_report,
+        intended_use=args.intended_use,
+    )
+    generator.write(card, args.output, args.format)
+    print(json.dumps({"output": args.output, "format": args.format, "model_name": args.model_name}, indent=2, sort_keys=True))
+    return 0
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -437,6 +516,41 @@ def make_parser() -> argparse.ArgumentParser:
     readiness.add_argument("--max-duplicate-ratio", type=float, default=0.05)
     readiness.add_argument("--fail-on-gate", action="store_true")
     readiness.set_defaults(func=run_readiness)
+
+    policy_pack = sub.add_parser("policy-pack", help="list, show, or evaluate dataset policy packs")
+    policy_pack.add_argument("--list", action="store_true", help="list built-in policy packs")
+    policy_pack.add_argument("--show", help="show one built-in policy pack")
+    policy_pack.add_argument("--dataset")
+    policy_pack.add_argument("--pack", default="open-safe")
+    policy_pack.add_argument("--format", choices=["json", "markdown"], default="json")
+    policy_pack.add_argument("--json-output")
+    policy_pack.add_argument("--markdown-output")
+    policy_pack.add_argument("--fail-on-gate", action="store_true")
+    policy_pack.set_defaults(func=run_policy_pack)
+
+    license_gate = sub.add_parser("license-gate", help="evaluate dataset license compliance gates")
+    license_gate.add_argument("--dataset", required=True)
+    license_gate.add_argument("--allow", help="comma-separated allowed license IDs")
+    license_gate.add_argument("--deny", help="comma-separated denied license IDs")
+    license_gate.add_argument("--allow-unknown", action="store_true")
+    license_gate.add_argument("--format", choices=["json", "markdown"], default="json")
+    license_gate.add_argument("--json-output")
+    license_gate.add_argument("--markdown-output")
+    license_gate.add_argument("--summary-only", action="store_true")
+    license_gate.add_argument("--fail-on-gate", action="store_true")
+    license_gate.set_defaults(func=run_license_gate)
+
+    model_card = sub.add_parser("model-card", help="generate a dataset model card from PeachTree reports")
+    model_card.add_argument("--dataset", required=True)
+    model_card.add_argument("--model-name", required=True)
+    model_card.add_argument("--output", required=True)
+    model_card.add_argument("--format", choices=["markdown", "json"], default="markdown")
+    model_card.add_argument("--manifest")
+    model_card.add_argument("--quality-report")
+    model_card.add_argument("--license-report")
+    model_card.add_argument("--policy-report")
+    model_card.add_argument("--intended-use", default="Safe downstream AI model training review.")
+    model_card.set_defaults(func=run_model_card)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

@@ -9,6 +9,9 @@ from .diff_review import DatasetDiffReviewer, DatasetDiff
 from .scheduler import UpdatePlanBuilder, ScheduledUpdatePlan
 from .quality import DatasetQualityScorer, DatasetQualityReport
 from .dedup import DatasetDeduplicator, DedupReport
+from .license_gate import LicenseGate, LicenseGateReport
+from .policy_packs import PolicyPackEvaluator, PolicyPackEvaluation
+from .model_card import ModelCardGenerator, ModelCard
 from .safety import SafetyGate
 
 __all__ = [
@@ -35,6 +38,12 @@ __all__ = [
     "DatasetQualityReport",
     "DatasetDeduplicator",
     "DedupReport",
+    "LicenseGate",
+    "LicenseGateReport",
+    "PolicyPackEvaluator",
+    "PolicyPackEvaluation",
+    "ModelCardGenerator",
+    "ModelCard",
 ]
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"

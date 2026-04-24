@@ -55,7 +55,7 @@ class DatasetBuilder:
             record_count=len(records),
             source_count=len(sources),
             domain=self.domain,
-            builder_version="0.6.0",
+            builder_version="0.7.0",
             source_digests=tuple(sorted({source.digest for source in sources})),
             policy={"secret_filtering": True, "license_filtering": True, "provenance_required": True},
         )

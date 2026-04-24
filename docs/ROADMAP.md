@@ -16,7 +16,7 @@
 - rate-limited repo inventory
 
 ## v0.3.0
-- Cross-repo dependency graph
+- Cross-repo dependency graph ✅
 - Hancock/PeachFuzz/PeachTree lineage maps
 
 ## v0.4.0

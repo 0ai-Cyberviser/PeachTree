@@ -10,6 +10,8 @@ from .planner import RecursiveLearningTree
 from .repo_ingest import iter_local_documents
 from .safety import SafetyGate
 from .github_owned import OwnedGitHubConnector
+from .dependency_graph import DependencyGraphBuilder
+from .lineage import DatasetLineageBuilder
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -90,6 +92,64 @@ def run_github_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+
+
+def _print_or_write(content: str, output: str | None) -> None:
+    if output:
+        Path(output).parent.mkdir(parents=True, exist_ok=True)
+        Path(output).write_text(content + "\n", encoding="utf-8")
+    print(content)
+
+
+def run_graph(args: argparse.Namespace) -> int:
+    graph = DependencyGraphBuilder().from_inputs(
+        inventory_path=args.inventory,
+        dataset_dir=args.dataset_dir,
+        manifest_dir=args.manifest_dir,
+    )
+    if args.format == "json":
+        content = graph.to_json()
+    elif args.format == "mermaid":
+        content = graph.to_mermaid()
+    else:
+        content = graph.to_dot()
+    _print_or_write(content, args.output)
+    return 0
+
+
+def run_lineage(args: argparse.Namespace) -> int:
+    lineage = DatasetLineageBuilder().from_dataset(args.dataset, args.manifest)
+    if args.format == "json":
+        content = lineage.to_json()
+    else:
+        content = lineage.to_markdown()
+    _print_or_write(content, args.output)
+    return 0
+
+
+def run_ecosystem(args: argparse.Namespace) -> int:
+    graph = DependencyGraphBuilder().from_inputs(
+        inventory_path=args.inventory,
+        dataset_dir=args.dataset_dir,
+        manifest_dir=args.manifest_dir,
+    )
+    summary = DatasetLineageBuilder().summarize_directory(args.dataset_dir, args.manifest_dir)
+    content = json.dumps(
+        {
+            "graph": graph.to_dict(),
+            "lineage_summary": summary,
+            "policy": {
+                "local_only": True,
+                "public_github_collection": "disabled by default",
+                "review_required_before_training": True,
+            },
+        },
+        indent=2,
+        sort_keys=True,
+    )
+    _print_or_write(content, args.output)
+    return 0
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -136,6 +196,28 @@ def make_parser() -> argparse.ArgumentParser:
     github_plan.add_argument("--clone-script", default="scripts/clone_owned_repos.sh")
     github_plan.add_argument("--dataset-script", default="scripts/build_owned_datasets.sh")
     github_plan.set_defaults(func=run_github_plan)
+
+    graph = sub.add_parser("graph", help="build cross-repo dependency graph")
+    graph.add_argument("--inventory", help="owned repo inventory JSONL")
+    graph.add_argument("--dataset-dir", default="data/datasets")
+    graph.add_argument("--manifest-dir", default="data/manifests")
+    graph.add_argument("--format", choices=["json", "mermaid", "dot"], default="json")
+    graph.add_argument("--output")
+    graph.set_defaults(func=run_graph)
+
+    lineage = sub.add_parser("lineage", help="build dataset lineage map")
+    lineage.add_argument("--dataset", required=True)
+    lineage.add_argument("--manifest")
+    lineage.add_argument("--format", choices=["json", "markdown"], default="json")
+    lineage.add_argument("--output")
+    lineage.set_defaults(func=run_lineage)
+
+    ecosystem = sub.add_parser("ecosystem", help="build combined ecosystem graph and lineage summary")
+    ecosystem.add_argument("--inventory", help="owned repo inventory JSONL")
+    ecosystem.add_argument("--dataset-dir", default="data/datasets")
+    ecosystem.add_argument("--manifest-dir", default="data/manifests")
+    ecosystem.add_argument("--output")
+    ecosystem.set_defaults(func=run_ecosystem)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

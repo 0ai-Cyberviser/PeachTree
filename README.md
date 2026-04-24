@@ -1,6 +1,6 @@
 # PeachTree
 
-**PeachTree** is the recursive "learning-tree" dataset engine for CyberViser / 0AI projects.
+**PeachTree** is the recursive learning-tree dataset engine for CyberViser / 0AI projects.
 
 It is designed to become a shared dependency for Hancock, PeachFuzz/CactusFuzz, and future 0AI model-training pipelines.
 
@@ -97,3 +97,16 @@ bash scripts/build_owned_datasets.sh
 ```
 
 The connector inventories access-authorized repositories and generates reviewable scripts. Public GitHub-wide collection remains disabled by default.
+
+
+## Dependency graphs and lineage maps
+
+PeachTree v0.3.0 adds local-only graph and lineage reports.
+
+```bash
+peachtree graph --inventory data/manifests/owned.jsonl --format mermaid --output reports/ecosystem-graph.mmd
+peachtree lineage --dataset data/datasets/peachfuzz-instruct.jsonl --format markdown --output reports/peachfuzz-lineage.md
+peachtree ecosystem --inventory data/manifests/owned.jsonl --output reports/ecosystem.json
+```
+
+These commands read local inventory, datasets, and manifests. They do not contact GitHub or train models.

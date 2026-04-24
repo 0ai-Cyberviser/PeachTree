@@ -136,3 +136,16 @@ peachtree review-report --plan data/manifests/update-plan.json --output reports/
 ```
 
 The included GitHub Actions workflow opens pull requests for dataset updates. It does not train models, upload datasets, or push directly to `main`.
+
+
+## Dataset quality gates
+
+PeachTree v0.6.0 adds quality scoring, deterministic deduplication, and training readiness checks.
+
+```bash
+peachtree score --dataset data/datasets/peachfuzz-instruct.jsonl --markdown-output reports/quality.md
+peachtree dedup --source data/datasets/peachfuzz-instruct.jsonl --output data/datasets/peachfuzz-deduped.jsonl
+peachtree readiness --dataset data/datasets/peachfuzz-deduped.jsonl --output reports/readiness.json
+```
+
+These commands are local-only and do not train models or upload datasets.

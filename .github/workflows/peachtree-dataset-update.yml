@@ -1,0 +1,79 @@
+name: PeachTree Dataset Update PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_path:
+        description: "Local repo path after checkout"
+        required: false
+        default: "."
+      repo_name:
+        description: "Repository name for provenance"
+        required: false
+        default: "0ai-Cyberviser/PeachTree"
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dataset-update-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PeachTree
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Generate update plan
+        run: |
+          mkdir -p data/manifests reports
+          peachtree update-plan             --repo "${{ github.event.inputs.repo_path || '.' }}"             --repo-name "${{ github.event.inputs.repo_name || github.repository }}"             --output data/manifests/update-plan.json             --markdown-output reports/update-plan.md
+
+      - name: Build candidate dataset
+        run: |
+          SAFE_REPO_NAME="$(echo "${{ github.event.inputs.repo_name || github.repository }}" | sed 's#/#__#g')"
+          peachtree ingest-local             --repo "${{ github.event.inputs.repo_path || '.' }}"             --repo-name "${{ github.event.inputs.repo_name || github.repository }}"             --output "data/raw/${SAFE_REPO_NAME}.jsonl"
+          peachtree build             --source "data/raw/${SAFE_REPO_NAME}.jsonl"             --dataset "data/datasets/${SAFE_REPO_NAME}-instruct.jsonl"             --manifest "data/manifests/${SAFE_REPO_NAME}.json"             --domain "${SAFE_REPO_NAME}"
+          peachtree audit --dataset "data/datasets/${SAFE_REPO_NAME}-instruct.jsonl"
+
+      - name: Generate review report
+        run: |
+          peachtree review-report             --plan data/manifests/update-plan.json             --output reports/update-review.json
+
+      - name: Upload review artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: peachtree-dataset-update-review
+          path: |
+            data/manifests/*.json
+            data/datasets/*.jsonl
+            reports/*.md
+            reports/*.json
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: peachtree/dataset-update
+          commit-message: "chore: update PeachTree datasets"
+          title: "chore: update PeachTree datasets"
+          body: |
+            Automated PeachTree dataset update candidate.
+
+            Review required before merge:
+            - Dataset manifests
+            - Dataset JSONL changes
+            - Review reports
+            - Provenance warnings
+
+            This workflow does not train models or upload datasets.
+          labels: dataset, peachtree, review-required

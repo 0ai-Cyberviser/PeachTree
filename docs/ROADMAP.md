@@ -23,4 +23,5 @@
 - Exporters: ChatML, Alpaca, ShareGPT ✅
 
 ## v0.5.0
-- GitHub Actions scheduled dataset update PR workflow
+- GitHub Actions scheduled dataset update PR workflow ✅
+- Dataset diff review reports ✅

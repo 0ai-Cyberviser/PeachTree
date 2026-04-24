@@ -123,3 +123,16 @@ peachtree validate-export --format chatml --path data/exports/peachfuzz-chatml.j
 ```
 
 Exporters are local-only and preserve provenance metadata by default.
+
+
+## Scheduled dataset update PR workflow
+
+PeachTree v0.5.0 adds review-first scheduled update tooling.
+
+```bash
+peachtree update-plan --repo ~/peachfuzz --repo-name 0ai-Cyberviser/peachfuzz --output data/manifests/update-plan.json
+peachtree diff --baseline data/baseline/old.jsonl --candidate data/datasets/new.jsonl --format markdown
+peachtree review-report --plan data/manifests/update-plan.json --output reports/update-review.json
+```
+
+The included GitHub Actions workflow opens pull requests for dataset updates. It does not train models, upload datasets, or push directly to `main`.

@@ -5,6 +5,8 @@ from .github_owned import OwnedGitHubConnector, OwnedRepo
 from .dependency_graph import DependencyGraphBuilder, DependencyGraph
 from .lineage import DatasetLineageBuilder, DatasetLineage
 from .exporters import ModelExporter, export_format_names
+from .diff_review import DatasetDiffReviewer, DatasetDiff
+from .scheduler import UpdatePlanBuilder, ScheduledUpdatePlan
 from .safety import SafetyGate
 
 __all__ = [
@@ -23,6 +25,10 @@ __all__ = [
     "DatasetLineage",
     "ModelExporter",
     "export_format_names",
+    "DatasetDiffReviewer",
+    "DatasetDiff",
+    "UpdatePlanBuilder",
+    "ScheduledUpdatePlan",
 ]
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

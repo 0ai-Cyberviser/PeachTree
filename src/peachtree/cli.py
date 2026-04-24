@@ -13,6 +13,8 @@ from .github_owned import OwnedGitHubConnector
 from .dependency_graph import DependencyGraphBuilder
 from .lineage import DatasetLineageBuilder
 from .exporters import ModelExporter, export_format_names
+from .diff_review import DatasetDiffReviewer
+from .scheduler import UpdatePlanBuilder
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -170,6 +172,57 @@ def run_validate_export(args: argparse.Namespace) -> int:
     print(report.to_json())
     return 0 if report.ok else 1
 
+
+
+def run_diff(args: argparse.Namespace) -> int:
+    reviewer = DatasetDiffReviewer()
+    diff = reviewer.compare(args.baseline, args.candidate)
+    if args.json_output or args.markdown_output:
+        reviewer.write_reports(
+            diff,
+            args.json_output or "reports/dataset-diff.json",
+            args.markdown_output or "reports/dataset-diff.md",
+        )
+    if args.format == "markdown":
+        print(diff.to_markdown())
+    else:
+        print(diff.to_json())
+    return 0 if not args.fail_on_review or not diff.review_required else 2
+
+
+def run_update_plan(args: argparse.Namespace) -> int:
+    builder = UpdatePlanBuilder()
+    plan = builder.default_plan(args.repo, args.repo_name, name=args.name)
+    if args.output or args.markdown_output:
+        builder.write_plan(plan, args.output or "data/manifests/update-plan.json", args.markdown_output)
+    if args.format == "markdown":
+        print(plan.to_markdown())
+    else:
+        print(plan.to_json())
+    return 0
+
+
+def run_review_report(args: argparse.Namespace) -> int:
+    builder = UpdatePlanBuilder()
+    plan = builder.read_plan(args.plan)
+    commands = builder.command_preview(plan)
+    report = {
+        "plan": plan.to_dict(),
+        "commands": commands,
+        "safety": {
+            "review_required": plan.review_required,
+            "opens_pull_request": plan.open_pull_request,
+            "does_not_train_models": True,
+            "does_not_upload_datasets": True,
+        },
+    }
+    content = json.dumps(report, indent=2, sort_keys=True)
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(content + "\n", encoding="utf-8")
+    print(content)
+    return 0
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -255,6 +308,29 @@ def make_parser() -> argparse.ArgumentParser:
     validate_export.add_argument("--path", required=True)
     validate_export.add_argument("--format", choices=list(export_format_names()), required=True)
     validate_export.set_defaults(func=run_validate_export)
+
+    diff = sub.add_parser("diff", help="compare baseline and candidate dataset JSONL files")
+    diff.add_argument("--baseline", required=True)
+    diff.add_argument("--candidate", required=True)
+    diff.add_argument("--format", choices=["json", "markdown"], default="json")
+    diff.add_argument("--json-output")
+    diff.add_argument("--markdown-output")
+    diff.add_argument("--fail-on-review", action="store_true")
+    diff.set_defaults(func=run_diff)
+
+    update_plan = sub.add_parser("update-plan", help="create a scheduled dataset update plan")
+    update_plan.add_argument("--repo", required=True, help="local repository path used by CI checkout or local run")
+    update_plan.add_argument("--repo-name", required=True)
+    update_plan.add_argument("--name", default="peachtree-dataset-update")
+    update_plan.add_argument("--format", choices=["json", "markdown"], default="json")
+    update_plan.add_argument("--output")
+    update_plan.add_argument("--markdown-output")
+    update_plan.set_defaults(func=run_update_plan)
+
+    review_report = sub.add_parser("review-report", help="render a dataset update review report from a plan")
+    review_report.add_argument("--plan", required=True)
+    review_report.add_argument("--output")
+    review_report.set_defaults(func=run_review_report)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

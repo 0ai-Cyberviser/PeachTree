@@ -27,6 +27,9 @@ from .release_bundle import ReleaseBundleBuilder
 from .trainer_handoff import TrainerHandoffBuilder
 from .lora_job import LoraJobCardBuilder, LoraHyperparameters
 from .training_plan import DryRunTrainingPlanner
+from .doctor import PeachTreeDoctor, command_names_from_parser
+from .workspace import PeachWorkspace, build_workspace, workspace_report, write_default_workspace
+from .seeds import PeachSeedExporter, write_seed_manifest
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -543,9 +546,95 @@ def run_train_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def run_doctor(args: argparse.Namespace) -> int:
+    parser = make_parser()
+    report = PeachTreeDoctor().run(
+        dataset=args.dataset,
+        command_names=command_names_from_parser(parser),
+    )
+    if args.format == "json":
+        print(report.to_json())
+    else:
+        print(report.to_markdown())
+    return 0 if report.ok else 2
+
+
+def run_workspace(args: argparse.Namespace) -> int:
+    if args.workspace_command == "init":
+        output = write_default_workspace(args.output, force=args.force)
+        print(json.dumps({"output": str(output)}, indent=2, sort_keys=True))
+        return 0
+    if args.workspace_command == "validate":
+        workspace = PeachWorkspace.read(args.config)
+        report = workspace.validate()
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["ok"] else 2
+    if args.workspace_command == "build":
+        report = build_workspace(args.config)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0
+    if args.workspace_command == "report":
+        content = workspace_report(args.config)
+        if args.output:
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.output).write_text(content + "\n", encoding="utf-8")
+        print(content)
+        return 0
+    raise SystemExit(f"unknown workspace command: {args.workspace_command}")
+
+
+def run_seeds(args: argparse.Namespace) -> int:
+    manifest = PeachSeedExporter().export(
+        args.dataset,
+        args.target,
+        args.output,
+        write=args.write,
+        limit=args.limit,
+    )
+    if args.manifest:
+        write_seed_manifest(manifest, args.manifest)
+    if args.format == "markdown":
+        print(manifest.to_markdown())
+    else:
+        print(manifest.to_json())
+    return 0
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    doctor = sub.add_parser("doctor", help="run local PeachTree maintainer health checks")
+    doctor.add_argument("--dataset", help="optional dataset JSONL to validate")
+    doctor.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    doctor.set_defaults(func=run_doctor)
+
+    workspace = sub.add_parser("workspace", help="manage peach.json workspace config")
+    workspace_sub = workspace.add_subparsers(dest="workspace_command", required=True)
+    workspace_init = workspace_sub.add_parser("init", help="write a default peach.json")
+    workspace_init.add_argument("--output", default="peach.json")
+    workspace_init.add_argument("--force", action="store_true")
+    workspace_init.set_defaults(func=run_workspace)
+    workspace_validate = workspace_sub.add_parser("validate", help="validate peach.json")
+    workspace_validate.add_argument("--config", default="peach.json")
+    workspace_validate.set_defaults(func=run_workspace)
+    workspace_build = workspace_sub.add_parser("build", help="build all repos from peach.json")
+    workspace_build.add_argument("--config", default="peach.json")
+    workspace_build.set_defaults(func=run_workspace)
+    workspace_report_cmd = workspace_sub.add_parser("report", help="render a workspace report")
+    workspace_report_cmd.add_argument("--config", default="peach.json")
+    workspace_report_cmd.add_argument("--output")
+    workspace_report_cmd.set_defaults(func=run_workspace)
+
+    seeds = sub.add_parser("seeds", help="export reviewed dataset records into PeachFuzz seed corpora")
+    seeds.add_argument("--dataset", required=True)
+    seeds.add_argument("--target", choices=["json", "graphql", "openapi", "webhook", "yaml", "xml", "http", "log"], required=True)
+    seeds.add_argument("--output", required=True)
+    seeds.add_argument("--manifest")
+    seeds.add_argument("--limit", type=int)
+    seeds.add_argument("--write", action="store_true", help="write corpus files; default is dry-run")
+    seeds.add_argument("--format", choices=["json", "markdown"], default="json")
+    seeds.set_defaults(func=run_seeds)
 
     plan = sub.add_parser("plan", help="create a recursive learning tree")
     plan.add_argument("--goal", required=True)
@@ -566,7 +655,7 @@ def make_parser() -> argparse.ArgumentParser:
     build.add_argument("--dataset", required=True)
     build.add_argument("--manifest", required=True)
     build.add_argument("--domain", default="general")
-    build.add_argument("--allow-unknown-license", action="store_true", default=True)
+    build.add_argument("--allow-unknown-license", action="store_true", default=False)
     build.set_defaults(func=run_build)
 
     audit = sub.add_parser("audit", help="audit generated dataset JSONL")

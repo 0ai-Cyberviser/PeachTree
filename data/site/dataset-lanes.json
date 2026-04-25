@@ -1,0 +1,23 @@
+[
+  {
+    "name": "PeachFuzz Corpus",
+    "status": "ready-for-local-ingest",
+    "source": "owned local PeachFuzz repo and reports only",
+    "outputs": ["crash-triage-jsonl", "regression-reproducer-jsonl", "corpus-summary-jsonl"],
+    "gates": ["secret-scan", "owned-source-check", "dedup", "readiness"]
+  },
+  {
+    "name": "Hancock Security Instructions",
+    "status": "review-required",
+    "source": "owned Hancock docs, tests, modes, and examples",
+    "outputs": ["chatml", "alpaca", "sharegpt"],
+    "gates": ["license-gate", "unsafe-record-filter", "provenance-required"]
+  },
+  {
+    "name": "Owned Repo Knowledge",
+    "status": "inventory-first",
+    "source": "0ai-Cyberviser owned or explicitly authorized repositories",
+    "outputs": ["repo-summary-jsonl", "architecture-records", "maintenance-records"],
+    "gates": ["owner-allowlist", "private-data-block", "manual-review"]
+  }
+]

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="PeachTree live fuzzing dataset hub for owned CyberViser assets only." />
+  <title>PeachTree | Live Fuzzing Dataset Hub</title>
+  <link rel="stylesheet" href="assets/peachtree.css" />
+  <link rel="icon" href="data:," />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#top" aria-label="PeachTree home"><span>🌳</span><strong>PeachTree</strong></a>
+    <nav>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#fuzzing">Live fuzzing</a>
+      <a href="#datasets">Datasets</a>
+      <a href="#policy">Owned-only policy</a>
+      <a href="https://github.com/0ai-Cyberviser/PeachTree">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">CyberViser / 0AI / Hancock</p>
+        <h1>Live fuzzing signals into safe training datasets.</h1>
+        <p class="lead">PeachTree is the dataset control plane for fuzz reports, minimized reproducers, test artifacts, and repository knowledge from assets owned or explicitly controlled by CyberViser / 0AI.</p>
+        <div class="actions">
+          <a class="button primary" href="#pipeline">Build the pipeline</a>
+          <a class="button" href="https://github.com/0ai-Cyberviser/peachfuzz">Pair with PeachFuzz</a>
+        </div>
+      </div>
+      <aside class="terminal" aria-label="Example command flow">
+        <pre><code>$ peachtree policy
+owned_assets_only: true
+public_scraping: disabled
+review_required: true
+
+$ peachtree ingest-local --repo ~/peachfuzz --repo-name peachfuzz --output data/raw/peachfuzz.jsonl
+$ peachtree build --source data/raw/peachfuzz.jsonl --dataset data/datasets/peachfuzz-instruct.jsonl --manifest data/manifests/peachfuzz.json --domain peachfuzz
+$ peachtree readiness --dataset data/datasets/peachfuzz-instruct.jsonl --fail-on-gate</code></pre>
+      </aside>
+    </section>
+
+    <section class="grid metrics" aria-label="Dataset guardrails">
+      <article><span>01</span><strong>Owned sources only</strong><p>Local repos, logs, docs, fuzz reports, and corpora you own or are authorized to use.</p></article>
+      <article><span>02</span><strong>Review-first datasets</strong><p>Every JSONL record keeps provenance and moves through safety, license, quality, dedup, and readiness gates.</p></article>
+      <article><span>03</span><strong>No automatic training</strong><p>Trainer handoff remains dry-run until an explicit human approval and external compute plan exists.</p></article>
+    </section>
+
+    <section id="pipeline" class="panel">
+      <p class="eyebrow">Pipeline</p>
+      <h2>From live fuzzing to training-ready JSONL</h2>
+      <div class="steps">
+        <article><b>Collect</b><p>PeachFuzz, CI reports, local regression tests, crash metadata, docs, and repo notes.</p></article>
+        <article><b>Normalize</b><p>Convert source artifacts into traceable PeachTree source records with stable IDs.</p></article>
+        <article><b>Gate</b><p>Block secrets, unknown licenses when disallowed, unsafe content, duplicates, and low-quality samples.</p></article>
+        <article><b>Export</b><p>Emit ChatML, Alpaca, or ShareGPT JSONL for Hancock training/evaluation experiments.</p></article>
+      </div>
+    </section>
+
+    <section id="fuzzing" class="split">
+      <div>
+        <p class="eyebrow">Live fuzzing</p>
+        <h2>Use fuzzing as a dataset signal, not an unsafe autopilot.</h2>
+        <p>PeachTree treats live fuzzing output as reviewed evidence: stack traces, minimized payloads, regression tests, corpus summaries, coverage notes, and fix explanations. It does not launch unauthorized fuzzing, network scanning, exploit execution, or third-party collection.</p>
+      </div>
+      <div class="card-list">
+        <div><strong>Allowed</strong><p>Owned repos, local parsers, local corpora, CI-safe harnesses, synthetic payloads, minimized reproducers.</p></div>
+        <div><strong>Blocked</strong><p>Unowned targets, credential harvesting, raw secrets, private customer data, blind public scraping, destructive payloads.</p></div>
+      </div>
+    </section>
+
+    <section id="datasets" class="panel alt">
+      <p class="eyebrow">Dataset lanes</p>
+      <h2>Training data lanes for new Hancock models</h2>
+      <div class="dataset-grid" id="datasetGrid"></div>
+    </section>
+
+    <section id="policy" class="split policy">
+      <div>
+        <p class="eyebrow">Boundary</p>
+        <h2>Assets you own only.</h2>
+        <p>This site and pipeline are scoped to CyberViser / 0AI assets and explicit authorized repositories. Private credentials, raw telemetry, customer data, Google Admin URLs, Drive links, Proton Bridge secrets, and model provider keys stay out of public artifacts.</p>
+      </div>
+      <pre><code>dataset_boundary:
+  public_scraping: disabled
+  owned_local_repos: enabled
+  access_authorized_github: review_required
+  secrets: blocked
+  provenance: required
+  training_launch: dry_run_only</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <span>Maintained by CyberViser / 0AI.</span>
+    <a href="https://cyberviserai.com">CyberViser AI</a>
+    <a href="https://github.com/0ai-Cyberviser/Hancock">Hancock</a>
+    <a href="https://github.com/0ai-Cyberviser/peachfuzz">PeachFuzz</a>
+  </footer>
+
+  <script src="assets/peachtree.js"></script>
+</body>
+</html>

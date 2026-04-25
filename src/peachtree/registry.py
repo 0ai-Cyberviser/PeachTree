@@ -6,6 +6,8 @@ metadata for reproducible release review.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 import hashlib

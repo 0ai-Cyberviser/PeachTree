@@ -1,13 +1,13 @@
 """SBOM and provenance manifest generation for PeachTree release bundles."""
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
 from pathlib import Path
 from typing import Any
 
-from .registry import DatasetRegistry, DatasetRegistryBuilder, sha256_file
+from .registry import DatasetRegistry, DatasetRegistryBuilder
 
 
 @dataclass(frozen=True)

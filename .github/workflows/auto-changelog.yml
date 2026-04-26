@@ -1,0 +1,132 @@
+name: Auto-Changelog
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Parse PR information
+        id: pr
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          echo "title=$title" >> $GITHUB_OUTPUT
+          
+          # Extract type (feat, fix, docs, etc.)
+          type=$(echo "$title" | grep -oE "^(feat|fix|docs|refactor|test|chore|perf)" | head -1)
+          echo "type=${type:-chore}" >> $GITHUB_OUTPUT
+          
+          # Extract scope if present
+          scope=$(echo "$title" | grep -oE "\([^)]+\)" | head -1)
+          echo "scope=$scope" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog entry
+        id: changelog
+        run: |
+          type="${{ steps.pr.outputs.type }}"
+          title="${{ github.event.pull_request.title }}"
+          url="${{ github.event.pull_request.html_url }}"
+          author="${{ github.event.pull_request.user.login }}"
+          
+          case "$type" in
+            feat)
+              section="### Added"
+              ;;
+            fix)
+              section="### Fixed"
+              ;;
+            docs)
+              section="### Documentation"
+              ;;
+            perf)
+              section="### Performance"
+              ;;
+            *)
+              section="### Changed"
+              ;;
+          esac
+          
+          entry="- $title ([$author](${{ github.event.pull_request.user.html_url }}) in [${{ github.event.pull_request.number }}]($url))"
+          
+          echo "entry=$entry" >> $GITHUB_OUTPUT
+          echo "section=$section" >> $GITHUB_OUTPUT
+
+      - name: Update CHANGELOG.md
+        run: |
+          # Only update if PR was merged
+          if [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            # Backup current changelog
+            cp CHANGELOG.md CHANGELOG.md.bak
+            
+            # Read current content
+            cat CHANGELOG.md > temp.md
+            
+            # Create new content with latest changes
+            cat > CHANGELOG.md << 'EOF'
+          # Changelog
+
+          All notable changes to the PeachTree project are documented in this file.
+
+          The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+          and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+          ## [Unreleased]
+
+          ### Recent Changes
+
+          ${{ steps.changelog.outputs.entry }}
+
+          EOF
+            
+            # Append rest of changelog
+            tail -n +5 temp.md >> CHANGELOG.md
+            
+            # Clean up
+            rm temp.md
+          fi
+
+      - name: Commit changelog update
+        if: github.event.pull_request.merged == true
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          if git diff --quiet CHANGELOG.md; then
+            echo "No changelog changes needed"
+          else
+            git add CHANGELOG.md
+            git commit -m "docs: update changelog for PR #${{ github.event.pull_request.number }}" || true
+            git push || true
+          fi
+
+      - name: Comment on PR
+        if: github.event.pull_request.merged == true
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **Changelog Updated**\n\nYour changes have been automatically added to CHANGELOG.md'
+            })

@@ -1,0 +1,107 @@
+name: Auto-Label
+
+on:
+  pull_request:
+    types: [opened, edited]
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  label:
+    name: Auto-Label PR/Issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determine labels
+        id: labels
+        run: |
+          title="${{ github.event.pull_request.title || github.event.issue.title }}"
+          body="${{ github.event.pull_request.body || github.event.issue.body }}"
+          
+          labels=""
+          
+          # Type labels from title
+          if [[ "$title" =~ ^feat ]]; then
+            labels="$labels,enhancement"
+          fi
+          if [[ "$title" =~ ^fix ]]; then
+            labels="$labels,bug"
+          fi
+          if [[ "$title" =~ ^docs ]]; then
+            labels="$labels,documentation"
+          fi
+          if [[ "$title" =~ ^perf ]]; then
+            labels="$labels,performance"
+          fi
+          if [[ "$title" =~ ^test ]]; then
+            labels="$labels,testing"
+          fi
+          
+          # Area labels
+          if [[ "$title" =~ (builder|dataset|build) ]]; then
+            labels="$labels,area:dataset-building"
+          fi
+          if [[ "$title" =~ (safety|gate|secret) ]]; then
+            labels="$labels,area:safety"
+          fi
+          if [[ "$title" =~ (policy|pack) ]]; then
+            labels="$labels,area:policy"
+          fi
+          if [[ "$title" =~ (dedup|duplicate) ]]; then
+            labels="$labels,area:deduplication"
+          fi
+          if [[ "$title" =~ (cli|command) ]]; then
+            labels="$labels,area:cli"
+          fi
+          if [[ "$title" =~ (api|endpoint|sdk) ]]; then
+            labels="$labels,area:api"
+          fi
+          if [[ "$title" =~ (ci|cd|action|workflow) ]]; then
+            labels="$labels,area:ci-cd"
+          fi
+          
+          # Priority labels
+          if [[ "$body" =~ "Priority: High" ]] || [[ "$title" =~ \!\! ]]; then
+            labels="$labels,priority:high"
+          fi
+          if [[ "$body" =~ "Priority: Low" ]]; then
+            labels="$labels,priority:low"
+          fi
+          
+          # Remove leading comma and duplicates
+          labels=$(echo "$labels" | sed 's/^,//' | tr ',' '\n' | sort -u | tr '\n' ',')
+          labels=${labels%,}
+          
+          echo "labels=$labels" >> $GITHUB_OUTPUT
+
+      - name: Apply labels
+        if: steps.labels.outputs.labels != ''
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = '${{ steps.labels.outputs.labels }}'.split(',');
+            
+            if ('${{ github.event.pull_request.number }}' != '') {
+              // PR
+              github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            } else if ('${{ github.event.issue.number }}' != '') {
+              // Issue
+              github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: labels
+              });
+            }
+            
+            console.log('Applied labels:', labels);

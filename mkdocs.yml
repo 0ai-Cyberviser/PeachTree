@@ -32,7 +32,6 @@ theme:
 
 plugins:
   - search
-  - minify
 
 markdown_extensions:
   - pymdownx.highlight

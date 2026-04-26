@@ -87,3 +87,9 @@ nav:
     - Deployment: DEPLOYMENT.md
     - Contributing: CONTRIBUTING.md
     - Security: SECURITY.md
+  - Community:
+    - Code of Conduct: CODE_OF_CONDUCT.md
+    - Roadmap: ROADMAP.md
+    - Badges: BADGES.md
+    - Release Notes Template: RELEASE-NOTES-TEMPLATE.md
+    - Repository Settings: REPOSITORY-SETTINGS.md

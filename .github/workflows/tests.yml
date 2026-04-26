@@ -1,0 +1,77 @@
+name: Tests & Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.10", "3.11", "3.12" ]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Run tests with coverage
+      run: |
+        python -m pytest tests/ \
+          --cov=src/peachtree \
+          --cov-report=xml \
+          --cov-report=term-missing \
+          --junitxml=junit.xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: false
+        verbose: true
+
+    - name: Run ruff linting
+      run: python -m ruff check src/peachtree/ tests/
+
+    - name: Run mypy type checking
+      run: python -m mypy src/peachtree/ --strict
+
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      if: always()
+      with:
+        files: junit.xml
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Check for security issues with bandit
+      run: |
+        pip install bandit
+        bandit -r src/peachtree/ -ll || true
+
+    - name: Check code style
+      run: python -m ruff format --check src/peachtree/ tests/ || true

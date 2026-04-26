@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  peachtree-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: peachtree:dev
+    container_name: peachtree-dev
+    volumes:
+      - .:/app
+      - peachtree-cache:/app/.cache
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PEACHTREE_LOG_LEVEL=DEBUG
+    command: /bin/bash
+    stdin_open: true
+    tty: true
+
+  peachtree-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: peachtree:test
+    container_name: peachtree-test
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install -e '.[dev]' &&
+             python -m pytest tests/ -v --cov=src/peachtree --cov-report=html"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  peachtree-docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: peachtree:docs
+    container_name: peachtree-docs
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "pip install mkdocs mkdocs-material &&
+             python -m mkdocs serve -a 0.0.0.0:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  peachtree-cache:

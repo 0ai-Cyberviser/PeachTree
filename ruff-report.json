@@ -1,0 +1,138 @@
+[
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 49,
+      "row": 8
+    },
+    "filename": "/tmp/peachtree/src/peachtree/policy_packs.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from dataclasses import asdict, dataclass",
+          "end_location": {
+            "column": 49,
+            "row": 8
+          },
+          "location": {
+            "column": 1,
+            "row": 8
+          }
+        }
+      ],
+      "message": "Remove unused import: `dataclasses.field`"
+    },
+    "location": {
+      "column": 44,
+      "row": 8
+    },
+    "message": "`dataclasses.field` imported but unused",
+    "noqa_row": 8,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 38,
+      "row": 11
+    },
+    "filename": "/tmp/peachtree/src/peachtree/release_bundle.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from .registry import DatasetRegistryBuilder, sha256_file",
+          "end_location": {
+            "column": 75,
+            "row": 11
+          },
+          "location": {
+            "column": 1,
+            "row": 11
+          }
+        }
+      ],
+      "message": "Remove unused import: `.registry.DatasetRegistry`"
+    },
+    "location": {
+      "column": 23,
+      "row": 11
+    },
+    "message": "`.registry.DatasetRegistry` imported but unused",
+    "noqa_row": 11,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 31,
+      "row": 4
+    },
+    "filename": "/tmp/peachtree/src/peachtree/sbom.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from dataclasses import dataclass",
+          "end_location": {
+            "column": 42,
+            "row": 4
+          },
+          "location": {
+            "column": 1,
+            "row": 4
+          }
+        }
+      ],
+      "message": "Remove unused import: `dataclasses.asdict`"
+    },
+    "location": {
+      "column": 25,
+      "row": 4
+    },
+    "message": "`dataclasses.asdict` imported but unused",
+    "noqa_row": 4,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 75,
+      "row": 10
+    },
+    "filename": "/tmp/peachtree/src/peachtree/sbom.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from .registry import DatasetRegistry, DatasetRegistryBuilder",
+          "end_location": {
+            "column": 75,
+            "row": 10
+          },
+          "location": {
+            "column": 1,
+            "row": 10
+          }
+        }
+      ],
+      "message": "Remove unused import: `.registry.sha256_file`"
+    },
+    "location": {
+      "column": 64,
+      "row": 10
+    },
+    "message": "`.registry.sha256_file` imported but unused",
+    "noqa_row": 10,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  }
+]

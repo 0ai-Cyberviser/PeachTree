@@ -1,0 +1,89 @@
+site_name: PeachTree
+site_description: Recursive learning-tree dataset engine for safe, traceable ML training datasets
+repo_url: https://github.com/0ai-Cyberviser/PeachTree
+repo_name: 0ai-Cyberviser/PeachTree
+copyright: "Copyright &copy; 2024-2026 CyberViser / 0AI"
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: orange
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: orange
+      toggle:
+        icon: material/lightbulb
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+plugins:
+  - search
+  - minify
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Overview: getting-started/overview.md
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+  - User Guide:
+    - CLI Commands: user-guide/cli.md
+    - Building Datasets: user-guide/building.md
+    - Safety Gates: user-guide/safety.md
+    - Policy Packs: user-guide/policy-packs.md
+    - Quality Scoring: user-guide/quality.md
+    - Deduplication: user-guide/deduplication.md
+  - Architecture:
+    - Design: architecture/design.md
+    - Data Flow: architecture/dataflow.md
+    - Components: architecture/components.md
+    - JSONL Format: architecture/jsonl-format.md
+  - Advanced:
+    - Policy Compliance: advanced/policy-compliance.md
+    - Release Bundles: advanced/release-bundles.md
+    - Model Cards: advanced/model-cards.md
+    - Trainer Handoff: advanced/trainer-handoff.md
+    - License Gates: advanced/license-gates.md
+  - API Reference:
+    - Builder: api/builder.md
+    - Models: api/models.md
+    - Policy: api/policy.md
+    - Registry: api/registry.md
+  - Ecosystem:
+    - Hancock: ecosystem/hancock.md
+    - PeachFuzz: ecosystem/peachfuzz.md
+    - CyberViser AI: ecosystem/cyberviser.md
+  - Contributing:
+    - Development: contributing/development.md
+    - Testing: contributing/testing.md
+    - Code Quality: contributing/code-quality.md
+  - Resources:
+    - FAQ: resources/faq.md
+    - Troubleshooting: resources/troubleshooting.md
+    - Contributing: CONTRIBUTING.md
+    - Security: SECURITY.md

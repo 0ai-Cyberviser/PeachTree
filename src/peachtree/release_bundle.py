@@ -8,7 +8,7 @@ from pathlib import Path
 import zipfile
 from typing import Any
 
-from .registry import DatasetRegistry, DatasetRegistryBuilder, sha256_file
+from .registry import DatasetRegistryBuilder, sha256_file
 from .sbom import SBOMGenerator
 from .signing import ArtifactSigner
 

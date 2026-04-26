@@ -123,7 +123,7 @@ class DatasetRegistryBuilder:
         version: str = "0.8.0",
         metadata: dict[str, Any] | None = None,
     ) -> DatasetRegistry:
-        files: list[Path] = []
+        files: list[str | Path] = []
         root_paths = [Path(root) for root in roots]
         for root in root_paths:
             if root.is_file():

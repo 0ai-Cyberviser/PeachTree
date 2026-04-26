@@ -84,7 +84,12 @@ nav:
   - Resources:
     - FAQ: resources/faq.md
     - Troubleshooting: resources/troubleshooting.md
+    - Troubleshooting Playbook: TROUBLESHOOTING-PLAYBOOK.md
+    - Performance Optimization: PERFORMANCE-OPTIMIZATION.md
+    - Integration Testing: INTEGRATION-TESTING.md
+    - Quick Reference: QUICK-REFERENCE.md
     - Deployment: DEPLOYMENT.md
+    - Deployment Playbooks: DEPLOYMENT-PLAYBOOKS.md
     - Contributing: CONTRIBUTING.md
     - Security: SECURITY.md
   - Community:

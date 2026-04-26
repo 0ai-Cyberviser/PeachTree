@@ -48,6 +48,174 @@ PeachTree does **not** blindly scrape GitHub.
 - public collection requires explicit opt-in, license allowlists, rate limits, and provenance
 - secret/token/private-key patterns are blocked
 - provenance metadata is attached to every record
+
+## Quick Start
+
+### Installation
+
+```bash
+# From PyPI
+pip install peachtree-ai
+
+# From source
+git clone https://github.com/0ai-Cyberviser/PeachTree.git
+cd PeachTree
+pip install -e ".[dev]"
+```
+
+### Build Your First Dataset
+
+```bash
+# Plan dataset structure
+peachtree plan --source /path/to/repo --goal "Security training data"
+
+# Ingest repository
+peachtree ingest --repo /path/to/repo --output data/
+
+# Build JSONL dataset
+peachtree build --input data/ --output dataset.jsonl
+
+# Validate dataset
+peachtree audit --dataset dataset.jsonl
+
+# Check policy compliance
+peachtree policy --dataset dataset.jsonl --pack safety
+```
+
+## Features
+
+### Core Capabilities
+
+- **Recursive Learning Trees** — Define dataset structures with branching, filtering, and composition
+- **Safety Gates** — Automatic secret detection, license filtering, content validation
+- **Policy Packs** — Composable compliance rules for quality, deduplication, safety
+- **JSONL Datasets** — Full provenance: source, path, commit digest, timestamps
+- **Deduplication** — Content-hash, semantic, and fuzzy matching (3 methods)
+- **Quality Scoring** — Automated metrics for dataset quality and completeness
+- **Release Bundles** — SBOM, signatures, model cards, trainer handoff manifests
+
+### Ecosystem Integration
+
+- **Hancock** — Cybersecurity LLM agent datasets
+- **PeachFuzz** — Fuzzing corpora and crash triage
+- **CyberViser** — Project hub and documentation surface
+- **0AI** — Broader ecosystem coordination
+
+## Documentation
+
+Full documentation is available at:
+- **📖 [Official Docs](https://0ai-cyberviser.github.io/PeachTree/)** — Complete user guide, API reference, architecture
+- **[Getting Started](docs/getting-started/)** — Installation, quickstart, tutorials
+- **[User Guide](docs/user-guide/)** — CLI reference, workflows, safety gates, policy packs
+- **[Architecture](docs/architecture/)** — Design, data models, components, JSONL format
+- **[API Reference](docs/api/)** — Detailed API documentation
+- **[Contributing](CONTRIBUTING.md)** — Development guide, testing, code quality
+
+## Deployment
+
+### GitHub Pages
+
+Documentation is automatically deployed to GitHub Pages on every push to `main`:
+```bash
+https://0ai-cyberviser.github.io/PeachTree/
+```
+
+### Docker
+
+Run PeachTree in Docker:
+```bash
+# Build image
+docker build -t peachtree:latest .
+
+# Development environment with bash
+docker-compose run --rm peachtree-dev
+
+# Run tests
+docker-compose run --rm peachtree-test
+
+# Serve documentation locally
+docker-compose run --rm -p 8000:8000 peachtree-docs
+# Visit http://localhost:8000
+```
+
+### Release Process
+
+Releases are automated via GitHub Actions:
+
+1. Update version in `pyproject.toml`
+2. Update `CHANGELOG.md`
+3. Create git tag: `git tag v0.10.0`
+4. Push tag: `git push origin v0.10.0`
+5. GitHub Actions will automatically:
+   - Run tests
+   - Build packages
+   - Create GitHub Release
+   - Publish to PyPI
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for full deployment guide.
+
+## Quality
+
+- **129 unit tests** — 91% code coverage
+- **Type checking** — mypy with 0 errors
+- **Linting** — ruff with 0 violations
+- **Pre-commit hooks** — Automatic quality checks
+- **CI/CD** — GitHub Actions workflows for testing and deployment
+
+## Project Structure
+
+```
+peachtree/
+├── src/peachtree/          # Core library
+│   ├── builder.py          # DatasetBuilder
+│   ├── models.py           # SourceDocument, DatasetRecord, DatasetManifest
+│   ├── safety.py           # SafetyGate
+│   ├── policy.py           # PolicyPack evaluation
+│   ├── registry.py         # Registry and artifacts
+│   └── ...
+├── tests/                  # Unit tests (129 tests)
+├── docs/                   # Documentation (42 markdown files)
+├── .github/workflows/      # CI/CD workflows
+├── Dockerfile              # Docker image
+├── mkdocs.yml              # Documentation config
+└── pyproject.toml          # Project metadata
+```
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Development setup
+- Testing guidelines
+- Code quality standards
+- Pull request process
+- Development workflow
+
+## License
+
+PeachTree is part of the 0AI / CyberViser project. See LICENSE for details.
+
+## Support
+
+- **Issues** — GitHub Issues for bug reports and feature requests
+- **Discussions** — GitHub Discussions for questions
+- **Documentation** — https://0ai-cyberviser.github.io/PeachTree/
+- **Contributing** — See CONTRIBUTING.md
+
+## Roadmap
+
+- [ ] LoRA fine-tuning support
+- [ ] Dataset versioning system
+- [ ] Web UI for dataset management
+- [ ] Integration with Weights & Biases
+- [ ] Advanced deduplication algorithms
+- [ ] Performance benchmarking
+- [ ] Extended ecosystem integrations
+
+---
+
+**Status:** Active Development | **Version:** 0.9.0 | **Python:** 3.10+
+
+*Built for the 0AI ecosystem by CyberViser*
 - generated datasets are ignored by default until reviewed
 - trainer handoff commands are dry-run unless explicitly promoted outside PeachTree
 

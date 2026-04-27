@@ -1,0 +1,237 @@
+{
+  "policy_pack_name": "security-domain-compliance",
+  "version": "1.0.0",
+  "description": "Compliance policy pack for cybersecurity training datasets",
+  "domain": "security",
+  "created_at": "2026-04-27T00:00:00Z",
+  "gates": [
+    {
+      "name": "security_content_quality",
+      "type": "quality",
+      "enabled": true,
+      "threshold": 0.7,
+      "description": "Ensure security content meets minimum quality standards",
+      "rules": [
+        {
+          "rule_id": "min_record_length",
+          "description": "Security documentation should be sufficiently detailed",
+          "min_characters": 100,
+          "severity": "error"
+        },
+        {
+          "rule_id": "has_technical_content",
+          "description": "Records should contain technical security content",
+          "required_keywords": ["vulnerability", "exploit", "security", "CVE", "attack", "defense", "threat", "malware", "penetration", "authentication"],
+          "min_keyword_matches": 1,
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "name": "ethical_security_use",
+      "type": "policy",
+      "enabled": true,
+      "description": "Ensure dataset content supports ethical security practices",
+      "rules": [
+        {
+          "rule_id": "no_malicious_intent",
+          "description": "Content should not encourage unauthorized hacking",
+          "forbidden_patterns": [
+            "hack without permission",
+            "unauthorized access",
+            "steal credentials",
+            "deploy ransomware"
+          ],
+          "severity": "error",
+          "action": "flag_for_review"
+        },
+        {
+          "rule_id": "responsible_disclosure",
+          "description": "Vulnerability content should mention responsible disclosure",
+          "recommended_keywords": ["responsible disclosure", "coordinated disclosure", "authorized", "permission", "ethical"],
+          "severity": "info"
+        }
+      ]
+    },
+    {
+      "name": "license_compliance_security",
+      "type": "license",
+      "enabled": true,
+      "description": "Security tools often have GPL/AGPL licenses - track compliance",
+      "rules": [
+        {
+          "rule_id": "gpl_agpl_tracking",
+          "description": "GPL and AGPL content must be clearly marked",
+          "tracked_licenses": ["GPL-2.0", "GPL-3.0", "AGPL-3.0"],
+          "require_attribution": true,
+          "severity": "error"
+        },
+        {
+          "rule_id": "permissive_preferred",
+          "description": "Prefer MIT/BSD/Apache licensed content when available",
+          "preferred_licenses": ["MIT", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0"],
+          "severity": "info"
+        },
+        {
+          "rule_id": "commercial_use_flag",
+          "description": "Flag GPL/AGPL content for commercial deployment review",
+          "copyleft_licenses": ["GPL-2.0", "GPL-3.0", "AGPL-3.0"],
+          "action": "flag_for_legal_review",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "name": "security_data_provenance",
+      "type": "provenance",
+      "enabled": true,
+      "description": "Security data requires strong provenance for trust",
+      "rules": [
+        {
+          "rule_id": "source_attribution",
+          "description": "Every record must have source repository tracked",
+          "required_fields": ["source_repo", "source_path", "source_digest"],
+          "severity": "error"
+        },
+        {
+          "rule_id": "cve_verification",
+          "description": "CVE data should reference official MITRE database",
+          "applies_to_repos": ["mitre-cve-database"],
+          "verify_cve_format": true,
+          "severity": "warning"
+        },
+        {
+          "rule_id": "exploit_framework_version",
+          "description": "Exploit code should track framework version",
+          "applies_to_repos": ["metasploit-framework"],
+          "track_version": true,
+          "severity": "info"
+        }
+      ]
+    },
+    {
+      "name": "secret_prevention",
+      "type": "safety",
+      "enabled": true,
+      "description": "Security datasets are high-risk for accidental secret exposure",
+      "rules": [
+        {
+          "rule_id": "no_api_keys",
+          "description": "API keys and tokens must be filtered",
+          "patterns": [
+            "(?i)(api[_-]?key|apikey)\\s*[:=]\\s*['\"]?[a-zA-Z0-9]{20,}",
+            "(?i)(secret[_-]?key)\\s*[:=]\\s*['\"]?[a-zA-Z0-9]{20,}",
+            "ghp_[a-zA-Z0-9]{36}",
+            "sk-[a-zA-Z0-9]{48}"
+          ],
+          "severity": "critical",
+          "action": "reject_record"
+        },
+        {
+          "rule_id": "no_private_keys",
+          "description": "Private SSH/TLS keys must be filtered",
+          "patterns": [
+            "-----BEGIN (RSA|DSA|EC|OPENSSH) PRIVATE KEY-----",
+            "-----BEGIN PRIVATE KEY-----"
+          ],
+          "severity": "critical",
+          "action": "reject_record"
+        },
+        {
+          "rule_id": "no_passwords",
+          "description": "Plaintext passwords must be filtered",
+          "patterns": [
+            "(?i)password\\s*[:=]\\s*['\"]?[^'\"\\s]{8,}",
+            "(?i)passwd\\s*[:=]\\s*['\"]?[^'\"\\s]{8,}"
+          ],
+          "exclude_examples": true,
+          "severity": "error",
+          "action": "flag_for_review"
+        }
+      ]
+    },
+    {
+      "name": "deduplication_security",
+      "type": "dedup",
+      "enabled": true,
+      "description": "Security datasets should avoid duplicate exploits and vulnerabilities",
+      "rules": [
+        {
+          "rule_id": "content_hash_dedup",
+          "description": "Use SHA256 content hashing for deduplication",
+          "hash_algorithm": "sha256",
+          "similarity_threshold": 1.0,
+          "severity": "warning",
+          "action": "remove_duplicates"
+        },
+        {
+          "rule_id": "cve_id_dedup",
+          "description": "Each CVE should appear only once",
+          "applies_to_repos": ["mitre-cve-database"],
+          "unique_field": "cve_id",
+          "severity": "error"
+        }
+      ]
+    },
+    {
+      "name": "security_readiness",
+      "type": "readiness",
+      "enabled": true,
+      "description": "Dataset readiness checks for security domain training",
+      "rules": [
+        {
+          "rule_id": "minimum_records",
+          "description": "Security dataset should have sufficient training examples",
+          "min_records": 5000,
+          "recommended_records": 10000,
+          "severity": "warning"
+        },
+        {
+          "rule_id": "domain_coverage",
+          "description": "Security dataset should cover multiple security domains",
+          "required_domains": [
+            "vulnerability_analysis",
+            "exploit_development",
+            "malware_detection",
+            "network_security",
+            "authentication",
+            "incident_response"
+          ],
+          "min_coverage": 4,
+          "severity": "info"
+        },
+        {
+          "rule_id": "cve_freshness",
+          "description": "CVE data should be reasonably current",
+          "applies_to_repos": ["mitre-cve-database"],
+          "max_age_days": 365,
+          "severity": "info"
+        }
+      ]
+    }
+  ],
+  "reporting": {
+    "generate_compliance_report": true,
+    "include_gate_summaries": true,
+    "severity_thresholds": {
+      "critical": "block_deployment",
+      "error": "require_review",
+      "warning": "log_and_continue",
+      "info": "log_only"
+    },
+    "output_formats": ["json", "markdown", "html"]
+  },
+  "enforcement": {
+    "strict_mode": false,
+    "allow_overrides": true,
+    "require_approval_for": ["critical", "error"],
+    "auto_reject_on": ["critical"],
+    "review_queue_on": ["error", "warning"]
+  },
+  "metadata": {
+    "author": "0ai-Cyberviser",
+    "contact": "https://github.com/0ai-Cyberviser/PeachTree/issues",
+    "documentation": "https://github.com/0ai-Cyberviser/PeachTree/blob/main/docs/policy-packs/security-domain.md",
+    "last_updated": "2026-04-27T00:00:00Z"
+  }
+}

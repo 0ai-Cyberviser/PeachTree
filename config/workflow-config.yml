@@ -1,0 +1,137 @@
+# PeachTree Workflow Harness Configuration
+# Monitor-Audit-Review-Test-Log-Learn-Repeat Cycle
+
+# Dataset Configuration
+dataset_path: data/datasets/multi-org-security-training.jsonl
+manifest_path: data/manifests/multi-org-build-manifest.json
+
+# Quality Thresholds
+quality_threshold: 0.70
+duplicate_threshold: 0.05
+provenance_threshold: 1.0
+
+# Storage Paths
+state_dir: workflow-state
+log_dir: logs/workflow
+
+# Workflow Behavior
+continue_on_failure: true  # Continue to next phase even if one fails
+schedule: daily  # Options: hourly, daily, weekly, or cron expression
+
+# Phase Configuration
+phases:
+  monitor:
+    enabled: true
+    timeout: 300  # seconds
+    metrics:
+      - record_count
+      - quality_score
+      - duplicate_rate
+      - provenance_coverage
+    
+  audit:
+    enabled: true
+    timeout: 300
+    checks:
+      - duplicates
+      - provenance
+      - unique_ids
+      - file_integrity
+    
+  review:
+    enabled: true
+    timeout: 300
+    reports:
+      - quality_report
+      - lineage_report
+      - trend_analysis
+    
+  test:
+    enabled: true
+    timeout: 600
+    test_suites:
+      - unit_tests
+      - integration_tests
+      - evaluation_tests
+    
+  log:
+    enabled: true
+    timeout: 60
+    retention_days: 90
+    archive: true
+    
+  learn:
+    enabled: true
+    timeout: 300
+    historical_cycles: 10  # Number of previous cycles to analyze
+    insights:
+      - quality_trends
+      - issue_patterns
+      - optimization_opportunities
+    
+  repeat:
+    enabled: true
+    timeout: 60
+    next_cycle_delay: 24h  # Time until next cycle
+
+# Alert Configuration
+alerts:
+  enabled: true
+  channels:
+    - console
+    - log_file
+    # - slack
+    # - email
+  
+  thresholds:
+    quality_score_drop: 0.10  # Alert if quality drops by this much
+    duplicate_rate_increase: 0.05
+    test_failure_rate: 0.10
+    
+  severity_levels:
+    critical:
+      - safety_gate_failure
+      - provenance_missing
+      - test_failures
+    
+    warning:
+      - quality_degradation
+      - duplicate_increase
+      - test_warnings
+    
+    info:
+      - quality_improvement
+      - successful_cycle
+      - insights_generated
+
+# Learning Configuration
+learning:
+  enabled: true
+  min_cycles_for_trends: 3  # Minimum cycles before analyzing trends
+  
+  optimization_strategies:
+    - auto_deduplication  # Automatically run dedup if duplicate rate exceeds threshold
+    - quality_filtering  # Filter low-quality records
+    - source_rebalancing  # Adjust source repository weights
+  
+  auto_remediation:
+    enabled: false  # Set to true to automatically fix issues
+    max_retries: 3
+    
+# Integration Configuration
+integrations:
+  prometheus:
+    enabled: false
+    push_gateway: http://localhost:9091
+    
+  grafana:
+    enabled: false
+    dashboard_url: http://localhost:3000
+    
+  github:
+    enabled: false
+    create_issues: false  # Create GitHub issues for failures
+    
+  weights_and_biases:
+    enabled: false
+    project: peachtree-monitoring

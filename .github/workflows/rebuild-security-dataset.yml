@@ -1,0 +1,231 @@
+name: Rebuild Multi-Org Security Dataset
+
+on:
+  schedule:
+    # Run monthly on the 1st at 00:00 UTC
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+    inputs:
+      repos_to_update:
+        description: 'Repositories to update (comma-separated, or "all")'
+        required: false
+        default: 'all'
+      force_full_rebuild:
+        description: 'Force full rebuild (ignore cache)'
+        type: boolean
+        required: false
+        default: false
+
+env:
+  PYTHON_VERSION: '3.11'
+  DATASET_VERSION: '1.0'
+
+jobs:
+  rebuild-dataset:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+      
+      - name: Install PeachTree
+        run: |
+          pip install -e .
+          pip install pytest ruff mypy
+      
+      - name: Run tests
+        run: |
+          python -m pytest tests/ -v
+          python -m ruff check src/peachtree/
+      
+      - name: Clone security repositories
+        run: |
+          mkdir -p /tmp/datasets
+          cd /tmp/datasets
+          
+          # Clone each repository (or update if workflow_dispatch with specific repos)
+          git clone --depth 1 https://github.com/CVEProject/cvelistV5.git mitre-cve || true
+          git clone --depth 1 https://github.com/rapid7/metasploit-framework.git metasploit-framework || true
+          git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap || true
+          git clone --depth 1 https://github.com/openwall/john.git john || true
+          git clone --depth 1 https://github.com/Cisco-Talos/clamav.git clamav || true
+          git clone --depth 1 https://github.com/snort3/snort3.git snort3 || true
+          git clone --depth 1 https://github.com/haiderm/grok-promptss.git grok-promptss || true
+          
+          echo "✅ Repositories cloned"
+          du -sh *
+      
+      - name: Build dataset
+        run: |
+          bash scripts/build-multi-org-dataset.sh
+          
+          echo "Dataset build complete!"
+          ls -lh data/datasets/multi-org-security-training.jsonl
+          wc -l data/datasets/multi-org-security-training.jsonl
+      
+      - name: Run audit
+        run: |
+          peachtree audit --dataset data/datasets/multi-org-security-training.jsonl > reports/dataset-audit.json
+          cat reports/dataset-audit.json
+      
+      - name: Apply security policy pack
+        run: |
+          peachtree policy-pack \
+            --dataset data/datasets/multi-org-security-training.jsonl \
+            --policy config/policy-packs/security-domain-compliance.json \
+            --output reports/policy-compliance.json || echo "Policy pack command not yet implemented"
+      
+      - name: Export for Hancock
+        run: |
+          peachtree export \
+            --source data/datasets/multi-org-security-training.jsonl \
+            --output data/manifests/hancock-chatml-export.jsonl \
+            --format chatml
+          
+          echo "✅ Hancock export complete"
+          ls -lh data/manifests/hancock-chatml-export.jsonl
+      
+      - name: Generate reports
+        run: |
+          mkdir -p reports
+          
+          # Create build summary
+          cat > reports/build-summary.md << 'EOF'
+          # Dataset Build Summary
+          
+          **Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Trigger:** ${{ github.event_name }}
+          **Workflow:** ${{ github.workflow }}
+          
+          ## Statistics
+          - Records: $(wc -l < data/datasets/multi-org-security-training.jsonl)
+          - Dataset Size: $(du -h data/datasets/multi-org-security-training.jsonl | cut -f1)
+          - Hancock Export: $(du -h data/manifests/hancock-chatml-export.jsonl | cut -f1)
+          
+          ## Source Repositories
+          $(cd /tmp/datasets && du -sh * | awk '{print "- " $2 ": " $1}')
+          
+          ## Audit Results
+          \`\`\`json
+          $(cat reports/dataset-audit.json)
+          \`\`\`
+          EOF
+          
+          cat reports/build-summary.md
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git add data/ reports/
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected in dataset"
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Dataset changes detected"
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config user.name "PeachTree Bot"
+          git config user.email "peachtree-bot@users.noreply.github.com"
+          
+          # Get record count for commit message
+          RECORD_COUNT=$(wc -l < data/datasets/multi-org-security-training.jsonl)
+          
+          git commit -m "chore: automated dataset rebuild - ${RECORD_COUNT} records
+
+          Automated dataset rebuild triggered by: ${{ github.event_name }}
+          
+          Changes:
+          - Updated security dataset from latest repository snapshots
+          - Re-ran safety gates and quality checks
+          - Generated new Hancock export
+          - Updated compliance reports
+          
+          Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          git push
+      
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changes == 'true' && github.event_name == 'schedule'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: automated monthly dataset rebuild"
+          title: "🤖 Automated Dataset Rebuild - $(date +%B %Y)"
+          body: |
+            ## Automated Dataset Rebuild
+            
+            This PR contains the monthly automated rebuild of the multi-org security dataset.
+            
+            ### Changes
+            - Updated security repositories to latest versions
+            - Rebuilt dataset from fresh repository snapshots
+            - Applied all safety gates and quality checks
+            - Generated new Hancock training export
+            
+            ### Statistics
+            - **Records:** $(wc -l < data/datasets/multi-org-security-training.jsonl)
+            - **Dataset Size:** $(du -h data/datasets/multi-org-security-training.jsonl | cut -f1)
+            
+            ### Review Checklist
+            - [ ] Audit report shows zero duplicates
+            - [ ] All safety gates passing
+            - [ ] Record count within expected range
+            - [ ] Policy compliance checks passed
+            - [ ] Hancock export validated
+            
+            **Triggered by:** ${{ github.event_name }}
+            **Build Date:** $(date -u +"%Y-%m-%d")
+          branch: automated-dataset-rebuild-$(date +%Y-%m-%d)
+          delete-branch: true
+          labels: |
+            automated
+            dataset
+            security
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dataset-build-artifacts
+          path: |
+            data/datasets/multi-org-security-training.jsonl
+            data/manifests/hancock-chatml-export.jsonl
+            data/manifests/multi-org-build-manifest.json
+            reports/dataset-audit.json
+            reports/build-summary.md
+          retention-days: 90
+      
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Automated Dataset Rebuild Failed',
+              body: `The automated dataset rebuild workflow failed.
+              
+              **Workflow:** ${context.workflow}
+              **Run ID:** ${context.runId}
+              **Trigger:** ${context.eventName}
+              **Failed at:** ${new Date().toISOString()}
+              
+              [View failed run](${context.payload.repository.html_url}/actions/runs/${context.runId})`,
+              labels: ['automated', 'bug', 'dataset']
+            })

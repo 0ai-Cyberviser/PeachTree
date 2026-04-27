@@ -306,32 +306,32 @@ def test_ingest_all(mock_builder_class, mock_hancock_data_dir):
 
 @patch('peachtree.hancock_integration.TrainerHandoffBuilder')
 def test_generate_training_handoff(mock_trainer_builder, mock_hancock_data_dir):
-    \"\"\"Test generating trainer handoff package\"\"\"
-    config = HancockIngestionConfig(output_dir=mock_hancock_data_dir / \"output\")
+    """Test generating trainer handoff package"""
+    config = HancockIngestionConfig(output_dir=mock_hancock_data_dir / "output")
     ingester = HancockDataIngester(config)
     
     # Mock the trainer handoff builder
     mock_builder_instance = Mock()
     mock_manifest_obj = Mock()
     mock_manifest_obj.to_dict.return_value = {
-        \"model_name\": \"hancock-cybersecurity-llm\",
-        \"base_model\": \"meta-llama/Llama-3.2-3B\",
-        \"dataset_path\": str(mock_hancock_data_dir / \"output\" / \"test_dataset.jsonl\")
+        "model_name": "hancock-cybersecurity-llm",
+        "base_model": "meta-llama/Llama-3.2-3B",
+        "dataset_path": str(mock_hancock_data_dir / "output" / "test_dataset.jsonl")
     }
     mock_builder_instance.build.return_value = mock_manifest_obj
     mock_trainer_builder.return_value = mock_builder_instance
     
     # Create mock manifest
     manifest = Mock()
-    manifest.dataset_path = str(mock_hancock_data_dir / \"output\" / \"test_dataset.jsonl\")
-    manifest.records = [{\"id\": \"1\"}, {\"id\": \"2\"}]
+    manifest.dataset_path = str(mock_hancock_data_dir / "output" / "test_dataset.jsonl")
+    manifest.records = [{"id": "1"}, {"id": "2"}]
     manifest.total_records = 2
-    manifest.data_sources = [\"mitre\", \"cve\"]
+    manifest.data_sources = ["mitre", "cve"]
     
     handoff = ingester.generate_training_handoff(manifest)
     
     assert isinstance(handoff, dict)
-    assert \"model_name\" in handoff or \"base_model\" in handoff
+    assert "model_name" in handoff or "base_model" in handoff
 
 
 @patch('peachtree.hancock_integration.TrainerHandoffBuilder')

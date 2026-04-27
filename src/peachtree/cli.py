@@ -77,6 +77,9 @@ from .dataset_compression import DatasetCompressor, StreamingCompressor, Compres
 from .dataset_versioning import DatasetVersionControl, VersionStatus
 from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, QueryOperator, LogicalOperator
 from .dataset_benchmarking import DatasetBenchmark, BenchmarkCategory
+from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionAlgorithm, EncryptionPolicyManager, BatchEncryptor, EncryptionStatus
+from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicationStrategy, SyncMode, IncrementalReplicator, ReplicationMonitor
+from .dataset_observability import DatasetObservability, MetricsCollector, StructuredLogger, TraceCollector, MetricType, LogLevel, SpanKind
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -3099,6 +3102,175 @@ def run_benchmark(args: argparse.Namespace) -> int:
     return 1
 
 
+def run_encrypt(args: argparse.Namespace) -> int:
+    """Handle dataset encryption commands."""
+    key_manager = KeyManager(Path(args.key_store))
+    encryptor = DatasetEncryptor(key_manager)
+    
+    if args.operation == "encrypt":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        result = encryptor.encrypt_dataset(
+            Path(args.dataset),
+            Path(args.output),
+            key_id=args.key_id,
+            algorithm=algorithm,
+        )
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == EncryptionStatus.COMPLETED else 1
+    
+    elif args.operation == "decrypt":
+        result = encryptor.decrypt_dataset(
+            Path(args.encrypted),
+            Path(args.output),
+            args.key_id,
+        )
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.success else 1
+    
+    elif args.operation == "generate-key":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        key = key_manager.generate_key(algorithm)
+        print(json.dumps(key.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "rotate-key":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        new_key = key_manager.rotate_key(args.key_id, algorithm)
+        print(f"Rotated key {args.key_id} to {new_key.key_id}")
+        print(json.dumps(new_key.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "list-keys":
+        keys = key_manager.list_keys(active_only=args.active_only)
+        print(f"Found {len(keys)} keys:")
+        for key in keys:
+            print(f"  {key.key_id}: {key.algorithm.value} (active={key.is_active})")
+        return 0
+    
+    elif args.operation == "batch":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        batch = BatchEncryptor(encryptor)
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        results = batch.encrypt_batch(input_paths, Path(args.output_dir), algorithm)
+        stats = batch.get_statistics(results)
+        print(json.dumps(stats, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_replicate(args: argparse.Namespace) -> int:
+    """Handle dataset replication commands."""
+    replica_manager = ReplicaManager(Path(args.config))
+    strategy = ReplicationStrategy(args.strategy) if hasattr(args, "strategy") else ReplicationStrategy.MASTER_SLAVE
+    replicator = DatasetReplicator(replica_manager, strategy)
+    
+    if args.operation == "replicate":
+        log = replicator.replicate(
+            Path(args.dataset),
+            args.source_site,
+            args.target_site,
+        )
+        print(json.dumps(log.to_dict(), indent=2))
+        return 0 if log.status == ReplicationStatus.COMPLETED else 1
+    
+    elif args.operation == "sync":
+        sync_mode = SyncMode(args.sync_mode) if hasattr(args, "sync_mode") else SyncMode.PUSH
+        result = replicator.sync_sites(
+            args.source_site,
+            args.target_site,
+            mode=sync_mode,
+        )
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.success else 1
+    
+    elif args.operation == "add-site":
+        from .dataset_replication import ReplicaSite
+        site = ReplicaSite(
+            site_id=args.site_id,
+            location=args.location,
+            endpoint=args.endpoint,
+            is_master=args.is_master,
+        )
+        replica_manager.add_site(site)
+        print(f"Added site {args.site_id}")
+        return 0
+    
+    elif args.operation == "list-sites":
+        sites = replica_manager.list_sites(active_only=args.active_only)
+        print(f"Found {len(sites)} sites:")
+        for site in sites:
+            print(f"  {site.site_id}: {site.location} (master={site.is_master})")
+        return 0
+    
+    elif args.operation == "status":
+        status = replicator.get_replication_status()
+        print(json.dumps(status, indent=2))
+        return 0
+    
+    elif args.operation == "health":
+        monitor = ReplicationMonitor(replicator)
+        health = monitor.check_health()
+        print(json.dumps(health, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_observe(args: argparse.Namespace) -> int:
+    """Handle dataset observability commands."""
+    metrics = MetricsCollector()
+    logger = StructuredLogger(Path(args.log_output) if hasattr(args, "log_output") and args.log_output else None)
+    traces = TraceCollector()
+    observability = DatasetObservability(metrics, logger, traces)
+    
+    if args.operation == "record-metric":
+        metric_type = MetricType(args.metric_type)
+        if metric_type == MetricType.COUNTER:
+            metrics.record_counter(args.name, args.value, labels=json.loads(args.labels) if hasattr(args, "labels") and args.labels else None)
+        elif metric_type == MetricType.GAUGE:
+            metrics.record_gauge(args.name, args.value, labels=json.loads(args.labels) if hasattr(args, "labels") and args.labels else None)
+        else:
+            metrics.record_histogram(args.name, args.value, labels=json.loads(args.labels) if hasattr(args, "labels") and args.labels else None)
+        print(f"Recorded {metric_type.value} metric: {args.name} = {args.value}")
+        return 0
+    
+    elif args.operation == "log":
+        level = LogLevel(args.level)
+        logger.log(level, args.message, args.log_operation, context=json.loads(args.context) if hasattr(args, "context") and args.context else None)
+        print(f"Logged {level.value}: {args.message}")
+        return 0
+    
+    elif args.operation == "start-trace":
+        kind = SpanKind(args.span_kind) if hasattr(args, "span_kind") else SpanKind.INTERNAL
+        span = traces.start_span(args.trace_name, args.trace_id, kind=kind)
+        print(f"Started trace span: {span.span_id}")
+        print(json.dumps(span.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "end-trace":
+        from .dataset_observability import SpanStatus
+        status = SpanStatus.OK if not hasattr(args, "error") or not args.error else SpanStatus.ERROR
+        traces.end_span(args.span_id, status)
+        span = traces.get_span(args.span_id)
+        print(f"Ended trace span: {args.span_id} ({status.value})")
+        if span:
+            print(json.dumps(span.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "report":
+        report = observability.get_telemetry_report()
+        print(json.dumps(report, indent=2))
+        return 0
+    
+    elif args.operation == "export":
+        observability.export_all(Path(args.export_dir))
+        print(f"Exported telemetry to {args.export_dir}")
+        return 0
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -3949,6 +4121,53 @@ def make_parser() -> argparse.ArgumentParser:
     benchmark.add_argument("--current-id", help="current benchmark ID (for compare)")
     benchmark.add_argument("--regression-threshold", type=float, default=0.1, help="regression threshold (for compare)")
     benchmark.set_defaults(func=run_benchmark)
+
+    encrypt = sub.add_parser("encrypt", help="dataset encryption operations")
+    encrypt.add_argument("operation", choices=["encrypt", "decrypt", "generate-key", "rotate-key", "list-keys", "batch"])
+    encrypt.add_argument("--key-store", default=".peachtree/keys.json", help="key store path")
+    encrypt.add_argument("--dataset", help="dataset to encrypt")
+    encrypt.add_argument("--encrypted", help="encrypted dataset to decrypt")
+    encrypt.add_argument("--output", help="output path")
+    encrypt.add_argument("--output-dir", help="output directory (for batch)")
+    encrypt.add_argument("--key-id", help="encryption key ID")
+    encrypt.add_argument("--algorithm", default="aes-256-gcm", choices=["aes-256-gcm", "chacha20-poly1305", "aes-128-gcm", "xor-cipher"])
+    encrypt.add_argument("--active-only", action="store_true", help="list only active keys")
+    encrypt.add_argument("--inputs", help="comma-separated input datasets (for batch)")
+    encrypt.set_defaults(func=run_encrypt)
+
+    replicate = sub.add_parser("replicate", help="dataset replication operations")
+    replicate.add_argument("operation", choices=["replicate", "sync", "add-site", "list-sites", "status", "health"])
+    replicate.add_argument("--config", default=".peachtree/replication.json", help="replication config path")
+    replicate.add_argument("--dataset", help="dataset to replicate")
+    replicate.add_argument("--source-site", help="source site ID")
+    replicate.add_argument("--target-site", help="target site ID")
+    replicate.add_argument("--strategy", default="master-slave", choices=["master-slave", "multi-master", "eventual-consistency", "strong-consistency"])
+    replicate.add_argument("--sync-mode", default="push", choices=["push", "pull", "bidirectional", "incremental"])
+    replicate.add_argument("--site-id", help="site ID (for add-site)")
+    replicate.add_argument("--location", help="site location (for add-site)")
+    replicate.add_argument("--endpoint", help="site endpoint URL (for add-site)")
+    replicate.add_argument("--is-master", action="store_true", help="mark as master site (for add-site)")
+    replicate.add_argument("--active-only", action="store_true", help="list only active sites")
+    replicate.set_defaults(func=run_replicate)
+
+    observe = sub.add_parser("observe", help="dataset observability operations")
+    observe.add_argument("operation", choices=["record-metric", "log", "start-trace", "end-trace", "report", "export"])
+    observe.add_argument("--name", help="metric name (for record-metric)")
+    observe.add_argument("--value", type=float, help="metric value (for record-metric)")
+    observe.add_argument("--metric-type", default="counter", choices=["counter", "gauge", "histogram", "summary"])
+    observe.add_argument("--labels", help="metric labels JSON (for record-metric)")
+    observe.add_argument("--level", default="info", choices=["debug", "info", "warning", "error", "critical"])
+    observe.add_argument("--message", help="log message (for log)")
+    observe.add_argument("--log-operation", help="operation name (for log)")
+    observe.add_argument("--context", help="log context JSON (for log)")
+    observe.add_argument("--trace-id", help="trace ID (for start-trace/end-trace)")
+    observe.add_argument("--trace-name", help="trace name (for start-trace)")
+    observe.add_argument("--span-id", help="span ID (for end-trace)")
+    observe.add_argument("--span-kind", default="internal", choices=["internal", "server", "client", "producer", "consumer"])
+    observe.add_argument("--error", help="error message (for end-trace)")
+    observe.add_argument("--log-output", help="log output file path")
+    observe.add_argument("--export-dir", help="telemetry export directory")
+    observe.set_defaults(func=run_observe)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

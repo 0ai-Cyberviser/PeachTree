@@ -70,6 +70,9 @@ from .dataset_compression import DatasetCompressor, StreamingCompressor, Compres
 from .dataset_versioning import DatasetVersionControl, VersionMetadata, VersionDiff, VersionStatus, ChangeType
 from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, Query, QueryCondition, QueryOperator, LogicalOperator
 from .dataset_benchmarking import DatasetBenchmark, BenchmarkResult, BenchmarkComparison, BenchmarkCategory, BenchmarkStatus
+from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionKey, EncryptedDataset, DecryptionResult, EncryptionAlgorithm, KeyRotationPolicy, EncryptionStatus, EncryptionPolicyManager, BatchEncryptor
+from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicaSite, ReplicationLog, ConflictRecord, SyncResult, ReplicationStrategy, ConflictResolution, ReplicationStatus, SyncMode, IncrementalReplicator, ReplicationMonitor
+from .dataset_observability import DatasetObservability, MetricsCollector, StructuredLogger, TraceCollector, Metric, LogEntry, Span, MetricType, LogLevel, SpanKind, SpanStatus
 
 __all__ = [
     "DatasetBuilder",
@@ -361,6 +364,39 @@ __all__ = [
     "BenchmarkComparison",
     "BenchmarkCategory",
     "BenchmarkStatus",
+    "DatasetEncryptor",
+    "KeyManager",
+    "EncryptionKey",
+    "EncryptedDataset",
+    "DecryptionResult",
+    "EncryptionAlgorithm",
+    "KeyRotationPolicy",
+    "EncryptionStatus",
+    "EncryptionPolicyManager",
+    "BatchEncryptor",
+    "DatasetReplicator",
+    "ReplicaManager",
+    "ReplicaSite",
+    "ReplicationLog",
+    "ConflictRecord",
+    "SyncResult",
+    "ReplicationStrategy",
+    "ConflictResolution",
+    "ReplicationStatus",
+    "SyncMode",
+    "IncrementalReplicator",
+    "ReplicationMonitor",
+    "DatasetObservability",
+    "MetricsCollector",
+    "StructuredLogger",
+    "TraceCollector",
+    "Metric",
+    "LogEntry",
+    "Span",
+    "MetricType",
+    "LogLevel",
+    "SpanKind",
+    "SpanStatus",
 ]
 
 __version__ = "0.9.0"

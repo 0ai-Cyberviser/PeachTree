@@ -74,6 +74,9 @@ from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcesso
 from .dataset_parallelization import ParallelExecutor, ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelMode
 from .dataset_indexing import DatasetIndexBuilder, QueryOptimizer, IndexType, IndexStatus
 from .dataset_compression import DatasetCompressor, StreamingCompressor, CompressionAnalyzer, BatchCompressor, CompressionAlgorithm, CompressionLevel
+from .dataset_versioning import DatasetVersionControl, VersionStatus
+from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, QueryOperator, LogicalOperator
+from .dataset_benchmarking import DatasetBenchmark, BenchmarkCategory
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -2932,6 +2935,170 @@ def run_compress(args: argparse.Namespace) -> int:
     return 1
 
 
+def run_version(args: argparse.Namespace) -> int:
+    """Handle dataset versioning commands."""
+    vc = DatasetVersionControl(Path(args.repository))
+    
+    if args.operation == "commit":
+        metadata = vc.commit(
+            Path(args.dataset),
+            args.message,
+            args.author,
+            tags=args.tags.split(",") if args.tags else None,
+        )
+        print(f"Created version: {metadata.version_id}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "checkout":
+        success = vc.checkout(args.version_id, Path(args.output))
+        if success:
+            print(f"Checked out version {args.version_id} to {args.output}")
+            return 0
+        else:
+            print(f"Version {args.version_id} not found")
+            return 1
+    
+    elif args.operation == "diff":
+        diff = vc.diff(args.from_version, args.to_version)
+        print(json.dumps(diff.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "list":
+        versions = vc.list_versions()
+        print(f"Found {len(versions)} versions:")
+        for v in versions:
+            print(f"  {v.version_id}: {v.message} by {v.author} ({v.record_count} records)")
+        return 0
+    
+    elif args.operation == "tag":
+        success = vc.tag_version(args.version_id, args.tag)
+        if success:
+            print(f"Tagged version {args.version_id} with '{args.tag}'")
+            return 0
+        else:
+            print(f"Version {args.version_id} not found")
+            return 1
+    
+    elif args.operation == "history":
+        history = vc.get_history(args.version_id)
+        print(f"Version history ({len(history)} versions):")
+        for v in history:
+            print(f"  {v.version_id}: {v.message}")
+        return 0
+    
+    elif args.operation == "stats":
+        stats = vc.get_statistics()
+        print(json.dumps(stats, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_query(args: argparse.Namespace) -> int:
+    """Handle dataset query commands."""
+    engine = DatasetQueryEngine()
+    
+    # Build query
+    if args.sql:
+        parser = QueryParser()
+        query = parser.parse(args.sql)
+    else:
+        builder = QueryBuilder()
+        
+        if args.field and args.operator:
+            op = QueryOperator(args.operator)
+            builder.where(args.field, op, args.value)
+        
+        if args.select:
+            fields = [f.strip() for f in args.select.split(",")]
+            builder.select(*fields)
+        
+        if args.limit:
+            builder.limit(args.limit)
+        
+        if args.offset:
+            builder.offset(args.offset)
+        
+        if args.order_by:
+            builder.order_by(args.order_by, ascending=not args.descending)
+        
+        query = builder.build()
+    
+    # Execute operation
+    if args.operation == "execute":
+        results = engine.execute(Path(args.dataset), query)
+        print(f"Found {len(results)} records")
+        print(json.dumps(results, indent=2))
+        return 0
+    
+    elif args.operation == "count":
+        count = engine.count(Path(args.dataset), query)
+        print(f"Count: {count}")
+        return 0
+    
+    elif args.operation == "aggregate":
+        result = engine.aggregate(Path(args.dataset), query, args.field, args.agg_func)
+        print(f"{args.agg_func.upper()}({args.field}): {result}")
+        return 0
+    
+    elif args.operation == "group":
+        groups = engine.group_by(Path(args.dataset), query, args.field)
+        print(f"Grouped by {args.field} ({len(groups)} groups):")
+        for key, records in groups.items():
+            print(f"  {key}: {len(records)} records")
+        return 0
+    
+    elif args.operation == "distinct":
+        values = engine.distinct(Path(args.dataset), query, args.field)
+        print(f"Distinct values for {args.field} ({len(values)} unique):")
+        print(json.dumps(values, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_benchmark(args: argparse.Namespace) -> int:
+    """Handle dataset benchmarking commands."""
+    bench = DatasetBenchmark()
+    
+    if args.operation == "read":
+        result = bench.benchmark_read(Path(args.dataset), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "write":
+        result = bench.benchmark_write(Path(args.dataset), Path(args.output), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "transform":
+        def identity(r):
+            return r
+        result = bench.benchmark_transform(Path(args.dataset), identity, Path(args.output), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "filter":
+        def allow_all(r):
+            return True
+        result = bench.benchmark_filter(Path(args.dataset), allow_all, Path(args.output), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "compare":
+        comparison = bench.compare(args.baseline_id, args.current_id, args.regression_threshold)
+        print(json.dumps(comparison.to_dict(), indent=2))
+        return 0 if not comparison.is_regression else 1
+    
+    elif args.operation == "stats":
+        stats = bench.get_statistics()
+        print(json.dumps(stats, indent=2))
+        return 0
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -3743,6 +3910,45 @@ def make_parser() -> argparse.ArgumentParser:
     compress.add_argument("--level", type=int, default=6, help="compression level (1-9)")
     compress.add_argument("--streaming", action="store_true", help="use streaming compression")
     compress.set_defaults(func=run_compress)
+
+    version = sub.add_parser("version", help="dataset version control operations")
+    version.add_argument("operation", choices=["commit", "checkout", "diff", "list", "tag", "history", "stats"])
+    version.add_argument("--repository", default=".", help="repository path")
+    version.add_argument("--dataset", help="dataset path (for commit)")
+    version.add_argument("--message", help="commit message (for commit)")
+    version.add_argument("--author", default="peachtree", help="author name (for commit)")
+    version.add_argument("--tags", help="comma-separated tags (for commit/tag)")
+    version.add_argument("--version-id", help="version ID (for checkout/tag/history)")
+    version.add_argument("--from-version", help="from version (for diff)")
+    version.add_argument("--to-version", help="to version (for diff)")
+    version.add_argument("--output", help="output path (for checkout)")
+    version.add_argument("--tag", help="tag name (for tag operations)")
+    version.set_defaults(func=run_version)
+
+    query = sub.add_parser("query", help="query datasets with SQL-like syntax")
+    query.add_argument("operation", choices=["execute", "count", "aggregate", "group", "distinct"])
+    query.add_argument("--dataset", required=True, help="dataset to query")
+    query.add_argument("--field", help="field to query (for aggregate/group/distinct)")
+    query.add_argument("--operator", choices=["=", "!=", ">", ">=", "<", "<=", "in", "contains", "matches", "exists"], help="query operator")
+    query.add_argument("--value", help="value for comparison")
+    query.add_argument("--select", help="comma-separated fields to select")
+    query.add_argument("--limit", type=int, help="max results")
+    query.add_argument("--offset", type=int, default=0, help="skip N results")
+    query.add_argument("--order-by", help="field to order by")
+    query.add_argument("--descending", action="store_true", help="descending order")
+    query.add_argument("--agg-func", default="sum", choices=["sum", "avg", "min", "max", "count"], help="aggregation function")
+    query.add_argument("--sql", help="SQL-like query string (alternative to individual args)")
+    query.set_defaults(func=run_query)
+
+    benchmark = sub.add_parser("benchmark", help="benchmark dataset operations")
+    benchmark.add_argument("operation", choices=["read", "write", "transform", "filter", "compare", "stats"])
+    benchmark.add_argument("--dataset", help="dataset path")
+    benchmark.add_argument("--output", help="output path (for write/transform/filter)")
+    benchmark.add_argument("--benchmark-id", help="benchmark identifier")
+    benchmark.add_argument("--baseline-id", help="baseline benchmark ID (for compare)")
+    benchmark.add_argument("--current-id", help="current benchmark ID (for compare)")
+    benchmark.add_argument("--regression-threshold", type=float, default=0.1, help="regression threshold (for compare)")
+    benchmark.set_defaults(func=run_benchmark)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

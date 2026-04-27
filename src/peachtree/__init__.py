@@ -67,6 +67,9 @@ from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcesso
 from .dataset_parallelization import ParallelExecutor, ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelStats, ParallelMode, TaskStatus, TaskResult
 from .dataset_indexing import DatasetIndexBuilder, QueryOptimizer, HashIndex, InvertedIndex, IndexMetadata, IndexType, IndexStatus
 from .dataset_compression import DatasetCompressor, StreamingCompressor, CompressionAnalyzer, BatchCompressor, CompressionMetadata, CompressionStats, CompressionAlgorithm, CompressionLevel
+from .dataset_versioning import DatasetVersionControl, VersionMetadata, VersionDiff, VersionStatus, ChangeType
+from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, Query, QueryCondition, QueryOperator, LogicalOperator
+from .dataset_benchmarking import DatasetBenchmark, BenchmarkResult, BenchmarkComparison, BenchmarkCategory, BenchmarkStatus
 
 __all__ = [
     "DatasetBuilder",
@@ -341,6 +344,23 @@ __all__ = [
     "CompressionStats",
     "CompressionAlgorithm",
     "CompressionLevel",
+    "DatasetVersionControl",
+    "VersionMetadata",
+    "VersionDiff",
+    "VersionStatus",
+    "ChangeType",
+    "DatasetQueryEngine",
+    "QueryBuilder",
+    "QueryParser",
+    "Query",
+    "QueryCondition",
+    "QueryOperator",
+    "LogicalOperator",
+    "DatasetBenchmark",
+    "BenchmarkResult",
+    "BenchmarkComparison",
+    "BenchmarkCategory",
+    "BenchmarkStatus",
 ]
 
 __version__ = "0.9.0"

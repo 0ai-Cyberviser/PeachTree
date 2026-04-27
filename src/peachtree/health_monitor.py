@@ -319,6 +319,7 @@ class DatasetHealthMonitor:
         record_count_change = latest.record_count - oldest.record_count
         
         # Determine trend
+        trend_direction: Literal["improving", "stable", "degrading", "unknown"]
         if quality_change > 5.0:
             trend_direction = "improving"
         elif quality_change < -5.0:

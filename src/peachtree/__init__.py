@@ -22,6 +22,36 @@ from .training_plan import DryRunTrainingPlanner, DryRunTrainingPlan
 from .safety import SafetyGate
 from .health_monitor import DatasetHealthMonitor, DatasetHealthSnapshot, HealthTrend, HealthStatus
 from .optimizer import DatasetOptimizer, OptimizationReport
+from .batch_processor import BatchHealthMonitor, BatchOptimizer, BatchQualityScorer, BatchOperationReport
+from .status_dashboard import StatusDashboard, DatasetStatus, MultiDatasetStatus
+from .dataset_comparison import DatasetComparator, DatasetComparison, DatasetMetrics
+from .dataset_versions import DatasetVersionManager, DatasetVersion, VersionHistory
+from .workflows import WorkflowEngine, WorkflowDefinition, WorkflowStep, WorkflowExecutionResult, create_standard_pipeline
+from .quality_trends import QualityTrendAnalyzer, QualityTrend, QualitySnapshot, TrendAnalysisReport
+from .dataset_operations import DatasetMerger, DatasetSplitter, MergeResult, SplitResult
+from .smart_sampling import SmartSampler, SampleResult
+from .performance import PerformanceProfiler, ProfileReport, ProfileMetric
+from .dataset_validation import DatasetValidator, ValidationReport, ValidationRule, RequiredFieldRule, FieldTypeRule, ContentLengthRule, CustomRule, ValidationLevel, ValidationViolation
+from .incremental_update import IncrementalUpdater, DatasetDelta, IncrementalUpdateResult, ChangeTracker
+from .dataset_catalog import DatasetCatalog, DatasetCatalogEntry, SearchResult
+from .security_scanner import DatasetSecurityScanner, SecurityScanReport, SecurityIssue, SecurityIssueType
+from .advanced_exporters import AdvancedExporters, ExportResult, get_advanced_format_names
+from .lineage_visualizer import LineageVisualizer, LineageGraph, LineageNode, LineageEdge
+from .dataset_diff import DatasetDiffEngine, DatasetDiffReport, RecordChange
+from .policy_templates import PolicyTemplateLibrary, PolicyTemplate
+from .dataset_analytics import DatasetAnalyticsEngine, DatasetAnalyticsReport, ContentStatistics, ProvenanceStatistics, QualityStatistics
+from .dataset_migration import DatasetMigrationEngine, MigrationPlan, MigrationRule, MigrationResult
+from .quality_enhancement import QualityEnhancementEngine, EnhancementReport, EnhancementSuggestion, QualityIssue
+from .dataset_metrics import DatasetMetricsDashboard, DatasetDashboard, MetricCategory, MetricValue
+from .backup_restore import DatasetBackupRestore, BackupMetadata, RestoreResult, BackupInventory
+from .export_formats_v2 import ExportFormatsV2, ExportFormatResult
+from .quality_gates import QualityGateEngine, QualityGateConfig, GateRule, GateCheckResult, GateEvaluationReport
+from .dataset_profiler import DatasetProfiler, DatasetProfile, NumericStats, DistributionStats
+from .dataset_testing import DatasetTestFramework, SyntheticDataGenerator, SchemaValidator, RegressionTester, PropertyTester, TestSuite, TestCase, TestResult
+from .dataset_monitoring import DatasetMonitor, MonitoringConfig, HealthCheck, HealthStatus, Alert, MetricSnapshot
+from .dataset_sync import DatasetSynchronizer, SyncRecord, SyncState, SyncResult, ConflictResolution
+from .dataset_transform import DatasetTransformer, TransformationStep, TransformationPipeline, TransformationResult
+from .dataset_recommend import DatasetRecommender, Recommendation, RecommendationScore, RecommendationReport
 
 __all__ = [
     "DatasetBuilder",
@@ -75,6 +105,128 @@ __all__ = [
     "HealthStatus",
     "DatasetOptimizer",
     "OptimizationReport",
+    "BatchHealthMonitor",
+    "BatchOptimizer",
+    "BatchQualityScorer",
+    "BatchOperationReport",
+    "StatusDashboard",
+    "DatasetStatus",
+    "DatasetComparator",
+    "DatasetComparison",
+    "DatasetMetrics",
+    "MultiDatasetStatus",
+    "DatasetVersionManager",
+    "DatasetVersion",
+    "VersionHistory",
+    "WorkflowEngine",
+    "WorkflowDefinition",
+    "WorkflowStep",
+    "WorkflowExecutionResult",
+    "create_standard_pipeline",
+    "QualityTrendAnalyzer",
+    "DatasetMerger",
+    "DatasetSplitter",
+    "MergeResult",
+    "SplitResult",
+    "SmartSampler",
+    "SampleResult",
+    "PerformanceProfiler",
+    "ProfileReport",
+    "ProfileMetric",
+    "QualityTrend",
+    "QualitySnapshot",
+    "TrendAnalysisReport",
+    "DatasetValidator",
+    "ValidationReport",
+    "ValidationRule",
+    "RequiredFieldRule",
+    "FieldTypeRule",
+    "ContentLengthRule",
+    "CustomRule",
+    "ValidationLevel",
+    "ValidationViolation",
+    "IncrementalUpdater",
+    "DatasetDelta",
+    "IncrementalUpdateResult",
+    "ChangeTracker",
+    "DatasetSecurityScanner",
+    "SecurityScanReport",
+    "SecurityIssue",
+    "SecurityIssueType",
+    "AdvancedExporters",
+    "ExportResult",
+    "get_advanced_format_names",
+    "LineageVisualizer",
+    "LineageGraph",
+    "LineageNode",
+    "LineageEdge",
+    "DatasetCatalog",
+    "DatasetCatalogEntry",
+    "SearchResult",
+    "DatasetDiffEngine",
+    "DatasetDiffReport",
+    "RecordChange",
+    "PolicyTemplateLibrary",
+    "PolicyTemplate",
+    "DatasetAnalyticsEngine",
+    "DatasetAnalyticsReport",
+    "ContentStatistics",
+    "ProvenanceStatistics",
+    "QualityStatistics",
+    "DatasetMigrationEngine",
+    "MigrationPlan",
+    "MigrationRule",
+    "MigrationResult",
+    "QualityEnhancementEngine",
+    "EnhancementReport",
+    "EnhancementSuggestion",
+    "QualityIssue",
+    "DatasetMetricsDashboard",
+    "DatasetDashboard",
+    "MetricCategory",
+    "MetricValue",
+    "DatasetBackupRestore",
+    "BackupMetadata",
+    "RestoreResult",
+    "BackupInventory",
+    "ExportFormatsV2",
+    "ExportFormatResult",
+    "QualityGateEngine",
+    "QualityGateConfig",
+    "GateRule",
+    "GateCheckResult",
+    "GateEvaluationReport",
+    "DatasetProfiler",
+    "DatasetProfile",
+    "NumericStats",
+    "DistributionStats",
+    "DatasetTestFramework",
+    "SyntheticDataGenerator",
+    "SchemaValidator",
+    "RegressionTester",
+    "PropertyTester",
+    "TestSuite",
+    "TestCase",
+    "TestResult",
+    "DatasetMonitor",
+    "MonitoringConfig",
+    "HealthCheck",
+    "HealthStatus",
+    "Alert",
+    "MetricSnapshot",
+    "DatasetSynchronizer",
+    "SyncRecord",
+    "SyncState",
+    "SyncResult",
+    "ConflictResolution",
+    "DatasetTransformer",
+    "TransformationStep",
+    "TransformationPipeline",
+    "TransformationResult",
+    "DatasetRecommender",
+    "Recommendation",
+    "RecommendationScore",
+    "RecommendationReport",
 ]
 
 __version__ = "0.9.0"

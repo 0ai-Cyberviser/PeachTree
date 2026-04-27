@@ -6,14 +6,14 @@ and continuous enhancement of training datasets.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 import json
 from pathlib import Path
 from typing import Any, Literal
 
-from peachtree.dedup import DatasetDeduplicator, DedupReport
-from peachtree.quality import DatasetQualityScorer, DatasetQualityReport
+from peachtree.dedup import DatasetDeduplicator
+from peachtree.quality import DatasetQualityScorer
 
 
 @dataclass

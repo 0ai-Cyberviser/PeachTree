@@ -1,0 +1,384 @@
+---
+# Multi-Organization Security Dataset Configuration
+# Unifies MITRE-Cyber-Security-CVE-Database, Cybeviser, and 0ai-cyberviserai organizations
+# Owner: Johnny Watters (@0ai-Cyberviser, @cyberviser, @cyberviser-dotcom)
+# Created: April 27, 2026
+
+organizations:
+  - name: "MITRE-Cyber-Security-CVE-Database"
+    owner: "HackinSacks"
+    url: "https://github.com/MITRE-Cyber-Security-CVE-Database"
+    status: "flagged" # Hidden from public, contact support if mistake
+    members: 7
+    teams: 3
+    repositories: 19
+    contact: "hackinsacks@proton.me"
+    location: "United States of America"
+    
+    teams:
+      - name: "hakinsacks"
+        description: "teamwork"
+        members: 6
+        repositories: []
+      
+      - name: "tismchism"
+        description: "autisticaly inclined for tool development and heavily addicted to puzzels and pho!! just listen to the tism and all will be explained!!!"
+        members: 6
+        repositories: []
+      
+      - name: "flux"
+        description: "flux browser"
+        members: 7
+        repositories: []
+    
+    repositories:
+      # High-value security tools (sorted by stars)
+      - name: "metasploit-framework"
+        fork_from: "rapid7/metasploit-framework"
+        language: "Ruby"
+        license: "Other"
+        stars: 15000
+        updated: "2025-07-11" # 3 weeks ago from Apr 27, 2026
+        description: "Metasploit Framework"
+        ingestion_priority: "high"
+        use_case: "exploit documentation, penetration testing"
+      
+      - name: "fastapi"
+        fork_from: "original"
+        language: "Python"
+        license: "MIT"
+        stars: 9200
+        updated: "2025-04-15"
+        description: "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
+        ingestion_priority: "medium"
+        use_case: "API development patterns"
+      
+      - name: "sqlmap"
+        fork_from: "original"
+        language: "Python"
+        license: "Other"
+        stars: 6200
+        updated: "2025-05-21"
+        description: "Automatic SQL injection and database takeover tool"
+        ingestion_priority: "high"
+        use_case: "SQL injection detection, security testing"
+      
+      - name: "pydantic"
+        fork_from: "original"
+        language: "Python"
+        license: "MIT"
+        stars: 2600
+        updated: "2025-04-18"
+        description: "Data validation using Python type hints"
+        ingestion_priority: "low"
+        use_case: "data validation patterns"
+      
+      - name: "john"
+        fork_from: "original"
+        language: "C"
+        license: "Other"
+        stars: 2500
+        updated: "2025-05-29"
+        description: "John the Ripper jumbo - advanced offline password cracker"
+        ingestion_priority: "high"
+        use_case: "password security, hash cracking"
+      
+      - name: "wifite2"
+        fork_from: "original"
+        language: "Python"
+        license: "GPL-2.0"
+        stars: 1600
+        updated: "2024-08-20"
+        description: "Rewrite of the popular wireless network auditor, wifite"
+        ingestion_priority: "medium"
+        use_case: "wireless security auditing"
+      
+      - name: "commando-vm"
+        fork_from: "original"
+        language: "PowerShell"
+        license: "Apache-2.0"
+        stars: 1300
+        updated: "2024-09-24"
+        description: "Complete Mandiant Offensive VM (Commando VM)"
+        ingestion_priority: "medium"
+        use_case: "pentesting VM setup"
+      
+      - name: "clamav"
+        fork_from: "Cisco-Talos/clamav"
+        language: "C"
+        license: "GPL-2.0"
+        stars: 849
+        updated: "2025-05-31"
+        description: "ClamAV antivirus - https://docs.clamav.net"
+        ingestion_priority: "high"
+        use_case: "malware signatures, threat detection"
+      
+      - name: "snort3"
+        fork_from: "original"
+        language: "C++"
+        license: "Other"
+        stars: 666
+        updated: "2025-05-27"
+        description: "Snort++ IDS/IPS"
+        ingestion_priority: "high"
+        use_case: "intrusion detection patterns"
+      
+      - name: "grok-promptss"
+        fork_from: "xai-org/grok-prompts"
+        language: "Jinja"
+        license: "AGPL-3.0"
+        stars: 441
+        updated: "2025-07-15"
+        description: "Prompts for Grok chat assistant and @grok bot on X"
+        ingestion_priority: "high"
+        use_case: "security prompt engineering, LLM security"
+      
+      - name: "mitre-cve-database"
+        fork_from: null
+        language: "Shell"
+        license: "MIT"
+        stars: 37
+        updated: "2025-07-15"
+        description: "MITRE CVE database hosted beginning 16-04-2025"
+        ingestion_priority: "critical" # PRIMARY DATA SOURCE
+        use_case: "CVE records, vulnerability data"
+      
+      - name: "cobalt-strike-community_kit"
+        fork_from: "Cobalt-Strike/community_kit"
+        language: "HTML"
+        license: "Apache-2.0"
+        stars: 30
+        updated: "2025-06-11"
+        description: "Cobalt Strike post-exploitation framework extensions"
+        ingestion_priority: "medium"
+        use_case: "red team operations, aggressor scripts"
+      
+      - name: "whoosh-reloaded"
+        fork_from: "original"
+        language: "Python"
+        license: "Other"
+        stars: 31
+        updated: "2025-03-19"
+        description: "Fast full-text indexing and searching library in pure Python"
+        ingestion_priority: "low"
+        use_case: "search engine patterns"
+      
+      - name: "predator-os"
+        fork_from: "original"
+        language: "Shell"
+        stars: 24
+        updated: "2025-01-18"
+        description: "Penetration testing and ethical hacking distro with 1300+ pre-installed tools"
+        ingestion_priority: "low"
+        use_case: "tool collection reference"
+      
+      - name: "SatIntel"
+        fork_from: "original"
+        language: "Go"
+        license: "Other"
+        stars: 101
+        updated: "2024-03-15"
+        description: "OSINT tool for Satellites - extract telemetry, orbital predictions, TLEs"
+        ingestion_priority: "low"
+        use_case: "OSINT techniques"
+      
+      - name: "tgrok"
+        fork_from: "original"
+        language: "Go"
+        license: "MIT"
+        stars: 2
+        updated: "2025-04-20"
+        description: ""
+        ingestion_priority: "low"
+        use_case: "custom tooling"
+      
+      - name: "codegrok"
+        fork_from: "original"
+        language: "HTML"
+        license: "MIT"
+        stars: 2
+        updated: "2025-04-19"
+        description: ""
+        ingestion_priority: "low"
+        use_case: "code analysis"
+      
+      - name: "InfectedAI"
+        fork_from: "original"
+        language: "Python"
+        license: "Other"
+        stars: 2
+        updated: "2025-04-19"
+        description: ""
+        ingestion_priority: "medium"
+        use_case: "AI security research"
+      
+      - name: "demo-repository"
+        fork_from: null
+        language: "HTML"
+        visibility: "private"
+        stars: 0
+        updated: "2025-05-31"
+        description: "A code repository designed to show the best GitHub has to offer"
+        ingestion_priority: "exclude" # Private, exclude from ingestion
+        use_case: "demo/testing"
+
+  - name: "Cybeviser"
+    url: "https://github.com/orgs/Cybeviser/dashboard"
+    status: "active"
+    owner: "Johnny Watters"
+    repositories: []  # Add repositories if any
+    description: "Cybersecurity research organization"
+
+  - name: "0ai-cyberviserai"
+    url: "https://github.com/orgs/0ai-cyberviserai/dashboard"
+    status: "active"
+    owner: "Johnny Watters"
+    repositories: []  # Add repositories if any
+    description: "AI cybersecurity research organization"
+
+# Dataset Ingestion Strategy
+ingestion_strategy:
+  primary_organization: "MITRE-Cyber-Security-CVE-Database"
+  
+  priority_tiers:
+    critical:
+      - "mitre-cve-database"  # Primary CVE source
+    
+    high:
+      - "metasploit-framework"  # 15k stars
+      - "sqlmap"  # 6.2k stars
+      - "john"  # 2.5k stars
+      - "clamav"  # Malware signatures
+      - "snort3"  # IDS/IPS
+      - "grok-promptss"  # Security prompts
+    
+    medium:
+      - "fastapi"  # 9.2k stars, API patterns
+      - "wifite2"  # Wireless security
+      - "commando-vm"  # Pentesting VM
+      - "cobalt-strike-community_kit"  # Red team
+      - "InfectedAI"  # AI security
+    
+    low:
+      - "pydantic"  # Data validation
+      - "whoosh-reloaded"  # Search
+      - "predator-os"  # Tool collection
+      - "SatIntel"  # OSINT
+      - "tgrok"  # Custom tools
+      - "codegrok"  # Code analysis
+    
+    exclude:
+      - "demo-repository"  # Private demo
+
+# License Compliance Matrix
+license_compliance:
+  safe_for_commercial:
+    - "MIT"  # mitre-cve-database, fastapi, pydantic, tgrok, codegrok
+    - "Apache-2.0"  # commando-vm, cobalt-strike-community_kit
+  
+  requires_review:
+    - "GPL-2.0"  # clamav, wifite2 (copyleft, may restrict commercial use)
+    - "AGPL-3.0"  # grok-promptss (network copyleft)
+  
+  verify_before_use:
+    - "Other"  # metasploit-framework, sqlmap, john, whoosh-reloaded, predator-os, SatIntel, InfectedAI
+
+# PeachTree Integration Commands
+peachtree_commands:
+  # 1. Clone all critical repositories
+  clone_critical:
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/mitre-cve-database /tmp/datasets/mitre-cve"
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/metasploit-framework /tmp/datasets/metasploit"
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/sqlmap /tmp/datasets/sqlmap"
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/john /tmp/datasets/john"
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/clamav /tmp/datasets/clamav"
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/snort3 /tmp/datasets/snort3"
+    - "git clone https://github.com/MITRE-Cyber-Security-CVE-Database/grok-promptss /tmp/datasets/grok-prompts"
+  
+  # 2. Ingest CVE database (CRITICAL - primary source)
+  ingest_cve:
+    command: "peachtree ingest"
+    args:
+      - "--repo /tmp/datasets/mitre-cve"
+      - "--pattern '**/*.json,**/*.xml,**/*.txt'"
+      - "--output /tmp/peachtree/data/raw/cve-records.jsonl"
+      - "--metadata '{\"source\": \"mitre-cve\", \"org\": \"MITRE-Cyber-Security-CVE-Database\", \"priority\": \"critical\"}'"
+  
+  # 3. Ingest Metasploit documentation
+  ingest_metasploit:
+    command: "peachtree ingest"
+    args:
+      - "--repo /tmp/datasets/metasploit"
+      - "--pattern 'modules/**/*.rb,documentation/**/*.md'"
+      - "--output /tmp/peachtree/data/raw/metasploit-modules.jsonl"
+      - "--metadata '{\"source\": \"metasploit\", \"org\": \"MITRE-Cyber-Security-CVE-Database\", \"priority\": \"high\"}'"
+  
+  # 4. Ingest Grok security prompts
+  ingest_grok_prompts:
+    command: "peachtree ingest"
+    args:
+      - "--repo /tmp/datasets/grok-prompts"
+      - "--pattern '**/*.jinja,**/*.md,**/*.txt'"
+      - "--output /tmp/peachtree/data/raw/grok-security-prompts.jsonl"
+      - "--metadata '{\"source\": \"grok-prompts\", \"org\": \"MITRE-Cyber-Security-CVE-Database\", \"priority\": \"high\"}'"
+  
+  # 5. Build unified security dataset
+  build_unified:
+    command: "peachtree build"
+    args:
+      - "--input /tmp/peachtree/data/raw/cve-records.jsonl"
+      - "--input /tmp/peachtree/data/raw/metasploit-modules.jsonl"
+      - "--input /tmp/peachtree/data/raw/grok-security-prompts.jsonl"
+      - "--policy /tmp/peachtree/policies/security-dataset.yaml"
+      - "--output /tmp/peachtree/data/datasets/multi-org-security-training.jsonl"
+  
+  # 6. Audit combined dataset
+  audit_combined:
+    command: "peachtree audit"
+    args:
+      - "--input /tmp/peachtree/data/datasets/multi-org-security-training.jsonl"
+      - "--output /tmp/peachtree/reports/multi-org-audit.json"
+      - "--detailed"
+  
+  # 7. Generate Hancock training handoff
+  hancock_handoff:
+    command: "peachtree handoff"
+    args:
+      - "--dataset /tmp/peachtree/data/datasets/multi-org-security-training.jsonl"
+      - "--output /tmp/peachtree/data/manifests/hancock-multi-org-handoff.json"
+      - "--model hancock-cybersecurity-llm"
+      - "--training-config /tmp/peachtree/configs/hancock-training.yaml"
+
+# Ethical Use Requirements
+ethical_use:
+  purpose: "Defensive cybersecurity and security research only"
+  restrictions:
+    - "NO offensive hacking or malicious use"
+    - "NO weaponization of exploit code"
+    - "NO unauthorized penetration testing"
+    - "MUST obtain legal review before training"
+    - "MUST include ethical use agreement in model card"
+  
+  required_reviews:
+    - "Legal approval"
+    - "Security review"
+    - "Ethics committee approval"
+    - "Export control compliance (if international deployment)"
+  
+  data_filtering:
+    - "Remove live exploit code (documentation only)"
+    - "Redact actual credentials from CVE reports"
+    - "Filter weaponizable payloads"
+    - "Maintain provenance for all records"
+
+# Multi-Organization Metadata
+metadata:
+  created: "2026-04-27"
+  created_by: "Johnny Watters (@0ai-Cyberviser)"
+  organizations_unified: 3
+  total_repositories: 19
+  total_members: 7
+  total_teams: 3
+  primary_languages: ["Python", "HTML", "Shell", "C", "Go", "Ruby", "C++"]
+  deployment_timeline: "Apr 27 - May 3, 2026"
+  integration_target: "Hancock cybersecurity LLM via PeachTree"

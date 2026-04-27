@@ -64,6 +64,9 @@ from .dataset_audit_log import DatasetAuditLog, AuditEntry, AuditContext, AuditA
 from .dataset_streaming import DatasetStreamReader, DatasetStreamWriter, DatasetStreamProcessor, StreamingPipeline, StreamConfig, StreamStats, StreamMode, BufferStrategy
 from .dataset_sharding import DatasetSharder, ShardRouter, ShardRebalancer, ShardMetadata, ShardingConfig, ShardingStrategy, ShardStatus
 from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, ResumableOperation, CheckpointMetadata, CheckpointConfig, ProcessingState, CheckpointStrategy, CheckpointStatus
+from .dataset_parallelization import ParallelExecutor, ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelStats, ParallelMode, TaskStatus, TaskResult
+from .dataset_indexing import DatasetIndexBuilder, QueryOptimizer, HashIndex, InvertedIndex, IndexMetadata, IndexType, IndexStatus
+from .dataset_compression import DatasetCompressor, StreamingCompressor, CompressionAnalyzer, BatchCompressor, CompressionMetadata, CompressionStats, CompressionAlgorithm, CompressionLevel
 
 __all__ = [
     "DatasetBuilder",
@@ -315,6 +318,29 @@ __all__ = [
     "ProcessingState",
     "CheckpointStrategy",
     "CheckpointStatus",
+    "ParallelExecutor",
+    "ParallelDatasetProcessor",
+    "ParallelBatchProcessor",
+    "ParallelConfig",
+    "ParallelStats",
+    "ParallelMode",
+    "TaskStatus",
+    "TaskResult",
+    "DatasetIndexBuilder",
+    "QueryOptimizer",
+    "HashIndex",
+    "InvertedIndex",
+    "IndexMetadata",
+    "IndexType",
+    "IndexStatus",
+    "DatasetCompressor",
+    "StreamingCompressor",
+    "CompressionAnalyzer",
+    "BatchCompressor",
+    "CompressionMetadata",
+    "CompressionStats",
+    "CompressionAlgorithm",
+    "CompressionLevel",
 ]
 
 __version__ = "0.9.0"

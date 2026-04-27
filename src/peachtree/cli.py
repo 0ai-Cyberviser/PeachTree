@@ -71,6 +71,9 @@ from .dataset_audit_log import DatasetAuditLog, AuditAction, AuditSeverity, Audi
 from .dataset_streaming import DatasetStreamReader, DatasetStreamWriter, DatasetStreamProcessor, StreamingPipeline, StreamConfig, StreamMode, BufferStrategy
 from .dataset_sharding import DatasetSharder, ShardRouter, ShardRebalancer, ShardingConfig, ShardingStrategy, ShardStatus
 from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, CheckpointConfig, CheckpointStrategy, CheckpointStatus, ProcessingState
+from .dataset_parallelization import ParallelExecutor, ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelMode
+from .dataset_indexing import DatasetIndexBuilder, QueryOptimizer, IndexType, IndexStatus
+from .dataset_compression import DatasetCompressor, StreamingCompressor, CompressionAnalyzer, BatchCompressor, CompressionAlgorithm, CompressionLevel
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -2730,6 +2733,205 @@ def run_checkpoint(args: argparse.Namespace) -> int:
     return 1
 
 
+def run_parallel(args: argparse.Namespace) -> int:
+    """Handle parallel processing commands."""
+    config = ParallelConfig(
+        mode=ParallelMode(args.mode),
+        max_workers=args.max_workers,
+        chunk_size=args.chunk_size,
+    )
+    
+    if args.operation == "transform":
+        processor = ParallelDatasetProcessor(config)
+        
+        def identity_transform(record: Dict[str, Any]) -> Dict[str, Any]:
+            return record
+        
+        result = processor.transform(
+            Path(args.input),
+            Path(args.output),
+            identity_transform,
+        )
+        
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    elif args.operation == "filter":
+        processor = ParallelDatasetProcessor(config)
+        
+        def allow_all(record: Dict[str, Any]) -> bool:
+            return True
+        
+        result = processor.filter(
+            Path(args.input),
+            Path(args.output),
+            allow_all,
+        )
+        
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    elif args.operation == "merge":
+        batch_processor = ParallelBatchProcessor(config)
+        
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        result = batch_processor.merge_datasets(input_paths, Path(args.output))
+        
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_index(args: argparse.Namespace) -> int:
+    """Handle indexing commands."""
+    builder = DatasetIndexBuilder(Path(args.index_dir) if args.index_dir else None)
+    
+    if args.operation == "build":
+        if args.index_type == "hash":
+            metadata = builder.build_hash_index(
+                Path(args.dataset),
+                args.field,
+                index_id=args.index_id,
+            )
+        elif args.index_type == "inverted":
+            metadata = builder.build_inverted_index(
+                Path(args.dataset),
+                args.field,
+                index_id=args.index_id,
+            )
+        else:
+            print(f"Unknown index type: {args.index_type}")
+            return 1
+        
+        print(f"Built index: {metadata.index_id}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        
+        if args.save:
+            builder.save_index(metadata.index_id)
+            print(f"Saved index to disk")
+        
+        return 0
+    
+    elif args.operation == "lookup":
+        if args.load:
+            builder.load_index(args.index_id)
+        
+        results = builder.lookup(args.index_id, args.value)
+        print(f"Found {len(results)} records")
+        print(json.dumps(results, indent=2))
+        
+        return 0
+    
+    elif args.operation == "search":
+        if args.load:
+            builder.load_index(args.index_id)
+        
+        results = list(builder.search(args.index_id, args.query))
+        print(f"Found {len(results)} records")
+        print(json.dumps(results, indent=2))
+        
+        return 0
+    
+    elif args.operation == "list":
+        indexes = builder.list_indexes()
+        print(f"Found {len(indexes)} indexes:")
+        for idx in indexes:
+            print(f"  {idx.index_id}: {idx.index_type.value} on {idx.field_name} ({idx.record_count} records)")
+        
+        return 0
+    
+    elif args.operation == "drop":
+        success = builder.drop_index(args.index_id)
+        
+        if success:
+            print(f"Dropped index: {args.index_id}")
+            return 0
+        else:
+            print(f"Index not found: {args.index_id}")
+            return 1
+    
+    elif args.operation == "stats":
+        stats = builder.get_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_compress(args: argparse.Namespace) -> int:
+    """Handle compression commands."""
+    if args.operation == "compress":
+        algorithm = CompressionAlgorithm(args.algorithm)
+        
+        if args.streaming:
+            compressor = StreamingCompressor(algorithm)
+            metadata = compressor.compress_stream(
+                Path(args.input),
+                Path(args.output),
+                level=args.level,
+            )
+        else:
+            compressor = DatasetCompressor(algorithm)
+            metadata = compressor.compress_file(
+                Path(args.input),
+                Path(args.output),
+                level=args.level,
+            )
+        
+        print(f"Compressed: {metadata.original_size_bytes} -> {metadata.compressed_size_bytes} bytes")
+        print(f"Compression ratio: {metadata.compression_ratio:.2%}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "decompress":
+        algorithm = CompressionAlgorithm(args.algorithm)
+        
+        if args.streaming:
+            compressor = StreamingCompressor(algorithm)
+            size = compressor.decompress_stream(Path(args.input), Path(args.output))
+        else:
+            compressor = DatasetCompressor(algorithm)
+            size = compressor.decompress_file(Path(args.input), Path(args.output))
+        
+        print(f"Decompressed: {size} bytes")
+        
+        return 0
+    
+    elif args.operation == "benchmark":
+        analyzer = CompressionAnalyzer()
+        results = analyzer.benchmark_algorithms(Path(args.dataset))
+        
+        print("Compression benchmark results:")
+        for result in results:
+            print(f"  {result.algorithm.value}: {result.compression_ratio:.2%} ratio ({result.compressed_size_bytes} bytes)")
+        
+        best = analyzer.recommend_algorithm(Path(args.dataset))
+        print(f"\nRecommended: {best.value}")
+        
+        return 0
+    
+    elif args.operation == "batch":
+        algorithm = CompressionAlgorithm(args.algorithm)
+        batch_compressor = BatchCompressor(algorithm)
+        
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        results = batch_compressor.compress_datasets(
+            input_paths,
+            Path(args.output_dir),
+            level=args.level,
+        )
+        
+        stats = batch_compressor.get_statistics(results)
+        print(json.dumps(stats.to_dict(), indent=2))
+        
+        return 0
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -3506,6 +3708,41 @@ def make_parser() -> argparse.ArgumentParser:
     checkpoint.add_argument("--filter-operation", help="filter by operation (list only)")
     checkpoint.add_argument("--filter-status", help="filter by status: active, completed, failed")
     checkpoint.set_defaults(func=run_checkpoint)
+
+    parallel = sub.add_parser("parallel", help="parallel processing for datasets")
+    parallel.add_argument("operation", choices=["transform", "filter", "merge"])
+    parallel.add_argument("--input", help="input dataset (for transform/filter)")
+    parallel.add_argument("--inputs", help="comma-separated input datasets (for merge)")
+    parallel.add_argument("--output", help="output dataset/directory")
+    parallel.add_argument("--mode", default="processes", choices=["threads", "processes"])
+    parallel.add_argument("--max-workers", type=int, default=None, help="max parallel workers (default: CPU count)")
+    parallel.add_argument("--chunk-size", type=int, default=1000, help="records per chunk")
+    parallel.set_defaults(func=run_parallel)
+
+    index = sub.add_parser("index", help="build and query dataset indexes")
+    index.add_argument("operation", choices=["build", "lookup", "search", "list", "drop", "stats"])
+    index.add_argument("--dataset", help="dataset path (for build)")
+    index.add_argument("--field", help="field name to index (for build)")
+    index.add_argument("--index-type", default="hash", choices=["hash", "inverted"], help="index type (for build)")
+    index.add_argument("--index-id", help="index identifier")
+    index.add_argument("--value", help="value to lookup (for lookup)")
+    index.add_argument("--query", help="search query (for search)")
+    index.add_argument("--index-dir", help="directory for index files")
+    index.add_argument("--save", action="store_true", help="save index to disk (for build)")
+    index.add_argument("--load", action="store_true", help="load index from disk (for lookup/search)")
+    index.set_defaults(func=run_index)
+
+    compress = sub.add_parser("compress", help="compress/decompress datasets")
+    compress.add_argument("operation", choices=["compress", "decompress", "benchmark", "batch"])
+    compress.add_argument("--input", help="input file (for compress/decompress)")
+    compress.add_argument("--inputs", help="comma-separated input files (for batch)")
+    compress.add_argument("--output", help="output file (for compress/decompress)")
+    compress.add_argument("--output-dir", help="output directory (for batch)")
+    compress.add_argument("--dataset", help="dataset path (for benchmark)")
+    compress.add_argument("--algorithm", default="gzip", choices=["gzip", "lzma", "zlib", "bzip2"])
+    compress.add_argument("--level", type=int, default=6, help="compression level (1-9)")
+    compress.add_argument("--streaming", action="store_true", help="use streaming compression")
+    compress.set_defaults(func=run_compress)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

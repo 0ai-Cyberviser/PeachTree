@@ -55,6 +55,9 @@ from .dataset_recommend import DatasetRecommender, Recommendation, Recommendatio
 from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo, DatasetChange, CollaborationSession, ChangeType, ReviewStatus
 from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation, ComplianceStatus, ComplianceRequirement, ComplianceCheck, ComplianceReport
 from .dataset_cache import DatasetCacheOptimizer, DatasetCache, CacheEntry, CacheStats, CacheStrategy
+from .dataset_scheduler import DatasetScheduler, ScheduledTask, TaskExecution, ScheduleType, TaskType, TaskStatus
+from .dataset_notifications import DatasetNotificationSystem, NotificationRule, DatasetEvent, Notification, NotificationType, EventType, NotificationChannel
+from .dataset_webhooks import DatasetWebhookManager, WebhookEndpoint, WebhookPayload, WebhookDelivery, WebhookEvent, WebhookStatus
 
 __all__ = [
     "DatasetBuilder",
@@ -247,6 +250,25 @@ __all__ = [
     "CacheEntry",
     "CacheStats",
     "CacheStrategy",
+    "DatasetScheduler",
+    "ScheduledTask",
+    "TaskExecution",
+    "ScheduleType",
+    "TaskType",
+    "TaskStatus",
+    "DatasetNotificationSystem",
+    "NotificationRule",
+    "DatasetEvent",
+    "Notification",
+    "NotificationType",
+    "EventType",
+    "NotificationChannel",
+    "DatasetWebhookManager",
+    "WebhookEndpoint",
+    "WebhookPayload",
+    "WebhookDelivery",
+    "WebhookEvent",
+    "WebhookStatus",
 ]
 
 __version__ = "0.9.0"

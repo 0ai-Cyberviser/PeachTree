@@ -62,6 +62,9 @@ from .dataset_recommend import DatasetRecommender
 from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo, DatasetChange, ChangeType, ReviewStatus
 from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation, ComplianceStatus
 from .dataset_cache import DatasetCacheOptimizer, CacheStrategy
+from .dataset_scheduler import DatasetScheduler, ScheduleType, TaskType
+from .dataset_notifications import DatasetNotificationSystem, NotificationType, EventType, NotificationChannel
+from .dataset_webhooks import DatasetWebhookManager, WebhookEvent
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -2240,6 +2243,213 @@ def run_cache(args: argparse.Namespace) -> int:
         return 0
     
     return 1
+
+
+def run_schedule(args: argparse.Namespace) -> int:
+    """Manage scheduled dataset tasks"""
+    scheduler = DatasetScheduler()
+    
+    if args.operation == "create":
+        # Create scheduled task
+        task_type = TaskType(args.task_type)
+        schedule_type = ScheduleType(args.schedule_type)
+        
+        # Parse schedule config
+        schedule_config = json.loads(args.schedule_config) if args.schedule_config else {}
+        
+        # Parse params
+        params = json.loads(args.params) if args.params else {}
+        
+        task = scheduler.create_task(
+            task_id=args.task_id,
+            task_type=task_type,
+            schedule_type=schedule_type,
+            schedule_config=schedule_config,
+            dataset_path=Path(args.dataset),
+            params=params,
+        )
+        
+        if args.output:
+            scheduler.save_tasks(Path(args.output))
+        
+        print(f"Created task: {task.task_id}")
+        print(json.dumps(task.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "list":
+        # Load and list tasks
+        if args.tasks_file:
+            scheduler.load_tasks(Path(args.tasks_file))
+        
+        print("Scheduled Tasks:")
+        for task in scheduler.tasks.values():
+            status = "Enabled" if task.enabled else "Disabled"
+            print(f"  {task.task_id}: {task.task_type.value} ({status})")
+            print(f"    Next run: {task.next_run or 'N/A'}")
+        
+        return 0
+    
+    elif args.operation == "run":
+        # Load tasks and run due tasks
+        if args.tasks_file:
+            scheduler.load_tasks(Path(args.tasks_file))
+        
+        executions = scheduler.run_due_tasks()
+        
+        print(f"Executed {len(executions)} tasks:")
+        for execution in executions:
+            status = execution.status.value
+            print(f"  {execution.task_id}: {status}")
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show task statistics
+        if args.tasks_file:
+            scheduler.load_tasks(Path(args.tasks_file))
+        
+        stats = scheduler.get_task_statistics(args.task_id)
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_notify(args: argparse.Namespace) -> int:
+    """Manage dataset notifications"""
+    notifier = DatasetNotificationSystem()
+    
+    if args.operation == "create-rule":
+        # Create notification rule
+        event_type = EventType(args.event_type)
+        notification_type = NotificationType(args.notification_type)
+        channels = [NotificationChannel(c) for c in args.channels.split(",")]
+        recipients = args.recipients.split(",") if args.recipients else []
+        
+        rule = notifier.create_rule(
+            rule_id=args.rule_id,
+            event_type=event_type,
+            notification_type=notification_type,
+            channels=channels,
+            recipients=recipients,
+        )
+        
+        if args.output:
+            notifier.save_rules(Path(args.output))
+        
+        print(f"Created rule: {rule.rule_id}")
+        print(json.dumps(rule.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "emit":
+        # Emit event
+        if args.rules_file:
+            notifier.load_rules(Path(args.rules_file))
+        
+        event_type = EventType(args.event_type)
+        metadata = json.loads(args.metadata) if args.metadata else {}
+        
+        event = notifier.emit_event(
+            event_type=event_type,
+            dataset_path=Path(args.dataset),
+            metadata=metadata,
+        )
+        
+        print(f"Emitted event: {event.event_id}")
+        print(f"Type: {event.event_type.value}")
+        
+        return 0
+    
+    elif args.operation == "list-events":
+        # List recent events
+        events = notifier.get_events(limit=args.limit)
+        
+        print(f"Recent Events ({len(events)}):")
+        for event in events:
+            print(f"  {event.event_id}: {event.event_type.value} - {event.timestamp}")
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show notification statistics
+        stats = notifier.get_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_webhook(args: argparse.Namespace) -> int:
+    """Manage dataset webhooks"""
+    webhook_manager = DatasetWebhookManager()
+    
+    if args.operation == "create":
+        # Create webhook endpoint
+        events = [WebhookEvent(e) for e in args.events.split(",")]
+        
+        endpoint = webhook_manager.create_endpoint(
+            endpoint_id=args.endpoint_id,
+            url=args.url,
+            events=events,
+            secret=args.secret,
+        )
+        
+        if args.output:
+            webhook_manager.save_endpoints(Path(args.output))
+        
+        print(f"Created webhook endpoint: {endpoint.endpoint_id}")
+        print(json.dumps(endpoint.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "trigger":
+        # Trigger webhook
+        if args.endpoints_file:
+            webhook_manager.load_endpoints(Path(args.endpoints_file))
+        
+        event = WebhookEvent(args.event)
+        data = json.loads(args.data) if args.data else {}
+        
+        deliveries = webhook_manager.trigger_webhook(
+            event=event,
+            dataset_path=Path(args.dataset),
+            data=data,
+        )
+        
+        print(f"Triggered {len(deliveries)} webhook(s)")
+        for delivery in deliveries:
+            print(f"  {delivery.endpoint_id}: {delivery.status.value}")
+        
+        return 0
+    
+    elif args.operation == "test":
+        # Test webhook endpoint
+        if args.endpoints_file:
+            webhook_manager.load_endpoints(Path(args.endpoints_file))
+        
+        delivery = webhook_manager.test_endpoint(args.endpoint_id)
+        
+        print(f"Test delivery sent: {delivery.status.value}")
+        print(json.dumps(delivery.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show webhook statistics
+        if args.endpoint_id:
+            stats = webhook_manager.get_endpoint_statistics(args.endpoint_id)
+        else:
+            stats = webhook_manager.get_statistics()
+        
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
         
         dashboard = monitor.generate_dashboard()
         print(json.dumps(dashboard, indent=2))
@@ -2960,6 +3170,45 @@ def make_parser() -> argparse.ArgumentParser:
     cache.add_argument("--use-disk", action="store_true", help="use disk cache instead of memory")
     cache.add_argument("--target-hit-rate", type=float, default=0.8, help="target hit rate (for recommend)")
     cache.set_defaults(func=run_cache)
+
+    schedule = sub.add_parser("schedule", help="manage scheduled dataset tasks")
+    schedule.add_argument("operation", choices=["create", "list", "run", "stats"])
+    schedule.add_argument("--task-id", help="task identifier")
+    schedule.add_argument("--task-type", choices=["backup", "quality_check", "compliance_check", "sync", "export", "cleanup"], help="type of task")
+    schedule.add_argument("--schedule-type", choices=["once", "hourly", "daily", "weekly", "monthly"], help="schedule type")
+    schedule.add_argument("--schedule-config", help="schedule configuration JSON")
+    schedule.add_argument("--dataset", help="dataset path")
+    schedule.add_argument("--params", help="task parameters JSON")
+    schedule.add_argument("--tasks-file", help="tasks file path")
+    schedule.add_argument("--output", help="output file path")
+    schedule.set_defaults(func=run_schedule)
+
+    notify = sub.add_parser("notify", help="manage dataset notifications")
+    notify.add_argument("operation", choices=["create-rule", "emit", "list-events", "stats"])
+    notify.add_argument("--rule-id", help="rule identifier")
+    notify.add_argument("--event-type", choices=["dataset_created", "dataset_updated", "dataset_deleted", "quality_score_changed", "compliance_check_failed", "build_completed", "build_failed", "sync_completed", "sync_failed", "backup_completed", "backup_failed", "threshold_exceeded"], help="event type")
+    notify.add_argument("--notification-type", choices=["info", "warning", "error", "success", "critical"], help="notification type")
+    notify.add_argument("--channels", help="comma-separated channels: email,slack,webhook,log,console,sms")
+    notify.add_argument("--recipients", help="comma-separated recipients")
+    notify.add_argument("--dataset", help="dataset path")
+    notify.add_argument("--metadata", help="event metadata JSON")
+    notify.add_argument("--rules-file", help="rules file path")
+    notify.add_argument("--output", help="output file path")
+    notify.add_argument("--limit", type=int, default=100, help="limit for list operations")
+    notify.set_defaults(func=run_notify)
+
+    webhook = sub.add_parser("webhook", help="manage dataset webhooks")
+    webhook.add_argument("operation", choices=["create", "trigger", "test", "stats"])
+    webhook.add_argument("--endpoint-id", help="endpoint identifier")
+    webhook.add_argument("--url", help="webhook URL")
+    webhook.add_argument("--events", help="comma-separated events: dataset.created,dataset.updated,build.completed,quality_check.passed,etc")
+    webhook.add_argument("--secret", help="webhook secret for HMAC signatures")
+    webhook.add_argument("--event", help="event to trigger")
+    webhook.add_argument("--dataset", help="dataset path")
+    webhook.add_argument("--data", help="webhook data JSON")
+    webhook.add_argument("--endpoints-file", help="endpoints file path")
+    webhook.add_argument("--output", help="output file path")
+    webhook.set_defaults(func=run_webhook)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

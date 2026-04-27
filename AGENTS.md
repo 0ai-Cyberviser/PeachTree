@@ -1,8 +1,48 @@
-# PeachTree AI Agents & Skills
+# PeachTree AI Agent System
 
-Specialized AI agents and skills for the PeachTree dataset control plane and deployment workflows.
+Specialized AI agents, skills, and instructions for the PeachTree dataset control plane and deployment workflows.
 
-## Overview
+## Quick Start for AI Agents
+
+### Essential Commands
+```bash
+# Setup
+pip install -e ".[dev]"
+
+# Testing (129+ tests must pass)
+pytest tests/ -v
+pytest tests/ --cov=src/peachtree --cov-report=html
+
+# Code Quality (must be 0 violations)
+ruff check src/ tests/
+ruff check --fix src/ tests/
+mypy src/peachtree/ --strict
+
+# CLI Commands (12 available)
+peachtree plan|ingest|build|audit|policy|quality|dedup|export|card|handoff|health|dashboard
+```
+
+### Core Principles (CRITICAL)
+1. **Safety-First**: NEVER skip safety gates (secrets, licenses, provenance). Local-only by default - no automatic public GitHub scraping
+2. **Provenance Tracking**: Every record MUST have source repo, source path, SHA256 digest. Use frozen dataclasses
+3. **Quality Standards**: Min score 0.70 (open-safe) or 0.80 (commercial). Zero duplicates for production
+4. **Human Approval**: No automatic training launches. Require explicit approval + policy compliance validation
+
+### Common Pitfalls
+- Frozen dataclasses cannot be modified (create new instances)
+- JSONL format: each line is complete JSON object with provenance, not JSON array
+- Python 3.10+ required (uses modern type hints: `str | None`)
+- All 129+ tests must pass before commit
+
+### Quick Reference
+- **Project structure**: `src/peachtree/` (80+ modules), `tests/` (74+ test files mirroring src)
+- **Entry point**: `src/peachtree/cli.py` (12 commands)
+- **Core models**: `SourceDocument`, `DatasetRecord`, `LearningNode` in `models.py`
+- **Documentation**: See [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/](docs/) for details
+
+---
+
+## Agent Ecosystem Overview
 
 **Created**: April 27, 2026  
 **System**: VS Code GitHub Copilot Agent Framework  

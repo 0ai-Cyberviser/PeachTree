@@ -20,6 +20,8 @@ from .trainer_handoff import TrainerHandoffBuilder, TrainerHandoffManifest
 from .lora_job import LoraJobCardBuilder, LoraJobCard, LoraHyperparameters
 from .training_plan import DryRunTrainingPlanner, DryRunTrainingPlan
 from .safety import SafetyGate
+from .health_monitor import DatasetHealthMonitor, DatasetHealthSnapshot, HealthTrend, HealthStatus
+from .optimizer import DatasetOptimizer, OptimizationReport
 
 __all__ = [
     "DatasetBuilder",
@@ -67,6 +69,12 @@ __all__ = [
     "LoraHyperparameters",
     "DryRunTrainingPlanner",
     "DryRunTrainingPlan",
+    "DatasetHealthMonitor",
+    "DatasetHealthSnapshot",
+    "HealthTrend",
+    "HealthStatus",
+    "DatasetOptimizer",
+    "OptimizationReport",
 ]
 
 __version__ = "0.9.0"

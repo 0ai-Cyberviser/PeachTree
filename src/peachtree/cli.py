@@ -27,6 +27,8 @@ from .release_bundle import ReleaseBundleBuilder
 from .trainer_handoff import TrainerHandoffBuilder
 from .lora_job import LoraJobCardBuilder, LoraHyperparameters
 from .training_plan import DryRunTrainingPlanner
+from .health_monitor import DatasetHealthMonitor
+from .optimizer import DatasetOptimizer
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -543,6 +545,64 @@ def run_train_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_health(args: argparse.Namespace) -> int:
+    monitor = DatasetHealthMonitor(
+        history_dir=args.history_dir,
+        quality_warning=args.quality_warning,
+        quality_critical=args.quality_critical,
+        duplicate_warning=args.duplicate_warning,
+        duplicate_critical=args.duplicate_critical,
+    )
+    
+    if args.trend:
+        trend = monitor.analyze_trend(args.dataset, days=args.days)
+        content = json.dumps(trend.to_dict(), indent=2, sort_keys=True)
+        if args.output:
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.output).write_text(content + "\n", encoding="utf-8")
+        print(content)
+        return 0 if trend.trend_direction != "degrading" else 2
+    else:
+        snapshot = monitor.check_health(args.dataset, save_history=not args.no_save)
+        if args.json_output or args.markdown_output:
+            json_path = Path(args.json_output or "reports/health-snapshot.json")
+            json_path.parent.mkdir(parents=True, exist_ok=True)
+            json_path.write_text(snapshot.to_json() + "\n", encoding="utf-8")
+            if args.markdown_output:
+                md_path = Path(args.markdown_output)
+                md_path.parent.mkdir(parents=True, exist_ok=True)
+                md_path.write_text(snapshot.to_markdown() + "\n", encoding="utf-8")
+        if args.format == "markdown":
+            print(snapshot.to_markdown())
+        else:
+            print(snapshot.to_json())
+        return 0 if snapshot.is_healthy else 2
+
+
+def run_optimize(args: argparse.Namespace) -> int:
+    optimizer = DatasetOptimizer(output_dir=args.output_dir)
+    report = optimizer.optimize(
+        dataset_path=args.dataset,
+        remove_duplicates=not args.skip_dedup,
+        filter_low_quality=not args.skip_filter,
+        quality_threshold=args.quality_threshold,
+        output_path=args.output,
+    )
+    if args.report_json or args.report_markdown:
+        json_path = Path(args.report_json or "reports/optimization-report.json")
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(report.to_json() + "\n", encoding="utf-8")
+        if args.report_markdown:
+            md_path = Path(args.report_markdown)
+            md_path.parent.mkdir(parents=True, exist_ok=True)
+            md_path.write_text(report.to_markdown() + "\n", encoding="utf-8")
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    return 0 if report.status == "completed" else 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -818,6 +878,34 @@ def make_parser() -> argparse.ArgumentParser:
     train_plan.add_argument("--output")
     train_plan.add_argument("--markdown-output")
     train_plan.set_defaults(func=run_train_plan)
+
+    health = sub.add_parser("health", help="monitor dataset health and quality trends")
+    health.add_argument("--dataset", required=True, help="dataset JSONL file to monitor")
+    health.add_argument("--trend", action="store_true", help="analyze trend over time instead of single snapshot")
+    health.add_argument("--days", type=int, default=7, help="days of history for trend analysis")
+    health.add_argument("--history-dir", default="data/health-history", help="directory for health history storage")
+    health.add_argument("--quality-warning", type=float, default=75.0, help="quality score warning threshold")
+    health.add_argument("--quality-critical", type=float, default=60.0, help="quality score critical threshold")
+    health.add_argument("--duplicate-warning", type=float, default=0.15, help="duplicate ratio warning threshold")
+    health.add_argument("--duplicate-critical", type=float, default=0.30, help="duplicate ratio critical threshold")
+    health.add_argument("--no-save", action="store_true", help="do not save snapshot to history")
+    health.add_argument("--format", choices=["json", "markdown"], default="json")
+    health.add_argument("--output", help="output file (for trend analysis)")
+    health.add_argument("--json-output", help="JSON output file (for snapshot)")
+    health.add_argument("--markdown-output", help="markdown output file (for snapshot)")
+    health.set_defaults(func=run_health)
+
+    optimize = sub.add_parser("optimize", help="optimize dataset by removing duplicates and low-quality records")
+    optimize.add_argument("--dataset", required=True, help="source dataset JSONL file")
+    optimize.add_argument("--output", help="output optimized dataset file")
+    optimize.add_argument("--output-dir", default="data/optimized", help="output directory for optimized datasets")
+    optimize.add_argument("--skip-dedup", action="store_true", help="skip duplicate removal")
+    optimize.add_argument("--skip-filter", action="store_true", help="skip quality filtering")
+    optimize.add_argument("--quality-threshold", type=int, default=60, help="minimum quality score to keep records")
+    optimize.add_argument("--format", choices=["json", "markdown"], default="json")
+    optimize.add_argument("--report-json", help="JSON report output file")
+    optimize.add_argument("--report-markdown", help="markdown report output file")
+    optimize.set_defaults(func=run_optimize)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

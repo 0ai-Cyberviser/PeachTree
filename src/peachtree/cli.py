@@ -59,6 +59,9 @@ from .dataset_monitoring import DatasetMonitor, MonitoringConfig, HealthStatus
 from .dataset_sync import DatasetSynchronizer, SyncState, ConflictResolution
 from .dataset_transform import DatasetTransformer, TransformationPipeline, TransformationStep
 from .dataset_recommend import DatasetRecommender
+from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo, DatasetChange, ChangeType, ReviewStatus
+from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation, ComplianceStatus
+from .dataset_cache import DatasetCacheOptimizer, CacheStrategy
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -2084,6 +2087,159 @@ def run_recommend(args: argparse.Namespace) -> int:
         return 0
     
     return 1
+
+
+def run_collaborate(args: argparse.Namespace) -> int:
+    """Manage dataset collaboration sessions"""
+    engine = DatasetCollaborationEngine()
+    
+    if args.operation == "create":
+        # Create new collaboration session
+        owner = CollaboratorInfo(
+            user_id=args.user_id or "owner",
+            username=args.username or "owner",
+            email=args.email or "owner@example.com",
+            role="owner",
+            joined_at=json.dumps({"timestamp": "now"}),
+        )
+        
+        session = engine.create_session(Path(args.dataset), owner)
+        
+        # Save session
+        if args.output:
+            engine.save_session(session.session_id, Path(args.output))
+        
+        print(f"Created session: {session.session_id}")
+        print(session.to_json())
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Load session and show stats
+        session = engine.load_session(Path(args.session))
+        stats = engine.get_collaboration_stats(session.session_id)
+        
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_compliance(args: argparse.Namespace) -> int:
+    """Check dataset compliance with regulations"""
+    tracker = DatasetComplianceTracker()
+    
+    if args.operation == "check":
+        # Parse regulations
+        regulations = [ComplianceRegulation(r) for r in args.regulations.split(",")]
+        
+        # Load metadata if provided
+        metadata = {}
+        if args.metadata:
+            metadata = json.loads(Path(args.metadata).read_text(encoding="utf-8"))
+        
+        # Run compliance check
+        report = tracker.check_compliance(
+            Path(args.dataset),
+            regulations,
+            metadata,
+        )
+        
+        # Save report
+        if args.output:
+            tracker.save_report(report, Path(args.output))
+        
+        # Display summary
+        print(f"Compliance Score: {report.summary['compliance_score']:.2%}")
+        print(f"Total Checks: {report.summary['total_checks']}")
+        print(f"Compliant: {report.summary['compliant']}")
+        print(f"Non-Compliant: {report.summary['non_compliant']}")
+        print(f"Partially Compliant: {report.summary['partially_compliant']}")
+        
+        if args.json_output:
+            print("\nFull Report:")
+            print(report.to_json())
+        
+        return 0 if report.summary['compliance_score'] >= 0.8 else 1
+    
+    elif args.operation == "remediate":
+        # Load report and generate remediation plan
+        report = tracker.load_report(Path(args.report))
+        plan = tracker.get_remediation_plan(report)
+        
+        print("Remediation Plan:\n")
+        
+        if plan["critical"]:
+            print("CRITICAL (Must Fix):")
+            for item in plan["critical"]:
+                print(f"  - {item}")
+            print()
+        
+        if plan["important"]:
+            print("IMPORTANT (Should Fix):")
+            for item in plan["important"]:
+                print(f"  - {item}")
+            print()
+        
+        if plan["recommended"]:
+            print("RECOMMENDED (Nice to Fix):")
+            for item in plan["recommended"]:
+                print(f"  - {item}")
+        
+        return 0
+    
+    return 1
+
+
+def run_cache(args: argparse.Namespace) -> int:
+    """Manage dataset caching and performance optimization"""
+    optimizer = DatasetCacheOptimizer(
+        max_memory_mb=args.max_memory_mb,
+        max_disk_mb=args.max_disk_mb,
+    )
+    
+    if args.operation == "enable":
+        # Cache dataset
+        cache_key = optimizer.cache_dataset(
+            Path(args.dataset),
+            use_disk=args.use_disk,
+        )
+        
+        print(f"Dataset cached with key: {cache_key}")
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show cache statistics
+        stats = optimizer.get_cache_statistics()
+        
+        print("Cache Statistics:")
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "clear":
+        # Clear cache
+        optimizer.clear_all_cache()
+        
+        print("Cache cleared")
+        
+        return 0
+    
+    elif args.operation == "recommend":
+        # Recommend cache size
+        recommendations = optimizer.recommend_cache_size(
+            Path(args.dataset),
+            target_hit_rate=args.target_hit_rate,
+        )
+        
+        print("Cache Recommendations:")
+        print(json.dumps(recommendations, indent=2))
+        
+        return 0
+    
+    return 1
         
         dashboard = monitor.generate_dashboard()
         print(json.dumps(dashboard, indent=2))
@@ -2775,6 +2931,35 @@ def make_parser() -> argparse.ArgumentParser:
     recommend.add_argument("--output", help="output file path")
     recommend.add_argument("--format", choices=["json", "markdown"], default="json")
     recommend.set_defaults(func=run_recommend)
+
+    collaborate = sub.add_parser("collaborate", help="manage dataset collaboration sessions")
+    collaborate.add_argument("operation", choices=["create", "stats"])
+    collaborate.add_argument("--dataset", help="dataset path (for create)")
+    collaborate.add_argument("--session", help="session file path (for stats)")
+    collaborate.add_argument("--user-id", help="user ID (for create)")
+    collaborate.add_argument("--username", help="username (for create)")
+    collaborate.add_argument("--email", help="email (for create)")
+    collaborate.add_argument("--output", help="output file path")
+    collaborate.set_defaults(func=run_collaborate)
+
+    compliance = sub.add_parser("compliance", help="check dataset compliance with regulations")
+    compliance.add_argument("operation", choices=["check", "remediate"])
+    compliance.add_argument("--dataset", help="dataset to check (for check)")
+    compliance.add_argument("--regulations", help="comma-separated regulations: gdpr,ccpa,ai_act,hipaa,soc2,iso27001 (for check)")
+    compliance.add_argument("--metadata", help="metadata JSON file (for check)")
+    compliance.add_argument("--report", help="compliance report file (for remediate)")
+    compliance.add_argument("--output", help="output file path")
+    compliance.add_argument("--json-output", action="store_true", help="show full JSON output")
+    compliance.set_defaults(func=run_compliance)
+
+    cache = sub.add_parser("cache", help="manage dataset caching and performance optimization")
+    cache.add_argument("operation", choices=["enable", "stats", "clear", "recommend"])
+    cache.add_argument("--dataset", help="dataset path")
+    cache.add_argument("--max-memory-mb", type=int, default=1024, help="max memory cache size in MB")
+    cache.add_argument("--max-disk-mb", type=int, default=10240, help="max disk cache size in MB")
+    cache.add_argument("--use-disk", action="store_true", help="use disk cache instead of memory")
+    cache.add_argument("--target-hit-rate", type=float, default=0.8, help="target hit rate (for recommend)")
+    cache.set_defaults(func=run_cache)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

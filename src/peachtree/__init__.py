@@ -52,6 +52,9 @@ from .dataset_monitoring import DatasetMonitor, MonitoringConfig, HealthCheck, H
 from .dataset_sync import DatasetSynchronizer, SyncRecord, SyncState, SyncResult, ConflictResolution
 from .dataset_transform import DatasetTransformer, TransformationStep, TransformationPipeline, TransformationResult
 from .dataset_recommend import DatasetRecommender, Recommendation, RecommendationScore, RecommendationReport
+from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo, DatasetChange, CollaborationSession, ChangeType, ReviewStatus
+from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation, ComplianceStatus, ComplianceRequirement, ComplianceCheck, ComplianceReport
+from .dataset_cache import DatasetCacheOptimizer, DatasetCache, CacheEntry, CacheStats, CacheStrategy
 
 __all__ = [
     "DatasetBuilder",
@@ -227,6 +230,23 @@ __all__ = [
     "Recommendation",
     "RecommendationScore",
     "RecommendationReport",
+    "DatasetCollaborationEngine",
+    "CollaboratorInfo",
+    "DatasetChange",
+    "CollaborationSession",
+    "ChangeType",
+    "ReviewStatus",
+    "DatasetComplianceTracker",
+    "ComplianceRegulation",
+    "ComplianceStatus",
+    "ComplianceRequirement",
+    "ComplianceCheck",
+    "ComplianceReport",
+    "DatasetCacheOptimizer",
+    "DatasetCache",
+    "CacheEntry",
+    "CacheStats",
+    "CacheStrategy",
 ]
 
 __version__ = "0.9.0"

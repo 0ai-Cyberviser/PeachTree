@@ -405,9 +405,9 @@ def hancock_ingestion_workflow(
     
     # Deduplication
     deduplicator = DatasetDeduplicator()
-    dedup_stats = deduplicator.deduplicate_dataset(
-        config.output_dir / "hancock_security_dataset.jsonl",
-        config.output_dir / "hancock_security_dataset_deduped.jsonl"
+    dedup_stats = deduplicator.deduplicate(
+        source_path=config.output_dir / "hancock_security_dataset.jsonl",
+        output_path=config.output_dir / "hancock_security_dataset_deduped.jsonl"
     )
     
     # Generate trainer handoff if requested

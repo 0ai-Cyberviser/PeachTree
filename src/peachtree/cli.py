@@ -65,6 +65,9 @@ from .dataset_cache import DatasetCacheOptimizer, CacheStrategy
 from .dataset_scheduler import DatasetScheduler, ScheduleType, TaskType
 from .dataset_notifications import DatasetNotificationSystem, NotificationType, EventType, NotificationChannel
 from .dataset_webhooks import DatasetWebhookManager, WebhookEvent
+from .dataset_templates import DatasetTemplateManager, TemplateCategory, TemplateComplexity
+from .dataset_plugins import PluginManager, PluginType, PluginStatus
+from .dataset_audit_log import DatasetAuditLog, AuditAction, AuditSeverity, AuditStatus, AuditContext as AuditLogContext
 
 
 def run_plan(args: argparse.Namespace) -> int:

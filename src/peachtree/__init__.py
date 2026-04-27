@@ -58,6 +58,9 @@ from .dataset_cache import DatasetCacheOptimizer, DatasetCache, CacheEntry, Cach
 from .dataset_scheduler import DatasetScheduler, ScheduledTask, TaskExecution, ScheduleType, TaskType, TaskStatus
 from .dataset_notifications import DatasetNotificationSystem, NotificationRule, DatasetEvent, Notification, NotificationType, EventType, NotificationChannel
 from .dataset_webhooks import DatasetWebhookManager, WebhookEndpoint, WebhookPayload, WebhookDelivery, WebhookEvent, WebhookStatus
+from .dataset_templates import DatasetTemplateManager, TemplateMetadata, DatasetTemplate, TemplateCategory, TemplateComplexity
+from .dataset_plugins import PluginManager, Plugin, PluginMetadata, PluginRegistration, PluginType, PluginStatus
+from .dataset_audit_log import DatasetAuditLog, AuditEntry, AuditContext, AuditAction, AuditSeverity, AuditStatus
 
 __all__ = [
     "DatasetBuilder",
@@ -269,6 +272,23 @@ __all__ = [
     "WebhookDelivery",
     "WebhookEvent",
     "WebhookStatus",
+    "DatasetTemplateManager",
+    "TemplateMetadata",
+    "DatasetTemplate",
+    "TemplateCategory",
+    "TemplateComplexity",
+    "PluginManager",
+    "Plugin",
+    "PluginMetadata",
+    "PluginRegistration",
+    "PluginType",
+    "PluginStatus",
+    "DatasetAuditLog",
+    "AuditEntry",
+    "AuditContext",
+    "AuditAction",
+    "AuditSeverity",
+    "AuditStatus",
 ]
 
 __version__ = "0.9.0"

@@ -85,6 +85,7 @@ from .dataset_federation import FederatedQueryExecutor, EndpointRegistry, QueryP
 from .dataset_visualization import DatasetVisualizer, ChartType, ExportFormat
 from .dataset_sampling import DatasetSampler, SamplingStrategy, SampleValidationLevel, SamplingConfig
 from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatus, CompressionLevel, RetentionPolicy
+from .hancock_integration import HancockDataIngester, HancockIngestionConfig, hancock_ingestion_workflow
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -4466,7 +4467,168 @@ def make_parser() -> argparse.ArgumentParser:
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)
 
+    # Hancock cybersecurity dataset integration
+    hancock = sub.add_parser("hancock-discover", help="discover Hancock data sources")
+    hancock.add_argument("--hancock-dir", help="Hancock data directory path (default: ~/Hancock/data)")
+    hancock.add_argument("--output", help="output JSON path for discovered sources")
+    hancock.add_argument("--include-sources", help="comma-separated list of source types to include (mitre,cve,kev,ghsa,atomic,kb,soc-kb)")
+    hancock.set_defaults(func=run_hancock_discover)
+
+    hancock_ingest = sub.add_parser("hancock-ingest", help="ingest Hancock cybersecurity data into PeachTree")
+    hancock_ingest.add_argument("--hancock-dir", help="Hancock data directory path (default: ~/Hancock/data)")
+    hancock_ingest.add_argument("--output-dir", default="data/hancock", help="output directory for dataset and manifests")
+    hancock_ingest.add_argument("--min-quality-score", type=float, default=0.70, help="minimum quality score threshold")
+    hancock_ingest.add_argument("--include-sources", help="comma-separated list of source types to include")
+    hancock_ingest.add_argument("--allow-unknown-license", action="store_true", help="allow sources with unknown licenses")
+    hancock_ingest.add_argument("--skip-handoff", action="store_true", help="skip trainer handoff generation")
+    hancock_ingest.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    hancock_ingest.set_defaults(func=run_hancock_ingest)
+
+    hancock_workflow = sub.add_parser("hancock-workflow", help="run complete Hancock ingestion and preparation workflow")
+    hancock_workflow.add_argument("--hancock-dir", help="Hancock data directory path (default: ~/Hancock/data)")
+    hancock_workflow.add_argument("--output-dir", default="data/hancock", help="output directory for all artifacts")
+    hancock_workflow.add_argument("--min-quality-score", type=float, default=0.70, help="minimum quality score threshold")
+    hancock_workflow.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    hancock_workflow.set_defaults(func=run_hancock_workflow)
+
     return parser
+
+
+def run_hancock_discover(args: argparse.Namespace) -> int:
+    """Discover available Hancock data sources"""
+    hancock_dir = Path(args.hancock_dir).expanduser() if args.hancock_dir else Path("~/Hancock/data").expanduser()
+    
+    config = HancockIngestionConfig(
+        hancock_data_dir=hancock_dir,
+        include_sources=args.include_sources.split(",") if args.include_sources else None
+    )
+    
+    ingester = HancockDataIngester(config)
+    sources = ingester.discover_sources()
+    
+    result = {
+        "hancock_data_dir": str(hancock_dir),
+        "sources_found": len(sources),
+        "sources": [
+            {
+                "name": s.name,
+                "type": s.source_type,
+                "file_path": str(s.file_path),
+                "record_count": s.record_count,
+                "metadata": s.metadata
+            }
+            for s in sources
+        ]
+    }
+    
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    
+    print(json.dumps(result, indent=2))
+    return 0
+
+
+def run_hancock_ingest(args: argparse.Namespace) -> int:
+    """Ingest Hancock data into PeachTree dataset"""
+    hancock_dir = Path(args.hancock_dir).expanduser() if args.hancock_dir else Path("~/Hancock/data").expanduser()
+    output_dir = Path(args.output_dir)
+    
+    config = HancockIngestionConfig(
+        hancock_data_dir=hancock_dir,
+        output_dir=output_dir,
+        min_quality_score=args.min_quality_score,
+        include_sources=args.include_sources.split(",") if args.include_sources else None,
+        allow_unknown_license=args.allow_unknown_license
+    )
+    
+    ingester = HancockDataIngester(config)
+    
+    try:
+        # Ingest all sources
+        documents, manifest = ingester.ingest_all()
+        
+        # Generate trainer handoff if not skipped
+        handoff = None
+        if not args.skip_handoff:
+            handoff = ingester.generate_training_handoff(manifest)
+        
+        result = {
+            "status": "success",
+            "sources_ingested": len(ingester.sources),
+            "total_documents": len(documents),
+            "total_records": len(manifest.records),
+            "dataset_path": str(output_dir / "hancock_security_dataset.jsonl"),
+            "manifest_path": str(output_dir / "hancock_manifest.json"),
+            "handoff_path": str(output_dir / "hancock_trainer_handoff.json") if handoff else None
+        }
+        
+        if args.format == "markdown":
+            md_output = f"""# Hancock Ingestion Complete
+
+## Summary
+- **Status**: {result['status']}
+- **Sources Ingested**: {result['sources_ingested']}
+- **Total Documents**: {result['total_documents']}
+- **Total Records**: {result['total_records']}
+
+## Output Files
+- **Dataset**: `{result['dataset_path']}`
+- **Manifest**: `{result['manifest_path']}`
+- **Trainer Handoff**: `{result['handoff_path'] or 'Not generated'}`
+"""
+            print(md_output)
+        else:
+            print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    except Exception as e:
+        print(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        return 1
+
+
+def run_hancock_workflow(args: argparse.Namespace) -> int:
+    """Run complete Hancock ingestion workflow"""
+    hancock_dir = Path(args.hancock_dir).expanduser() if args.hancock_dir else None
+    output_dir = Path(args.output_dir)
+    
+    try:
+        summary = hancock_ingestion_workflow(
+            hancock_data_dir=hancock_dir,
+            output_dir=output_dir,
+            min_quality_score=args.min_quality_score,
+            generate_handoff=True
+        )
+        
+        if args.format == "markdown":
+            md_output = f"""# Hancock Ingestion Workflow Complete
+
+## Summary
+- **Sources Ingested**: {summary['sources_ingested']}
+- **Total Documents**: {summary['total_documents']}
+- **Total Records**: {summary['total_records']}
+- **Quality Score**: {summary['quality_score']:.2f}
+- **Ready for Training**: {'✅ Yes' if summary['ready_for_training'] else '❌ No'}
+
+## Deduplication Statistics
+- **Duplicates Removed**: {summary['deduplication'].get('removed', 0)}
+- **Records Kept**: {summary['deduplication'].get('kept', 0)}
+
+## Output Files
+- **Dataset**: `{summary['dataset_path']}`
+- **Manifest**: `{summary['manifest_path']}`
+- **Trainer Handoff**: `{summary['handoff_path'] or 'Not generated'}`
+"""
+            print(md_output)
+        else:
+            print(json.dumps(summary, indent=2))
+        
+        return 0 if summary['ready_for_training'] else 2
+    
+    except Exception as e:
+        print(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        return 1
 
 
 def main(argv: list[str] | None = None) -> int:

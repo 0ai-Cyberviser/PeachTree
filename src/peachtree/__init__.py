@@ -79,6 +79,7 @@ from .dataset_visualization import DatasetVisualizer, ChartGenerator, DatasetAna
 from .dataset_sampling import DatasetSampler, RandomSampler, StratifiedSampler, ReservoirSampler, SystematicSampler, WeightedSampler, SampleValidator, SampleComparator, SamplingConfig, SampleResult, SampleStatistics, SamplingStrategy, SampleValidationLevel
 from .dataset_migration import DatasetMigrationEngine, MigrationRule, MigrationPlan, MigrationResult
 from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatistics, ArchiveMetadata, ArchiveIndex, ArchiveStatus, CompressionLevel, RetentionPolicy
+from .hancock_integration import HancockDataIngester, HancockIngestionConfig, HancockSource, hancock_ingestion_workflow
 
 __all__ = [
     "DatasetBuilder",
@@ -468,6 +469,11 @@ __all__ = [
     "ArchiveStatus",
     "CompressionLevel",
     "RetentionPolicy",
+    # Hancock integration
+    "HancockDataIngester",
+    "HancockIngestionConfig",
+    "HancockSource",
+    "hancock_ingestion_workflow",
 ]
 
 __version__ = "0.9.0"

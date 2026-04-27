@@ -1,9 +1,0 @@
-body{font-family:system-ui,Arial;background:#0b0f14;color:#e6edf3;margin:0}
-.nav{display:flex;justify-content:space-between;padding:12px 20px;background:#111827}
-.hero{padding:40px;display:flex;gap:30px}
-.button{padding:10px 16px;border-radius:8px;background:#1f2937;color:#fff;text-decoration:none}
-.primary{background:#2563eb}
-.panel{padding:30px}
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px}
-.card-list div{background:#111827;padding:12px;border-radius:8px;margin-bottom:8px}
-footer{padding:20px;text-align:center;background:#111827}

@@ -179,17 +179,11 @@ class HancockDataIngester:
                 source_path += f"/{record['technique_id']}"
             
             return SourceDocument(
+                repo_name=f"Hancock/{source.name}",
+                path=source_path,
                 content=content,
-                source_repo=f"Hancock/{source.name}",
-                source_path=source_path,
                 license_id="MIT",  # Hancock is MIT licensed
-                sha256_digest=DatasetBuilder._compute_sha256(content),
-                metadata={
-                    "hancock_source": source.source_type,
-                    "ingestion_date": source.metadata.get("ingestion_date", ""),
-                    "record_id": record.get("id", ""),
-                    **self._extract_metadata(record, source.source_type)
-                }
+                source_type="hancock-security"
             )
         except Exception as e:
             logger.error(f"Failed to convert record {index} from {source.name}: {e}")
@@ -199,14 +193,18 @@ class HancockDataIngester:
         """Extract trainable content from Hancock record"""
         if source_type == "mitre":
             # MITRE ATT&CK technique
+            tactics_list = [phase.get('phase_name', '') for phase in record.get('kill_chain_phases', [])]
+            tactics_str = ', '.join(tactics_list) if tactics_list else 'Unknown'
+            
             parts = [
                 f"Technique: {record.get('name', 'Unknown')}",
                 f"ID: {record.get('external_references', [{}])[0].get('external_id', 'Unknown')}",
-                f"Tactic: {', '.join(record.get('kill_chain_phases', [{}]))}",
+                f"Tactic: {tactics_str}",
                 f"Description: {record.get('description', '')}",
             ]
             if record.get('x_mitre_platforms'):
-                parts.append(f"Platforms: {', '.join(record['x_mitre_platforms'])}")
+                platforms_list = [str(p) for p in record['x_mitre_platforms']]
+                parts.append(f"Platforms: {', '.join(platforms_list)}")
             if record.get('x_mitre_detection'):
                 parts.append(f"Detection: {record['x_mitre_detection']}")
             return "\n\n".join(p for p in parts if p)
@@ -351,26 +349,31 @@ Category: {record.get('category', 'Unknown')}"""
         """Generate trainer handoff package for Hancock dataset"""
         handoff_builder = TrainerHandoffBuilder()
         
-        handoff = handoff_builder.create_handoff(
-            manifest=manifest,
-            model_type="cybersecurity-llm",
+        # Build trainer handoff manifest
+        handoff_manifest = handoff_builder.build(
+            dataset_path=manifest.dataset_path,
+            model_name="hancock-cybersecurity-llm",
             base_model="meta-llama/Llama-3.2-3B",
-            task_description="Cybersecurity question answering and threat analysis",
-            recommended_epochs=3,
-            notes=[
-                "Dataset combines MITRE ATT&CK, CVE, CISA KEV, GHSA, and Atomic Red Team data",
-                "Suitable for security operations and penetration testing use cases",
-                "Contains real-world vulnerability and exploit documentation",
-                "Recommend additional filtering for production deployment"
-            ]
+            trainer_profile="unsloth",
+            dataset_format="chatml",
+            metadata={
+                "task_description": "Cybersecurity question answering and threat analysis",
+                "recommended_epochs": 3,
+                "notes": [
+                    "Dataset combines MITRE ATT&CK, CVE, CISA KEV, GHSA, and Atomic Red Team data",
+                    "Suitable for security operations and penetration testing use cases",
+                    "Contains real-world vulnerability and exploit documentation",
+                    "Recommend additional filtering for production deployment"
+                ]
+            }
         )
         
-        # Write handoff manifest
+        # Write handoff to file
         handoff_path = self.config.output_dir / "hancock_trainer_handoff.json"
-        handoff_path.write_text(json.dumps(handoff, indent=2), encoding="utf-8")
+        handoff_builder.write(handoff_manifest, handoff_path)
         
-        logger.info(f"Trainer handoff written to: {handoff_path}")
-        return handoff
+        logger.info(f"Generated trainer handoff at {handoff_path}")
+        return handoff_manifest.to_dict()
 
 
 def hancock_ingestion_workflow(

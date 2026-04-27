@@ -182,9 +182,8 @@ def test_convert_mitre_to_source_documents(mock_hancock_data_dir):
     assert isinstance(doc, SourceDocument)
     assert "Phishing" in doc.content
     assert "T1566" in doc.content
-    assert doc.source_repo.startswith("Hancock/")
+    assert doc.repo_name.startswith("Hancock/")
     assert doc.license_id == "MIT"
-    assert doc.metadata["hancock_source"] == "mitre"
 
 
 def test_convert_cve_to_source_documents(mock_hancock_data_dir):
@@ -200,7 +199,6 @@ def test_convert_cve_to_source_documents(mock_hancock_data_dir):
     doc = documents[0]
     assert "CVE-2024-12345" in doc.content
     assert "CRITICAL" in doc.content or "Critical" in doc.content
-    assert doc.metadata["cve_id"] == "CVE-2024-12345"
 
 
 def test_convert_kev_to_source_documents(mock_hancock_data_dir):
@@ -217,7 +215,6 @@ def test_convert_kev_to_source_documents(mock_hancock_data_dir):
     assert "CVE-2024-54321" in doc.content
     assert "Microsoft" in doc.content
     assert "ProxyShell" in doc.content
-    assert doc.metadata["vendor"] == "Microsoft"
 
 
 def test_convert_kb_to_source_documents(mock_hancock_data_dir):
@@ -234,7 +231,6 @@ def test_convert_kb_to_source_documents(mock_hancock_data_dir):
     assert "SQL injection" in doc.content
     assert "Question:" in doc.content
     assert "Answer:" in doc.content
-    assert doc.metadata["category"] == "Web Security"
 
 
 def test_convert_jsonl_format(mock_hancock_data_dir):
@@ -308,31 +304,46 @@ def test_ingest_all(mock_builder_class, mock_hancock_data_dir):
     assert mock_builder.write_jsonl.called
 
 
-def test_generate_training_handoff(mock_hancock_data_dir):
-    """Test generating trainer handoff package"""
-    config = HancockIngestionConfig(output_dir=mock_hancock_data_dir / "output")
+@patch('peachtree.hancock_integration.TrainerHandoffBuilder')
+def test_generate_training_handoff(mock_trainer_builder, mock_hancock_data_dir):
+    \"\"\"Test generating trainer handoff package\"\"\"
+    config = HancockIngestionConfig(output_dir=mock_hancock_data_dir / \"output\")
     ingester = HancockDataIngester(config)
+    
+    # Mock the trainer handoff builder
+    mock_builder_instance = Mock()
+    mock_manifest_obj = Mock()
+    mock_manifest_obj.to_dict.return_value = {
+        \"model_name\": \"hancock-cybersecurity-llm\",
+        \"base_model\": \"meta-llama/Llama-3.2-3B\",
+        \"dataset_path\": str(mock_hancock_data_dir / \"output\" / \"test_dataset.jsonl\")
+    }
+    mock_builder_instance.build.return_value = mock_manifest_obj
+    mock_trainer_builder.return_value = mock_builder_instance
     
     # Create mock manifest
     manifest = Mock()
-    manifest.records = [{"id": "1"}, {"id": "2"}]
+    manifest.dataset_path = str(mock_hancock_data_dir / \"output\" / \"test_dataset.jsonl\")
+    manifest.records = [{\"id\": \"1\"}, {\"id\": \"2\"}]
     manifest.total_records = 2
-    manifest.data_sources = ["mitre", "cve"]
+    manifest.data_sources = [\"mitre\", \"cve\"]
     
     handoff = ingester.generate_training_handoff(manifest)
     
     assert isinstance(handoff, dict)
-    assert "model_type" in handoff or handoff is not None
+    assert \"model_name\" in handoff or \"base_model\" in handoff
 
 
+@patch('peachtree.hancock_integration.TrainerHandoffBuilder')
 @patch('peachtree.hancock_integration.HancockDataIngester.ingest_all')
 @patch('peachtree.hancock_integration.DatasetQualityScorer')
 @patch('peachtree.hancock_integration.DatasetDeduplicator')
-def test_hancock_ingestion_workflow(mock_dedup, mock_scorer, mock_ingest, tmp_path):
+def test_hancock_ingestion_workflow(mock_dedup, mock_scorer, mock_ingest, mock_trainer_builder, tmp_path):
     """Test complete Hancock ingestion workflow"""
     # Setup mocks
     mock_docs = [Mock(spec=SourceDocument)]
     mock_manifest = Mock()
+    mock_manifest.dataset_path = str(tmp_path / "output" / "test_dataset.jsonl")
     mock_manifest.records = [{"id": "1"}]
     mock_ingest.return_value = (mock_docs, mock_manifest)
     
@@ -343,6 +354,13 @@ def test_hancock_ingestion_workflow(mock_dedup, mock_scorer, mock_ingest, tmp_pa
     mock_dedup_instance = Mock()
     mock_dedup_instance.deduplicate_dataset.return_value = {"removed": 5, "kept": 95}
     mock_dedup.return_value = mock_dedup_instance
+    
+    # Mock trainer handoff builder
+    mock_builder_instance = Mock()
+    mock_handoff_manifest = Mock()
+    mock_handoff_manifest.to_dict.return_value = {"model_name": "test"}
+    mock_builder_instance.build.return_value = mock_handoff_manifest
+    mock_trainer_builder.return_value = mock_builder_instance
     
     # Run workflow
     summary = hancock_ingestion_workflow(
@@ -401,9 +419,9 @@ def test_provenance_tracking(mock_hancock_data_dir):
     for source in sources[:1]:  # Test first source
         documents = ingester.convert_to_source_documents(source)
         for doc in documents:
-            assert doc.source_repo
-            assert doc.source_path
-            assert doc.sha256_digest
+            assert doc.repo_name
+            assert doc.path
+            assert doc.digest
             assert doc.license_id
 
 

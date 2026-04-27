@@ -2470,12 +2470,6 @@ def run_webhook(args: argparse.Namespace) -> int:
         
         return 0
     
-    return 1
-        
-        dashboard = monitor.generate_dashboard()
-        print(json.dumps(dashboard, indent=2))
-        return 0
-    
     elif args.operation == "alerts":
         # Check for alerts
         config = MonitoringConfig(

@@ -73,6 +73,9 @@ from .dataset_benchmarking import DatasetBenchmark, BenchmarkResult, BenchmarkCo
 from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionKey, EncryptedDataset, DecryptionResult, EncryptionAlgorithm, KeyRotationPolicy, EncryptionStatus, EncryptionPolicyManager, BatchEncryptor
 from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicaSite, ReplicationLog, ConflictRecord, SyncResult, ReplicationStrategy, ConflictResolution, ReplicationStatus, SyncMode, IncrementalReplicator, ReplicationMonitor
 from .dataset_observability import DatasetObservability, MetricsCollector, StructuredLogger, TraceCollector, Metric, LogEntry, Span, MetricType, LogLevel, SpanKind, SpanStatus
+from .dataset_provenance import ProvenanceTracker, ProvenanceEntity, ProvenanceActivity, ProvenanceAgent, ProvenanceRelationship, ProvenanceChain, ProvenanceEventType, EntityType, ProvenanceRelation, DatasetProvenanceRecorder, ProvenanceValidator
+from .dataset_federation import EndpointRegistry, QueryPlanner, FederatedQueryExecutor, FederatedQuery, QueryExecutionPlan, FederatedQueryResult, FederationStrategy, JoinType, AggregationFunction, DatasetEndpoint, FederatedJoinEngine, FederationStatistics, FederationCatalog
+from .dataset_visualization import DatasetVisualizer, ChartGenerator, DatasetAnalyzer, VisualizationExporter, ChartData, StatisticalSummary, Visualization, ChartType, ExportFormat
 
 __all__ = [
     "DatasetBuilder",
@@ -397,6 +400,42 @@ __all__ = [
     "LogLevel",
     "SpanKind",
     "SpanStatus",
+    # Provenance tracking
+    "ProvenanceTracker",
+    "ProvenanceEntity",
+    "ProvenanceActivity",
+    "ProvenanceAgent",
+    "ProvenanceRelationship",
+    "ProvenanceChain",
+    "ProvenanceEventType",
+    "EntityType",
+    "ProvenanceRelation",
+    "DatasetProvenanceRecorder",
+    "ProvenanceValidator",
+    # Federated queries
+    "EndpointRegistry",
+    "QueryPlanner",
+    "FederatedQueryExecutor",
+    "FederatedQuery",
+    "QueryExecutionPlan",
+    "FederatedQueryResult",
+    "FederationStrategy",
+    "JoinType",
+    "AggregationFunction",
+    "DatasetEndpoint",
+    "FederatedJoinEngine",
+    "FederationStatistics",
+    "FederationCatalog",
+    # Visualization
+    "DatasetVisualizer",
+    "ChartGenerator",
+    "DatasetAnalyzer",
+    "VisualizationExporter",
+    "ChartData",
+    "StatisticalSummary",
+    "Visualization",
+    "ChartType",
+    "ExportFormat",
 ]
 
 __version__ = "0.9.0"

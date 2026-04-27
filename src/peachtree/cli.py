@@ -80,6 +80,9 @@ from .dataset_benchmarking import DatasetBenchmark, BenchmarkCategory
 from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionAlgorithm, EncryptionPolicyManager, BatchEncryptor, EncryptionStatus
 from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicationStrategy, SyncMode, IncrementalReplicator, ReplicationMonitor
 from .dataset_observability import DatasetObservability, MetricsCollector, StructuredLogger, TraceCollector, MetricType, LogLevel, SpanKind
+from .dataset_provenance import ProvenanceTracker, DatasetProvenanceRecorder, ProvenanceValidator, ProvenanceEventType, EntityType, ProvenanceRelation
+from .dataset_federation import FederatedQueryExecutor, EndpointRegistry, QueryPlanner, FederatedQuery, FederationStrategy, DatasetEndpoint
+from .dataset_visualization import DatasetVisualizer, ChartType, ExportFormat
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -3271,6 +3274,166 @@ def run_observe(args: argparse.Namespace) -> int:
     return 1
 
 
+def run_provenance(args: argparse.Namespace) -> int:
+    """Handle provenance tracking commands."""
+    tracker = ProvenanceTracker(Path(args.storage) if hasattr(args, "storage") and args.storage else None)
+    recorder = DatasetProvenanceRecorder(tracker)
+    
+    if args.operation == "register-entity":
+        entity_type = EntityType(args.entity_type)
+        entity = tracker.register_entity(
+            args.entity_id,
+            entity_type,
+            args.name,
+            attributes=json.loads(args.attributes) if hasattr(args, "attributes") and args.attributes else None,
+        )
+        print(json.dumps(entity.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "record-creation":
+        dataset_id = recorder.record_creation(
+            Path(args.dataset),
+            args.agent_id,
+            source_paths=[Path(p) for p in args.sources.split(",")] if hasattr(args, "sources") and args.sources else None,
+        )
+        print(f"Recorded creation: {dataset_id}")
+        return 0
+    
+    elif args.operation == "record-transformation":
+        dataset_id = recorder.record_transformation(
+            Path(args.input_dataset),
+            Path(args.output_dataset),
+            args.transformation_name,
+            args.agent_id,
+        )
+        print(f"Recorded transformation: {dataset_id}")
+        return 0
+    
+    elif args.operation == "get-chain":
+        chain = tracker.get_chain(args.entity_id)
+        print(json.dumps(chain.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "get-ancestors":
+        ancestors = tracker.get_ancestors(args.entity_id)
+        print(f"Found {len(ancestors)} ancestors:")
+        for ancestor in ancestors:
+            print(f"  {ancestor.entity_id}: {ancestor.name}")
+        return 0
+    
+    elif args.operation == "validate":
+        validator = ProvenanceValidator(tracker)
+        result = validator.validate_chain(args.entity_id)
+        print(json.dumps(result, indent=2))
+        return 0 if result["valid"] else 1
+    
+    elif args.operation == "export":
+        tracker.export_provenance(Path(args.output))
+        print(f"Exported provenance to {args.output}")
+        return 0
+    
+    return 1
+
+
+def run_federate(args: argparse.Namespace) -> int:
+    """Handle federated query commands."""
+    registry = EndpointRegistry(Path(args.registry) if hasattr(args, "registry") and args.registry else None)
+    planner = QueryPlanner(registry)
+    executor = FederatedQueryExecutor(registry, planner)
+    
+    if args.operation == "register-endpoint":
+        endpoint = DatasetEndpoint(
+            endpoint_id=args.endpoint_id,
+            name=args.name,
+            location=Path(args.location),
+            endpoint_type=args.endpoint_type if hasattr(args, "endpoint_type") else "local",
+        )
+        registry.register_endpoint(endpoint)
+        print(f"Registered endpoint: {args.endpoint_id}")
+        return 0
+    
+    elif args.operation == "list-endpoints":
+        endpoints = registry.list_endpoints(available_only=args.available_only if hasattr(args, "available_only") else False)
+        print(f"Found {len(endpoints)} endpoints:")
+        for ep in endpoints:
+            print(f"  {ep.endpoint_id}: {ep.name} ({ep.location})")
+        return 0
+    
+    elif args.operation == "query":
+        from .dataset_federation import FederationCatalog
+        
+        query = FederatedQuery(
+            query_id=args.query_id,
+            endpoints=args.endpoints.split(","),
+            query_text=args.query_text,
+            query_type="select",
+        )
+        
+        strategy = FederationStrategy(args.strategy) if hasattr(args, "strategy") else FederationStrategy.PARALLEL
+        result = executor.execute(query, strategy)
+        
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "index":
+        from .dataset_federation import FederationCatalog
+        catalog = FederationCatalog(registry)
+        catalog.index_endpoint(args.endpoint_id)
+        print(f"Indexed endpoint: {args.endpoint_id}")
+        return 0
+    
+    return 1
+
+
+def run_visualize(args: argparse.Namespace) -> int:
+    """Handle dataset visualization commands."""
+    visualizer = DatasetVisualizer()
+    
+    if args.operation == "create":
+        chart_type = ChartType(args.chart_type)
+        visualization = visualizer.visualize_dataset(
+            Path(args.dataset),
+            chart_type,
+            args.field,
+            title=args.title if hasattr(args, "title") else None,
+        )
+        print(f"Created visualization: {visualization.visualization_id}")
+        print(json.dumps(visualization.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "export":
+        # Re-create visualization
+        chart_type = ChartType(args.chart_type)
+        visualization = visualizer.visualize_dataset(
+            Path(args.dataset),
+            chart_type,
+            args.field,
+        )
+        
+        export_format = ExportFormat(args.format)
+        visualizer.export_visualization(visualization, Path(args.output), export_format)
+        print(f"Exported visualization to {args.output}")
+        return 0
+    
+    elif args.operation == "stats":
+        stats = visualizer.get_statistics(Path(args.dataset), args.field)
+        print(json.dumps(stats.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "dashboard":
+        fields = args.fields.split(",")
+        generated_files = visualizer.create_dashboard(
+            Path(args.dataset),
+            fields,
+            Path(args.output_dir),
+        )
+        print(f"Created dashboard with {len(generated_files)} files")
+        print(f"Index: {Path(args.output_dir) / 'index.html'}")
+        return 0
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -4168,6 +4331,48 @@ def make_parser() -> argparse.ArgumentParser:
     observe.add_argument("--log-output", help="log output file path")
     observe.add_argument("--export-dir", help="telemetry export directory")
     observe.set_defaults(func=run_observe)
+
+    provenance = sub.add_parser("provenance", help="dataset provenance tracking")
+    provenance.add_argument("operation", choices=["register-entity", "record-creation", "record-transformation", "get-chain", "get-ancestors", "validate", "export"])
+    provenance.add_argument("--storage", help="provenance storage directory")
+    provenance.add_argument("--entity-id", help="entity ID")
+    provenance.add_argument("--entity-type", choices=["dataset", "agent", "activity"])
+    provenance.add_argument("--name", help="entity name")
+    provenance.add_argument("--attributes", help="entity attributes JSON")
+    provenance.add_argument("--dataset", help="dataset path")
+    provenance.add_argument("--agent-id", help="agent ID")
+    provenance.add_argument("--sources", help="comma-separated source paths")
+    provenance.add_argument("--input-dataset", help="input dataset path")
+    provenance.add_argument("--output-dataset", help="output dataset path")
+    provenance.add_argument("--transformation-name", help="transformation name")
+    provenance.add_argument("--output", help="export output path")
+    provenance.set_defaults(func=run_provenance)
+
+    federate = sub.add_parser("federate", help="federated dataset queries")
+    federate.add_argument("operation", choices=["register-endpoint", "list-endpoints", "query", "index"])
+    federate.add_argument("--registry", help="endpoint registry path")
+    federate.add_argument("--endpoint-id", help="endpoint ID")
+    federate.add_argument("--name", help="endpoint name")
+    federate.add_argument("--location", help="endpoint dataset location")
+    federate.add_argument("--endpoint-type", default="local", help="endpoint type")
+    federate.add_argument("--available-only", action="store_true", help="list only available endpoints")
+    federate.add_argument("--query-id", help="query ID")
+    federate.add_argument("--endpoints", help="comma-separated endpoint IDs")
+    federate.add_argument("--query-text", help="query text")
+    federate.add_argument("--strategy", default="parallel", choices=["parallel", "sequential", "adaptive", "distributed"])
+    federate.set_defaults(func=run_federate)
+
+    visualize = sub.add_parser("visualize", help="dataset visualization")
+    visualize.add_argument("operation", choices=["create", "export", "stats", "dashboard"])
+    visualize.add_argument("--dataset", help="dataset path")
+    visualize.add_argument("--field", help="field to visualize")
+    visualize.add_argument("--chart-type", choices=["bar", "line", "pie", "scatter", "histogram", "box_plot", "heatmap"])
+    visualize.add_argument("--title", help="chart title")
+    visualize.add_argument("--format", choices=["json", "html", "svg", "csv", "markdown"])
+    visualize.add_argument("--output", help="export output path")
+    visualize.add_argument("--fields", help="comma-separated fields for dashboard")
+    visualize.add_argument("--output-dir", help="dashboard output directory")
+    visualize.set_defaults(func=run_visualize)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

@@ -68,6 +68,9 @@ from .dataset_webhooks import DatasetWebhookManager, WebhookEvent
 from .dataset_templates import DatasetTemplateManager, TemplateCategory, TemplateComplexity
 from .dataset_plugins import PluginManager, PluginType, PluginStatus
 from .dataset_audit_log import DatasetAuditLog, AuditAction, AuditSeverity, AuditStatus, AuditContext as AuditLogContext
+from .dataset_streaming import DatasetStreamReader, DatasetStreamWriter, DatasetStreamProcessor, StreamingPipeline, StreamConfig, StreamMode, BufferStrategy
+from .dataset_sharding import DatasetSharder, ShardRouter, ShardRebalancer, ShardingConfig, ShardingStrategy, ShardStatus
+from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, CheckpointConfig, CheckpointStrategy, CheckpointStatus, ProcessingState
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -2479,6 +2482,254 @@ def run_webhook(args: argparse.Namespace) -> int:
     return 1
 
 
+def run_stream(args: argparse.Namespace) -> int:
+    """Handle stream commands."""
+    config = StreamConfig(
+        buffer_size=args.buffer_size,
+        buffer_strategy=BufferStrategy(args.buffer_strategy),
+        max_memory_mb=args.max_memory_mb,
+    )
+    
+    if args.operation == "read":
+        # Stream read records
+        reader = DatasetStreamReader(config)
+        
+        count = 0
+        for record in reader.stream_records(Path(args.input)):
+            if args.sample and count >= args.sample:
+                break
+            if args.print:
+                print(json.dumps(record, sort_keys=True))
+            count += 1
+        
+        stats = reader.get_statistics()
+        print(f"\nStreamed {stats.records_processed} records ({stats.bytes_read} bytes)")
+        print(f"Throughput: {stats.throughput_records_per_sec:.2f} records/sec")
+        
+        return 0
+    
+    elif args.operation == "transform":
+        # Stream transform
+        processor = DatasetStreamProcessor(config)
+        
+        def identity_transform(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+            return record
+        
+        result = processor.process(
+            Path(args.input),
+            Path(args.output),
+            identity_transform,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    elif args.operation == "merge":
+        # Merge streams
+        processor = DatasetStreamProcessor(config)
+        
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        result = processor.merge_streams(
+            input_paths,
+            Path(args.output),
+            dedup=args.dedup,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    elif args.operation == "split":
+        # Split stream
+        processor = DatasetStreamProcessor(config)
+        
+        def split_fn(record: Dict[str, Any]) -> str:
+            return str(hash(json.dumps(record, sort_keys=True)) % args.num_splits)
+        
+        result = processor.split_stream(
+            Path(args.input),
+            Path(args.output_dir),
+            split_fn,
+            max_splits=args.num_splits,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_shard(args: argparse.Namespace) -> int:
+    """Handle shard commands."""
+    if args.operation == "create":
+        # Create shards
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field,
+            strategy=ShardingStrategy(args.strategy),
+            replication_factor=args.replication_factor,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        shards = sharder.shard_dataset(
+            Path(args.input),
+            Path(args.output_dir),
+            prefix=args.prefix,
+        )
+        
+        print(f"Created {len(shards)} shards in {args.output_dir}")
+        
+        if args.manifest:
+            sharder.save_shard_manifest(Path(args.manifest))
+            print(f"Saved manifest to {args.manifest}")
+        
+        stats = sharder.get_shard_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "merge":
+        # Merge shards
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field or "id",
+            strategy=ShardingStrategy.HASH,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        result = sharder.merge_shards(
+            Path(args.shard_dir),
+            Path(args.output),
+            prefix=args.prefix,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show shard statistics
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field or "id",
+            strategy=ShardingStrategy.HASH,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        if args.manifest:
+            sharder.load_shard_manifest(Path(args.manifest))
+        
+        stats = sharder.get_shard_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "balance":
+        # Check shard balance
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field or "id",
+            strategy=ShardingStrategy.HASH,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        if args.manifest:
+            sharder.load_shard_manifest(Path(args.manifest))
+        
+        rebalancer = ShardRebalancer(sharder)
+        analysis = rebalancer.analyze_balance()
+        suggestion = rebalancer.suggest_rebalancing()
+        
+        print("Balance Analysis:")
+        print(json.dumps(analysis, indent=2))
+        print("\nRebalancing Suggestion:")
+        print(json.dumps(suggestion, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_checkpoint(args: argparse.Namespace) -> int:
+    """Handle checkpoint commands."""
+    config = CheckpointConfig(
+        strategy=CheckpointStrategy(args.strategy),
+        interval_seconds=args.interval_seconds,
+        interval_records=args.interval_records,
+        max_checkpoints=args.max_checkpoints,
+        checkpoint_dir=Path(args.checkpoint_dir) if args.checkpoint_dir else None,
+    )
+    
+    manager = CheckpointManager(config)
+    
+    if args.operation == "list":
+        # List checkpoints
+        checkpoints = manager.list_checkpoints(
+            operation=args.filter_operation,
+            status=CheckpointStatus(args.filter_status) if args.filter_status else None,
+        )
+        
+        print(f"Found {len(checkpoints)} checkpoints:")
+        for checkpoint in checkpoints:
+            print(f"  {checkpoint.checkpoint_id}: {checkpoint.status.value} - {checkpoint.records_processed} records")
+        
+        return 0
+    
+    elif args.operation == "load":
+        # Load checkpoint state
+        state = manager.load_checkpoint(args.checkpoint_id)
+        
+        if state:
+            print(json.dumps(state.to_dict(), indent=2))
+            return 0
+        else:
+            print(f"Checkpoint {args.checkpoint_id} not found or corrupted")
+            return 1
+    
+    elif args.operation == "delete":
+        # Delete checkpoint
+        success = manager.delete_checkpoint(args.checkpoint_id)
+        
+        if success:
+            print(f"Deleted checkpoint {args.checkpoint_id}")
+            return 0
+        else:
+            print(f"Checkpoint {args.checkpoint_id} not found")
+            return 1
+    
+    elif args.operation == "stats":
+        # Show checkpoint statistics
+        stats = manager.get_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "process":
+        # Process with checkpointing
+        processor = CheckpointedStreamProcessor(manager)
+        
+        def identity_transform(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+            return record
+        
+        result = processor.process(
+            Path(args.input),
+            Path(args.output),
+            identity_transform,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -3212,6 +3463,49 @@ def make_parser() -> argparse.ArgumentParser:
     webhook.add_argument("--endpoints-file", help="endpoints file path")
     webhook.add_argument("--output", help="output file path")
     webhook.set_defaults(func=run_webhook)
+
+    stream = sub.add_parser("stream", help="memory-efficient dataset streaming")
+    stream.add_argument("operation", choices=["read", "transform", "merge", "split"])
+    stream.add_argument("--input", help="input dataset")
+    stream.add_argument("--inputs", help="comma-separated input datasets (for merge)")
+    stream.add_argument("--output", help="output dataset")
+    stream.add_argument("--output-dir", help="output directory (for split)")
+    stream.add_argument("--buffer-size", type=int, default=8192, help="buffer size in bytes")
+    stream.add_argument("--buffer-strategy", default="line_buffered", choices=["line_buffered", "block_buffered", "unbuffered"])
+    stream.add_argument("--max-memory-mb", type=int, default=512, help="max memory in MB")
+    stream.add_argument("--sample", type=int, help="sample size (read only)")
+    stream.add_argument("--print", action="store_true", help="print records (read only)")
+    stream.add_argument("--dedup", action="store_true", help="deduplicate during merge")
+    stream.add_argument("--num-splits", type=int, default=4, help="number of splits (split only)")
+    stream.set_defaults(func=run_stream)
+
+    shard = sub.add_parser("shard", help="horizontal partitioning for distributed processing")
+    shard.add_argument("operation", choices=["create", "merge", "stats", "balance"])
+    shard.add_argument("--input", help="input dataset (for create)")
+    shard.add_argument("--shard-dir", help="shard directory (for merge)")
+    shard.add_argument("--output", help="output file (for merge)")
+    shard.add_argument("--output-dir", help="output directory (for create)")
+    shard.add_argument("--num-shards", type=int, default=4, help="number of shards")
+    shard.add_argument("--shard-key-field", default="id", help="field to use for sharding")
+    shard.add_argument("--strategy", default="hash", choices=["hash", "range", "list", "round_robin", "consistent_hash"])
+    shard.add_argument("--replication-factor", type=int, default=1, help="replication factor")
+    shard.add_argument("--prefix", default="shard", help="shard file prefix")
+    shard.add_argument("--manifest", help="shard manifest file")
+    shard.set_defaults(func=run_shard)
+
+    checkpoint = sub.add_parser("checkpoint", help="save and restore processing state")
+    checkpoint.add_argument("operation", choices=["list", "load", "delete", "stats", "process"])
+    checkpoint.add_argument("--checkpoint-id", help="checkpoint identifier")
+    checkpoint.add_argument("--input", help="input dataset (for process)")
+    checkpoint.add_argument("--output", help="output dataset (for process)")
+    checkpoint.add_argument("--strategy", default="time_based", choices=["time_based", "record_based", "size_based", "manual"])
+    checkpoint.add_argument("--interval-seconds", type=int, default=300, help="checkpoint interval in seconds")
+    checkpoint.add_argument("--interval-records", type=int, default=10000, help="checkpoint interval in records")
+    checkpoint.add_argument("--max-checkpoints", type=int, default=5, help="max checkpoints to keep")
+    checkpoint.add_argument("--checkpoint-dir", help="checkpoint directory")
+    checkpoint.add_argument("--filter-operation", help="filter by operation (list only)")
+    checkpoint.add_argument("--filter-status", help="filter by status: active, completed, failed")
+    checkpoint.set_defaults(func=run_checkpoint)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

@@ -61,6 +61,9 @@ from .dataset_webhooks import DatasetWebhookManager, WebhookEndpoint, WebhookPay
 from .dataset_templates import DatasetTemplateManager, TemplateMetadata, DatasetTemplate, TemplateCategory, TemplateComplexity
 from .dataset_plugins import PluginManager, Plugin, PluginMetadata, PluginRegistration, PluginType, PluginStatus
 from .dataset_audit_log import DatasetAuditLog, AuditEntry, AuditContext, AuditAction, AuditSeverity, AuditStatus
+from .dataset_streaming import DatasetStreamReader, DatasetStreamWriter, DatasetStreamProcessor, StreamingPipeline, StreamConfig, StreamStats, StreamMode, BufferStrategy
+from .dataset_sharding import DatasetSharder, ShardRouter, ShardRebalancer, ShardMetadata, ShardingConfig, ShardingStrategy, ShardStatus
+from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, ResumableOperation, CheckpointMetadata, CheckpointConfig, ProcessingState, CheckpointStrategy, CheckpointStatus
 
 __all__ = [
     "DatasetBuilder",
@@ -289,6 +292,29 @@ __all__ = [
     "AuditAction",
     "AuditSeverity",
     "AuditStatus",
+    "DatasetStreamReader",
+    "DatasetStreamWriter",
+    "DatasetStreamProcessor",
+    "StreamingPipeline",
+    "StreamConfig",
+    "StreamStats",
+    "StreamMode",
+    "BufferStrategy",
+    "DatasetSharder",
+    "ShardRouter",
+    "ShardRebalancer",
+    "ShardMetadata",
+    "ShardingConfig",
+    "ShardingStrategy",
+    "ShardStatus",
+    "CheckpointManager",
+    "CheckpointedStreamProcessor",
+    "ResumableOperation",
+    "CheckpointMetadata",
+    "CheckpointConfig",
+    "ProcessingState",
+    "CheckpointStrategy",
+    "CheckpointStatus",
 ]
 
 __version__ = "0.9.0"

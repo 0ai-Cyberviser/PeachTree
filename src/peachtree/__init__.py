@@ -76,6 +76,9 @@ from .dataset_observability import DatasetObservability, MetricsCollector, Struc
 from .dataset_provenance import ProvenanceTracker, ProvenanceEntity, ProvenanceActivity, ProvenanceAgent, ProvenanceRelationship, ProvenanceChain, ProvenanceEventType, EntityType, ProvenanceRelation, DatasetProvenanceRecorder, ProvenanceValidator
 from .dataset_federation import EndpointRegistry, QueryPlanner, FederatedQueryExecutor, FederatedQuery, QueryExecutionPlan, FederatedQueryResult, FederationStrategy, JoinType, AggregationFunction, DatasetEndpoint, FederatedJoinEngine, FederationStatistics, FederationCatalog
 from .dataset_visualization import DatasetVisualizer, ChartGenerator, DatasetAnalyzer, VisualizationExporter, ChartData, StatisticalSummary, Visualization, ChartType, ExportFormat
+from .dataset_sampling import DatasetSampler, RandomSampler, StratifiedSampler, ReservoirSampler, SystematicSampler, WeightedSampler, SampleValidator, SampleComparator, SamplingConfig, SampleResult, SampleStatistics, SamplingStrategy, SampleValidationLevel
+from .dataset_migration import DatasetMigrationEngine, MigrationRule, MigrationPlan, MigrationResult
+from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatistics, ArchiveMetadata, ArchiveIndex, ArchiveStatus, CompressionLevel, RetentionPolicy
 
 __all__ = [
     "DatasetBuilder",
@@ -436,6 +439,35 @@ __all__ = [
     "Visualization",
     "ChartType",
     "ExportFormat",
+    # Sampling
+    "DatasetSampler",
+    "RandomSampler",
+    "StratifiedSampler",
+    "ReservoirSampler",
+    "SystematicSampler",
+    "WeightedSampler",
+    "SampleValidator",
+    "SampleComparator",
+    "SamplingConfig",
+    "SampleResult",
+    "SampleStatistics",
+    "SamplingStrategy",
+    "SampleValidationLevel",
+    # Migration
+    "DatasetMigrationEngine",
+    "MigrationRule",
+    "MigrationPlan",
+    "MigrationResult",
+    # Archival
+    "DatasetArchiver",
+    "ArchiveIndexManager",
+    "RetentionPolicyManager",
+    "ArchiveStatistics",
+    "ArchiveMetadata",
+    "ArchiveIndex",
+    "ArchiveStatus",
+    "CompressionLevel",
+    "RetentionPolicy",
 ]
 
 __version__ = "0.9.0"

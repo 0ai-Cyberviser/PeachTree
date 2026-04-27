@@ -83,6 +83,8 @@ from .dataset_observability import DatasetObservability, MetricsCollector, Struc
 from .dataset_provenance import ProvenanceTracker, DatasetProvenanceRecorder, ProvenanceValidator, ProvenanceEventType, EntityType, ProvenanceRelation
 from .dataset_federation import FederatedQueryExecutor, EndpointRegistry, QueryPlanner, FederatedQuery, FederationStrategy, DatasetEndpoint
 from .dataset_visualization import DatasetVisualizer, ChartType, ExportFormat
+from .dataset_sampling import DatasetSampler, SamplingStrategy, SampleValidationLevel, SamplingConfig
+from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatus, CompressionLevel, RetentionPolicy
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -3434,6 +3436,82 @@ def run_visualize(args: argparse.Namespace) -> int:
     return 1
 
 
+def run_archive(args: argparse.Namespace) -> int:
+    """Handle dataset archival commands."""
+    archiver = DatasetArchiver(Path(args.archive_dir))
+    index_manager = ArchiveIndexManager(Path(args.archive_dir) / "index.json")
+    
+    if args.operation == "create":
+        retention = RetentionPolicy(args.retention)
+        compression = CompressionLevel(args.compression)
+        
+        metadata = archiver.archive_dataset(
+            Path(args.dataset),
+            retention_policy=retention,
+            compression_level=compression,
+        )
+        
+        index_manager.add_archive(metadata)
+        
+        print(f"Archive created: {metadata.archive_id}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "restore":
+        metadata = index_manager.get_archive(args.archive_id)
+        if not metadata:
+            print(f"Archive not found: {args.archive_id}")
+            return 1
+        
+        success = archiver.restore_dataset(metadata, Path(args.output))
+        if success:
+            print(f"Archive restored to {args.output}")
+            return 0
+        else:
+            print(f"Failed to restore archive {args.archive_id}")
+            return 1
+    
+    elif args.operation == "list":
+        status = ArchiveStatus(args.status) if args.status else None
+        archives = index_manager.list_archives(status=status)
+        
+        print(f"Found {len(archives)} archives:")
+        for archive in archives:
+            print(f"  {archive.archive_id}: {archive.original_path} ({archive.status.value})")
+        
+        return 0
+    
+    elif args.operation == "delete":
+        metadata = index_manager.get_archive(args.archive_id)
+        if not metadata:
+            print(f"Archive not found: {args.archive_id}")
+            return 1
+        
+        success = archiver.delete_archive(metadata)
+        if success:
+            index_manager.remove_archive(args.archive_id)
+            print(f"Archive deleted: {args.archive_id}")
+            return 0
+        else:
+            print(f"Failed to delete archive {args.archive_id}")
+            return 1
+    
+    elif args.operation == "apply-retention":
+        policy_mgr = RetentionPolicyManager(index_manager)
+        result = policy_mgr.apply_retention_policies()
+        
+        print(f"Retention policies applied:")
+        print(f"  Deleted: {result['deleted_count']} archives")
+        if result['errors']:
+            print(f"  Errors: {len(result['errors'])}")
+            for error in result['errors']:
+                print(f"    - {error}")
+        
+        return 0 if not result['errors'] else 1
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -4373,6 +4451,17 @@ def make_parser() -> argparse.ArgumentParser:
     visualize.add_argument("--fields", help="comma-separated fields for dashboard")
     visualize.add_argument("--output-dir", help="dashboard output directory")
     visualize.set_defaults(func=run_visualize)
+
+    archive = sub.add_parser("archive", help="dataset archival and retention")
+    archive.add_argument("operation", choices=["create", "restore", "list", "delete", "apply-retention"])
+    archive.add_argument("--archive-dir", default=".peachtree/archives", help="archive storage directory")
+    archive.add_argument("--dataset", help="dataset to archive")
+    archive.add_argument("--archive-id", help="archive ID")
+    archive.add_argument("--output", help="restore output path")
+    archive.add_argument("--retention", default="medium", choices=["short", "medium", "long", "permanent"])
+    archive.add_argument("--compression", type=int, default=5, choices=[0, 1, 5, 9])
+    archive.add_argument("--status", choices=["active", "archived", "restoring", "deleted"])
+    archive.set_defaults(func=run_archive)
 
     policy = sub.add_parser("policy", help="show collection safety policy")
     policy.set_defaults(func=run_policy)

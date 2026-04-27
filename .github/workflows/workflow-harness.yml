@@ -1,0 +1,145 @@
+name: PeachTree Workflow Harness
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      cycle_type:
+        description: 'Cycle type to run'
+        required: false
+        default: 'full-cycle'
+        type: choice
+        options:
+          - full-cycle
+          - monitor
+          - audit
+          - review
+          - test
+          - log
+          - learn
+          - repeat
+
+jobs:
+  workflow-cycle:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -e ".[dev]"
+          pip install pyyaml
+      
+      - name: Restore workflow state
+        uses: actions/cache@v4
+        with:
+          path: workflow-state
+          key: workflow-state-${{ github.run_number }}
+          restore-keys: |
+            workflow-state-
+      
+      - name: Run workflow harness
+        run: |
+          if [ "${{ github.event.inputs.cycle_type }}" = "" ]; then
+            python scripts/workflow-harness.py --full-cycle
+          elif [ "${{ github.event.inputs.cycle_type }}" = "full-cycle" ]; then
+            python scripts/workflow-harness.py --full-cycle
+          else
+            python scripts/workflow-harness.py --cycle ${{ github.event.inputs.cycle_type }}
+          fi
+        env:
+          PYTHONPATH: .
+      
+      - name: Upload workflow artifacts
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: workflow-cycle-${{ github.run_number }}
+          path: |
+            workflow-state/
+            logs/workflow/
+          retention-days: 90
+      
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## Workflow Cycle Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Find latest cycle summary
+          LATEST_SUMMARY=$(ls -t workflow-state/cycle-summary-*.json | head -1)
+          
+          if [ -f "$LATEST_SUMMARY" ]; then
+            echo "**Cycle ID:** $(jq -r '.cycle_id' $LATEST_SUMMARY)" >> $GITHUB_STEP_SUMMARY
+            echo "**Status:** $(jq -r '.overall_status' $LATEST_SUMMARY)" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Phase Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            jq -r '.phases[] | "- **\(.phase)**: \(.status) (\(.duration_seconds)s)"' $LATEST_SUMMARY >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Create issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summaries = fs.readdirSync('workflow-state')
+              .filter(f => f.startsWith('cycle-summary-'))
+              .sort()
+              .reverse();
+            
+            if (summaries.length > 0) {
+              const summary = JSON.parse(fs.readFileSync(`workflow-state/${summaries[0]}`, 'utf8'));
+              
+              const failedPhases = summary.phases
+                .filter(p => p.status === 'failure')
+                .map(p => `- **${p.phase}**: ${p.issues.join(', ')}`)
+                .join('\n');
+              
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Workflow Cycle Failure - ${summary.cycle_id}`,
+                body: `## Workflow Cycle Failed
+                
+**Cycle ID:** ${summary.cycle_id}
+**Timestamp:** ${summary.timestamp}
+
+### Failed Phases
+
+${failedPhases}
+
+### Recommendations
+
+${summary.phases.flatMap(p => p.recommendations).join('\n- ')}
+
+See workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+`,
+                labels: ['workflow-failure', 'automated']
+              });
+              
+              console.log(`Created issue #${issue.data.number}`);
+            }
+      
+      - name: Post to Slack (optional)
+        if: always()
+        run: |
+          # Placeholder for Slack integration
+          # Uncomment and configure when Slack webhook is available
+          # curl -X POST ${{ secrets.SLACK_WEBHOOK_URL }} \
+          #   -H 'Content-Type: application/json' \
+          #   -d '{"text":"PeachTree workflow cycle completed: ${{ job.status }}"}'
+          echo "Slack notification would be sent here"

@@ -2,6 +2,7 @@
 
 **Status:** Production Ready  
 **Portfolio:** 0AI / CyberViser  
+**Company Site:** https://cyberviserai.com/  
 **Documentation:** https://0ai-cyberviser.github.io/PeachTree/  
 **Repository:** https://github.com/0ai-Cyberviser/PeachTree  
 **Date:** April 27, 2026
@@ -10,7 +11,12 @@
 
 ## Overview
 
-**PeachTree** is the dataset control plane for the 0AI portfolio, providing provenance-first, safety-aware dataset building infrastructure for AI/ML training workflows.
+**PeachTree** is the dataset control plane for the [CyberViser AI](https://cyberviserai.com/) portfolio, providing provenance-first, safety-aware dataset building infrastructure for AI/ML training workflows.
+
+As showcased on [cyberviserai.com](https://cyberviserai.com/#stack), PeachTree is the third component of the CyberViser stack:
+- 🍑 **PeachFuzz** - Defensive fuzzing
+- 🌵 **CactusFuzz** - Authorized adversarial testing  
+- 🌳 **PeachTree** - Dataset engine with provenance
 
 ### Position in 0AI Portfolio
 

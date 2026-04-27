@@ -1,8 +1,9 @@
 site_name: PeachTree
+site_url: https://0ai-cyberviser.github.io/PeachTree/
 site_description: Recursive learning-tree dataset engine for safe, traceable ML training datasets
 repo_url: https://github.com/0ai-Cyberviser/PeachTree
 repo_name: 0ai-Cyberviser/PeachTree
-copyright: "Copyright &copy; 2024-2026 CyberViser / 0AI"
+copyright: "Copyright &copy; 2024-2026 CyberViser / 0AI • <a href='https://cyberviserai.com/'>cyberviserai.com</a>"
 
 theme:
   name: material

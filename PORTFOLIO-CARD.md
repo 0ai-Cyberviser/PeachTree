@@ -1,5 +1,6 @@
 # PeachTree - Portfolio Card for 0AI Homepage
 
+**Company Site:** https://cyberviserai.com/  
 **EXACT TEXT TO ADD TO:** https://0ai-cyberviser.github.io/0ai/
 
 ---
@@ -12,10 +13,11 @@ Insert this between **Hancock** and **MrClean**:
 ### PeachTree
 
 Dataset control plane with provenance tracking, safety gates, and policy-first
-automation for AI/ML training workflows. Integrates with Hancock for cybersecurity
-model training.
+automation for AI/ML training workflows. Part of the [CyberViser AI](https://cyberviserai.com/)
+stack for secure fuzzing and dataset generation.
 
 [OPEN PEACHTREE SITE](https://0ai-cyberviser.github.io/PeachTree/)
+[COMPANY SITE](https://cyberviserai.com/)
 ```
 
 ---

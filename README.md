@@ -1,16 +1,22 @@
 # PeachTree
 
+**Part of the [CyberViser AI](https://cyberviserai.com/) ecosystem**
+
 **PeachTree** is the recursive learning-tree dataset engine for CyberViser / 0AI.
 
 It turns owned repositories, documentation, tests, fuzz reports, issue notes, telemetry summaries, and architecture plans into traceable, safe, deduplicated JSONL datasets for model training and security-assurance workflows.
 
+🌐 **Company:** [cyberviserai.com](https://cyberviserai.com/)  
+📚 **Documentation:** [0ai-cyberviser.github.io/PeachTree](https://0ai-cyberviser.github.io/PeachTree/)  
+📦 **Repository:** [github.com/0ai-Cyberviser/PeachTree](https://github.com/0ai-Cyberviser/PeachTree)
+
 PeachTree is designed as a shared dependency for:
 
+- [PeachFuzz](https://github.com/0ai-Cyberviser/peachfuzz) — fuzzing findings, crash triage, and regression corpora  
+  *See it in action at [cyberviserai.com](https://cyberviserai.com/#stack)*
 - [Hancock](https://github.com/0ai-Cyberviser/Hancock) — cybersecurity LLM agent datasets
-- [PeachFuzz](https://github.com/0ai-Cyberviser/peachfuzz) — fuzzing findings, crash triage, and regression corpora
-- [CyberViser AI](https://cyberviserai.com/) — public project hub and documentation surface
-- [0AI](https://0ai-cyberviser.github.io/0ai/) — broader CyberViser / 0AI ecosystem coordination
-- [Hancock public docs/demo](https://cyberviser.github.io/Hancock/) — user-facing Hancock project page
+- [CactusFuzz](https://cyberviserai.com/#stack) — adversarial testing and guardrail validation
+- [0AI Portfolio](https://0ai-cyberviser.github.io/0ai/) — broader CyberViser / 0AI ecosystem coordination
 
 ## What PeachTree does
 

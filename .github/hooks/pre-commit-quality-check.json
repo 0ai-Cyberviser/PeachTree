@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "bash -c 'TOOL_NAME=$(echo \"$TOOL_INPUT\" | jq -r \".toolName // empty\"); COMMAND=$(echo \"$TOOL_INPUT\" | jq -r \".parameters.command // empty\"); if [[ \"$TOOL_NAME\" == \"run_in_terminal\" && \"$COMMAND\" == git\\ commit* ]]; then cd /tmp/peachtree && echo \"[PeachTree] Running pre-commit quality checks...\" >&2 && pytest -q && ruff check src/ tests/ && mypy src/peachtree/ --strict && peachtree policy && echo \"{\\\"hookSpecificOutput\\\": {\\\"hookEventName\\\": \\\"PreToolUse\\\", \\\"permissionDecision\\\": \\\"allow\\\"}}\" || (echo \"{\\\"hookSpecificOutput\\\": {\\\"hookEventName\\\": \\\"PreToolUse\\\", \\\"permissionDecision\\\": \\\"deny\\\", \\\"permissionDecisionReason\\\": \\\"Quality gates failed. All checks must pass before commit: pytest -q && ruff check && mypy --strict && peachtree policy\\\"}}\"; exit 2); else echo \"{\\\"hookSpecificOutput\\\": {\\\"hookEventName\\\": \\\"PreToolUse\\\", \\\"permissionDecision\\\": \\\"allow\\\"}}\"; fi'",
+        "timeout": 120
+      }
+    ]
+  }
+}

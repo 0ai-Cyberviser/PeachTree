@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 IGRFT CPU-Optimized Training Script
-Generated: 2026-04-28T02:10:37.093050
+Generated: 2026-04-28T04:30:50.353393
 """
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
@@ -10,7 +10,7 @@ from datasets import load_dataset
 import torch
 
 # Model configuration
-MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3"
+MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 DATASET_PATH = "data/igrft_output/cycle3_enhanced.jsonl"
 OUTPUT_DIR = "data/igrft_output/cycle3_model"
 

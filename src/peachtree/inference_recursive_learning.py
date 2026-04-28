@@ -155,7 +155,7 @@ class CPUOptimizedTrainer:
         self,
         dataset_path: Path,
         output_dir: Path,
-        model_name: str = "mistralai/Mistral-7B-Instruct-v0.3"
+        model_name: str = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"  # Changed for memory safety (2-3GB vs 8-12GB)
     ) -> Path:
         """Generate QLoRA training script for CPU"""
         

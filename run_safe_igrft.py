@@ -98,22 +98,21 @@ def run_safe_igrft(dataset_path: str, cycles: int = 3, model: str = None):
     
     kill_memory_hogs()
     
-    # Use safe model by default
-    if model is None:
-        model = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-        print(f"\n🤖 Using memory-safe model: {model}")
-        print("   (Requires ~2-3GB RAM instead of 8-12GB)")
+    # Note: Model selection is currently hardcoded in IGRFT module
+    # To use TinyLlama, you need to modify src/peachtree/inference_recursive_learning.py
+    # Change line 158: model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
     
     print(f"\n🚀 Starting IGRFT with {cycles} cycles...")
     print(f"   Dataset: {dataset_path}")
-    print(f"   Model: {model}")
+    print(f"   ⚠️  Note: Model is hardcoded in IGRFT (currently Mistral-7B)")
+    print(f"   For low-memory systems, edit src/peachtree/inference_recursive_learning.py")
+    print(f"   Change line 158 to: model_name = 'TinyLlama/TinyLlama-1.1B-Chat-v1.0'")
     
-    # Run with memory monitoring
+    # Run with memory monitoring (no --model arg, it's not supported)
     cmd = [
         sys.executable, '-m', 'peachtree.inference_recursive_learning',
         '--dataset', dataset_path,
         '--cycles', str(cycles),
-        '--model', model,
         '--verbose'
     ]
     
@@ -142,14 +141,14 @@ if __name__ == '__main__':
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Safe mode with TinyLlama (2-3GB RAM)
+  # Run IGRFT (uses hardcoded model - currently Mistral-7B)
   python run_safe_igrft.py data/hancock/unified-expanded.jsonl
   
-  # With specific model
-  python run_safe_igrft.py data/hancock/unified-expanded.jsonl --model microsoft/phi-2
-  
-  # More cycles
+  # Run with more cycles
   python run_safe_igrft.py data/hancock/unified-expanded.jsonl --cycles 5
+  
+  # For low-memory systems, edit src/peachtree/inference_recursive_learning.py
+  # Change line 158 to use TinyLlama instead of Mistral-7B
         """
     )
     
@@ -163,10 +162,8 @@ Examples:
         default=3,
         help='Number of IGRFT cycles (default: 3)'
     )
-    parser.add_argument(
-        '--model',
-        help='Model to use (default: TinyLlama-1.1B)'
-    )
+    # NOTE: --model removed because IGRFT doesn't support it
+    # Model is hardcoded in src/peachtree/inference_recursive_learning.py
     
     args = parser.parse_args()
     
@@ -174,4 +171,4 @@ Examples:
         print(f"❌ Dataset not found: {args.dataset}")
         sys.exit(1)
     
-    run_safe_igrft(args.dataset, args.cycles, args.model)
+    run_safe_igrft(args.dataset, args.cycles)

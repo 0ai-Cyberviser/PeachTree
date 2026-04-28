@@ -83,7 +83,7 @@ from .hancock_integration import HancockDataIngester, HancockIngestionConfig, Ha
 from .fuzzing_enrichment import FuzzingEnrichment, CrashSignature, CoverageMetrics, enrich_fuzzing_corpus
 from .peachfuzz_harness import PeachFuzzHarness, FuzzTarget, CorpusItem, build_peachfuzz_harness
 from .enhanced_planner import EnhancedLearningTree, TrainingInferencePath, build_fuzzing_learning_tree, build_security_learning_tree
-from .security_quality import SecurityQualityScorer, SecurityQualityMetrics, score_fuzzing_dataset
+from .security_quality import SecurityQualityScorer, SecurityQualityMetrics, SecurityDatasetReport, score_fuzzing_dataset
 from .corpus_optimization import CorpusOptimizer, CorpusSeed, optimize_fuzzing_corpus
 
 __all__ = [
@@ -494,6 +494,7 @@ __all__ = [
     "build_security_learning_tree",
     "SecurityQualityScorer",
     "SecurityQualityMetrics",
+    "SecurityDatasetReport",
     "score_fuzzing_dataset",
     "CorpusOptimizer",
     "CorpusSeed",

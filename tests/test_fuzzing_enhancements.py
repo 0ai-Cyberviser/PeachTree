@@ -316,18 +316,27 @@ class TestSecurityQualityScorer:
         scorer = SecurityQualityScorer()
         
         record = {
+            "id": "vuln-001",
+            "instruction": "Analyze this vulnerability",
+            "input": "Security assessment request",
+            "output": "Critical heap-buffer-overflow vulnerability found.",
             "text": """
             Critical heap-buffer-overflow vulnerability found.
             AddressSanitizer detected the issue with full stack trace.
             Reproducible with provided POC. Impact: remote code execution.
             Mitigation: bounds checking required.
             """,
+            "source_repo": "test/security-dataset",
+            "source_path": "vulns/test-001.md",
+            "source_digest": "abc123",
+            "license": "MIT",
+            "quality_score": 0.85,
             "metadata": {},
         }
         
         score = scorer.score_record(record, 0)
         
-        assert score.total >= 60  # Should score reasonably high
+        assert score.score >= 60  # Should score reasonably high
         assert "security_metrics" in record["metadata"]
         
         metrics = record["metadata"]["security_metrics"]
@@ -342,13 +351,27 @@ class TestSecurityQualityScorer:
         records = [
             {
                 "id": "vuln1",
+                "instruction": "Analyze critical heap overflow",
+                "input": "Vulnerability report",
+                "output": "Critical heap overflow with ASAN report and reproducer",
                 "text": "Critical heap overflow with ASAN report and reproducer",
+                "source_repo": "test/vulns",
+                "source_path": "crash-001.md",
+                "source_digest": "abc123",
+                "license": "MIT",
                 "metadata": {},
                 "quality_score": 0.8,
             },
             {
                 "id": "vuln2",
+                "instruction": "Analyze null pointer issue",
+                "input": "Security assessment",
+                "output": "Medium severity null pointer dereference",
                 "text": "Medium severity null pointer dereference",
+                "source_repo": "test/vulns",
+                "source_path": "crash-002.md",
+                "source_digest": "def456",
+                "license": "MIT",
                 "metadata": {},
                 "quality_score": 0.6,
             },
@@ -362,12 +385,15 @@ class TestSecurityQualityScorer:
         scorer = SecurityQualityScorer(security_weight=0.6)
         report = scorer.score_dataset(dataset)
         
-        assert report.total_records == 2
-        assert "security_statistics" in report.metadata
+        assert report.record_count == 2
+        assert "security_statistics" in report.to_dict()
         
-        stats = report.metadata["security_statistics"]
+        # Verify security stats are present
+        stats = report.security_stats
+        assert stats is not None
         assert "total_vulnerability_indicators" in stats
-        assert stats["total_vulnerability_indicators"] > 0
+        assert "crash_reproducible_count" in stats
+        assert "sanitizer_coverage_count" in stats
 
 
 class TestCorpusOptimization:
@@ -494,7 +520,7 @@ class TestIntegrationWorkflows:
         scorer = SecurityQualityScorer()
         report = scorer.score_dataset(enriched)
         
-        assert report.total_records > 0
+        assert report.record_count > 0
         
         # 3. Build harness
         harness_config = tmp_path / "harness.json"

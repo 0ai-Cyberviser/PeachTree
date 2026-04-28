@@ -159,9 +159,13 @@ class FuzzingEnrichment:
         address = None
         sanitizer_output = None
         
-        # Detect crash type
-        for crash_name, patterns in self.crash_patterns.items():
-            for pattern in patterns:
+        # Detect crash type (prioritize specific types over generic)
+        # Order matters - check heap-overflow before segfault
+        priority_order = ["heap-overflow", "use-after-free", "assertion", "timeout", "segfault"]
+        for crash_name in priority_order:
+            if crash_name not in self.crash_patterns:
+                continue
+            for pattern in self.crash_patterns[crash_name]:
                 if re.search(pattern, text, re.IGNORECASE):
                     crash_type = crash_name
                     break
@@ -269,9 +273,10 @@ class FuzzingEnrichment:
         fuzzing_keywords = [
             "fuzzing", "fuzz", "crash", "sanitizer", "coverage",
             "corpus", "seed", "mutation", "harness", "target",
+            "afl", "libfuzzer", "reproducer", "poc",
         ]
         keyword_count = sum(1 for kw in fuzzing_keywords if kw.lower() in text.lower())
-        score += min(0.3, keyword_count * 0.05)
+        score += min(0.4, keyword_count * 0.06)
         
         return min(1.0, score)
     

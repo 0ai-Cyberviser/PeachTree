@@ -16,6 +16,20 @@ from .quality import DatasetQualityScorer, RecordQualityScore, DatasetQualityRep
 
 
 @dataclass(frozen=True)
+class SecurityDatasetReport(DatasetQualityReport):
+    """Extended quality report with security statistics."""
+    
+    security_stats: dict[str, Any] = None  # type: ignore
+    
+    def to_dict(self, include_records: bool = True) -> dict[str, Any]:
+        """Convert to dictionary with security stats."""
+        data = super().to_dict(include_records=include_records)
+        if self.security_stats:
+            data["security_statistics"] = self.security_stats
+        return data
+
+
+@dataclass(frozen=True)
 class SecurityQualityMetrics:
     """Security-specific quality metrics for a dataset record."""
     
@@ -107,7 +121,7 @@ class SecurityQualityScorer(DatasetQualityScorer):
         
         # Combine base score with security score
         combined_score = (
-            base_score.total * (1.0 - self.security_weight) +
+            base_score.score * (1.0 - self.security_weight) +
             security_metrics.overall_security_score * self.security_weight
         )
         
@@ -126,7 +140,7 @@ class SecurityQualityScorer(DatasetQualityScorer):
         # Update the quality score
         return replace(
             base_score,
-            total=int(combined_score),
+            score=int(combined_score),
         )
     
     def _calculate_security_metrics(self, record: dict[str, Any]) -> SecurityQualityMetrics:
@@ -183,14 +197,14 @@ class SecurityQualityScorer(DatasetQualityScorer):
             triage_completeness=triage_completeness,
         )
     
-    def score_dataset(self, dataset_path: str | Path) -> DatasetQualityReport:
+    def score_dataset(self, dataset_path: str | Path) -> SecurityDatasetReport:
         """Score entire dataset with security-specific metrics.
         
         Args:
             dataset_path: Path to JSONL dataset file
             
         Returns:
-            DatasetQualityReport with security-enhanced scoring
+            SecurityDatasetReport with security-enhanced scoring
         """
         # Use parent class scoring
         base_report = super().score_dataset(dataset_path)
@@ -217,8 +231,8 @@ class SecurityQualityScorer(DatasetQualityScorer):
             if security_metrics.get("sanitizer_quality", 0) >= 0.5:
                 total_with_sanitizer += 1
         
-        # Add to report
-        base_report.metadata["security_statistics"] = {
+        # Create security statistics
+        security_stats = {
             "total_vulnerability_indicators": total_vuln_indicators,
             "avg_indicators_per_record": total_vuln_indicators / len(records) if records else 0,
             "crash_reproducible_count": total_crash_reproducible,
@@ -227,7 +241,19 @@ class SecurityQualityScorer(DatasetQualityScorer):
             "sanitizer_coverage_ratio": total_with_sanitizer / len(records) if records else 0,
         }
         
-        return base_report
+        # Return SecurityDatasetReport with security stats
+        return SecurityDatasetReport(
+            dataset_path=base_report.dataset_path,
+            record_count=base_report.record_count,
+            average_score=base_report.average_score,
+            min_score=base_report.min_score,
+            passed_records=base_report.passed_records,
+            failed_records=base_report.failed_records,
+            gates=base_report.gates,
+            records=base_report.records,
+            issues=base_report.issues,
+            security_stats=security_stats,
+        )
 
 
 def score_fuzzing_dataset(

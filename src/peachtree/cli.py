@@ -86,6 +86,10 @@ from .dataset_visualization import DatasetVisualizer, ChartType, ExportFormat
 from .dataset_sampling import DatasetSampler, SamplingStrategy, SampleValidationLevel, SamplingConfig
 from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatus, CompressionLevel, RetentionPolicy
 from .hancock_integration import HancockDataIngester, HancockIngestionConfig, hancock_ingestion_workflow
+from .fuzzing_enrichment import FuzzingEnrichment
+from .peachfuzz_harness import PeachFuzzHarness
+from .corpus_optimization import CorpusOptimizer
+from .security_quality import SecurityQualityScorer
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -3976,6 +3980,37 @@ def make_parser() -> argparse.ArgumentParser:
     export_advanced.add_argument("--json-output", help="JSON export result output")
     export_advanced.set_defaults(func=run_export_advanced)
 
+    # Fuzzing and security enhancements
+    fuzz_enrich = sub.add_parser("fuzz-enrich", help="enrich dataset with fuzzing metadata")
+    fuzz_enrich.add_argument("--source", required=True, help="source dataset to enrich")
+    fuzz_enrich.add_argument("--output", required=True, help="output enriched dataset")
+    fuzz_enrich.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    fuzz_enrich.set_defaults(func=run_fuzz_enrich)
+
+    fuzz_harness = sub.add_parser("fuzz-harness", help="generate PeachFuzz harness from dataset")
+    fuzz_harness.add_argument("--dataset", required=True, help="dataset to build harness from")
+    fuzz_harness.add_argument("--output-dir", required=True, help="output directory for harness")
+    fuzz_harness.add_argument("--optimize-corpus", action="store_true", help="optimize corpus before export")
+    fuzz_harness.add_argument("--corpus-limit", type=int, default=1000, help="max corpus items")
+    fuzz_harness.add_argument("--format", choices=["json", "yaml"], default="yaml", help="harness config format")
+    fuzz_harness.set_defaults(func=run_fuzz_harness)
+
+    corpus_optimize = sub.add_parser("corpus-optimize", help="optimize fuzzing corpus")
+    corpus_optimize.add_argument("--dataset", required=True, help="dataset with corpus seeds")
+    corpus_optimize.add_argument("--output", required=True, help="output directory for optimized corpus")
+    corpus_optimize.add_argument("--strategy", choices=["balanced", "coverage", "crashes", "diverse"], default="balanced", help="optimization strategy")
+    corpus_optimize.add_argument("--max-seeds", type=int, default=1000, help="max seeds to keep")
+    corpus_optimize.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    corpus_optimize.set_defaults(func=run_corpus_optimize)
+
+    security_score = sub.add_parser("security-score", help="score dataset with security-focused quality metrics")
+    security_score.add_argument("--dataset", required=True, help="dataset to score")
+    security_score.add_argument("--output", help="output report path")
+    security_score.add_argument("--security-weight", type=float, default=0.5, help="security metrics weight (0.0-1.0)")
+    security_score.add_argument("--min-score", type=float, default=0.0, help="minimum score threshold")
+    security_score.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    security_score.set_defaults(func=run_security_score)
+
     # Hancock cybersecurity dataset integration
     # Hancock cybersecurity dataset integration
     hancock = sub.add_parser("hancock-discover", help="discover Hancock data sources")
@@ -4002,6 +4037,146 @@ def make_parser() -> argparse.ArgumentParser:
     hancock_workflow.set_defaults(func=run_hancock_workflow)
 
     return parser
+
+
+def run_fuzz_enrich(args: argparse.Namespace) -> int:
+    """Enrich dataset with fuzzing metadata."""
+    enricher = FuzzingEnrichment()
+    enricher.enrich_dataset(args.source, args.output)
+    
+    result = {
+        "status": "success",
+        "source": args.source,
+        "output": args.output
+    }
+    
+    if args.format == "markdown":
+        print(f"# Fuzzing Enrichment Complete\n\n**Source**: {args.source}\n**Output**: {args.output}")
+    else:
+        print(json.dumps(result, indent=2))
+    
+    return 0
+
+
+def run_fuzz_harness(args: argparse.Namespace) -> int:
+    """Generate PeachFuzz harness from dataset."""
+    harness = PeachFuzzHarness.from_dataset(args.dataset)
+    
+    if args.optimize_corpus:
+        harness = harness.optimize_corpus(max_items=args.corpus_limit)
+    
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Export harness config
+    config_file = output_dir / f"harness.{args.format}"
+    config = harness.generate_harness_config()
+    if args.format == "yaml":
+        import yaml
+        config_file.write_text(yaml.dump(config, default_flow_style=False), encoding="utf-8")
+    else:
+        config_file.write_text(json.dumps(config, indent=2), encoding="utf-8")
+    
+    # Export corpus
+    corpus_dir = output_dir / "corpus"
+    harness.export_corpus_directory(corpus_dir)
+    
+    result = {
+        "status": "success",
+        "targets": len(harness.targets),
+        "corpus_items": len(harness.corpus),
+        "harness_config": str(config_file),
+        "corpus_dir": str(corpus_dir)
+    }
+    
+    print(json.dumps(result, indent=2))
+    return 0
+
+
+def run_corpus_optimize(args: argparse.Namespace) -> int:
+    """Optimize fuzzing corpus."""
+    import json
+    
+    optimizer = CorpusOptimizer()
+    
+    # Load dataset and add seeds
+    for line in Path(args.dataset).read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            record = json.loads(line)
+            optimizer.add_seed_from_record(record)
+    
+    # Optimize
+    optimized = optimizer.optimize(strategy=args.strategy, max_seeds=args.max_seeds)
+    
+    # Export
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    optimized.export_corpus(output_dir)
+    
+    result = {
+        "status": "success",
+        "strategy": args.strategy,
+        "original_seeds": len(optimizer.seeds),
+        "optimized_seeds": len(optimized.seeds),
+        "output_dir": str(output_dir)
+    }
+    
+    if args.format == "markdown":
+        md = f"""# Corpus Optimization Complete
+
+**Strategy**: {args.strategy}
+**Original Seeds**: {result['original_seeds']}
+**Optimized Seeds**: {result['optimized_seeds']}
+**Output**: {result['output_dir']}
+"""
+        print(md)
+    else:
+        print(json.dumps(result, indent=2))
+    
+    return 0
+
+
+def run_security_score(args: argparse.Namespace) -> int:
+    """Score dataset with security-focused quality metrics."""
+    scorer = SecurityQualityScorer(security_weight=args.security_weight)
+    report = scorer.score_dataset(args.dataset)
+    
+    # Filter by minimum score if specified
+    if args.min_score > 0:
+        passed = [r for r in report.records if r.score >= args.min_score]
+        print(f"Records passing minimum score {args.min_score}: {len(passed)}/{report.record_count}", file=__import__("sys").stderr)
+    
+    result = report.to_dict(include_records=False)
+    
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        if args.format == "markdown":
+            md = f"""# Security Quality Report
+
+## Summary
+- **Dataset**: {args.dataset}
+- **Record Count**: {report.record_count}
+- **Average Score**: {report.average_score:.2f}
+- **Passed Records**: {report.passed_records}
+- **Failed Records**: {report.failed_records}
+
+## Security Statistics
+"""
+            if report.security_stats:
+                md += f"\n- **Vulnerability Indicators**: {report.security_stats['total_vulnerability_indicators']}\n"
+                md += f"- **Crash Reproducibility**: {report.security_stats['crash_reproducible_ratio']:.1%}\n"
+                md += f"- **Sanitizer Coverage**: {report.security_stats['sanitizer_coverage_ratio']:.1%}\n"
+            
+            Path(args.output).write_text(md, encoding="utf-8")
+        else:
+            Path(args.output).write_text(json.dumps(result, indent=2), encoding="utf-8")
+    else:
+        if args.format == "markdown":
+            print(f"# Security Quality Report\n\n**Average Score**: {report.average_score:.2f}\n**Passed**: {report.passed_records}/{report.record_count}")
+        else:
+            print(json.dumps(result, indent=2))
+    
+    return 0
 
 
 def run_hancock_discover(args: argparse.Namespace) -> int:

@@ -10,7 +10,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import json
 from typing import Any
-import hashlib
 
 from .models import sha256_text
 
@@ -128,11 +127,11 @@ class CorpusOptimizer:
             priority += 0.2
         
         # Boost for high fuzzing relevance
-        fuzzing_relevance = metadata.get("fuzzing_relevance", 0.0)
+        fuzzing_relevance = float(metadata.get("fuzzing_relevance", 0.0))
         priority += fuzzing_relevance * 0.2
         
         # Boost for high quality score
-        quality_score = record.get("quality_score", 0.5)
+        quality_score = float(record.get("quality_score", 0.5))
         priority += quality_score * 0.1
         
         return min(1.0, priority)

@@ -6,7 +6,7 @@ model training, inference workflows, and security-focused learning objectives.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 import json
 from typing import Any
 
@@ -211,7 +211,7 @@ class EnhancedLearningTree(RecursiveLearningTree):
             # Add nodes from start to leaf
             if leaf.id != start_node.id:
                 intermediate = leaf
-                intermediate_nodes = []
+                intermediate_nodes: list[Any] = []
                 while intermediate and intermediate.id != start_node.id:
                     intermediate_nodes.insert(0, intermediate)
                     if intermediate.parent_id:

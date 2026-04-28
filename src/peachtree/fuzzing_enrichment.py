@@ -12,7 +12,6 @@ import json
 import re
 from typing import Any
 
-from .models import DatasetRecord, SourceDocument
 
 
 @dataclass(frozen=True)

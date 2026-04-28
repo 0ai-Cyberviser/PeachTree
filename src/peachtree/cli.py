@@ -4060,7 +4060,8 @@ def run_fuzz_enrich(args: argparse.Namespace) -> int:
 
 def run_fuzz_harness(args: argparse.Namespace) -> int:
     """Generate PeachFuzz harness from dataset."""
-    harness = PeachFuzzHarness.from_dataset(args.dataset)
+    harness = PeachFuzzHarness()
+    harness.from_dataset(args.dataset)
     
     if args.optimize_corpus:
         harness = harness.optimize_corpus(max_items=args.corpus_limit)
@@ -4070,12 +4071,7 @@ def run_fuzz_harness(args: argparse.Namespace) -> int:
     
     # Export harness config
     config_file = output_dir / f"harness.{args.format}"
-    config = harness.generate_harness_config()
-    if args.format == "yaml":
-        import yaml
-        config_file.write_text(yaml.dump(config, default_flow_style=False), encoding="utf-8")
-    else:
-        config_file.write_text(json.dumps(config, indent=2), encoding="utf-8")
+    harness.generate_harness_config(config_file, format=args.format)
     
     # Export corpus
     corpus_dir = output_dir / "corpus"
@@ -4084,7 +4080,7 @@ def run_fuzz_harness(args: argparse.Namespace) -> int:
     result = {
         "status": "success",
         "targets": len(harness.targets),
-        "corpus_items": len(harness.corpus),
+        "corpus_items": len(harness.corpus_items),
         "harness_config": str(config_file),
         "corpus_dir": str(corpus_dir)
     }
@@ -4106,18 +4102,25 @@ def run_corpus_optimize(args: argparse.Namespace) -> int:
             optimizer.add_seed_from_record(record)
     
     # Optimize
-    optimized = optimizer.optimize(strategy=args.strategy, max_seeds=args.max_seeds)
+    stats = optimizer.optimize(strategy=args.strategy)
+    
+    # Limit seeds if requested
+    original_count = len(optimizer.seeds)
+    if args.max_seeds and len(optimizer.seeds) > args.max_seeds:
+        # Keep highest quality seeds
+        optimizer.seeds = sorted(optimizer.seeds, key=lambda s: s.quality_score, reverse=True)[:args.max_seeds]
     
     # Export
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
-    optimized.export_corpus(output_dir)
+    optimizer.export_optimized_corpus(output_dir)
     
     result = {
         "status": "success",
         "strategy": args.strategy,
-        "original_seeds": len(optimizer.seeds),
-        "optimized_seeds": len(optimized.seeds),
+        "original_seeds": stats["original_count"],
+        "optimized_seeds": len(optimizer.seeds),
+        "max_seeds": args.max_seeds,
         "output_dir": str(output_dir)
     }
     

@@ -4,37 +4,27 @@ Tests the fuzzing enrichment, PeachFuzz harness, enhanced planner,
 security quality scorer, and corpus optimization modules.
 """
 
-from pathlib import Path
 import json
-import tempfile
 import pytest
 
 from peachtree.fuzzing_enrichment import (
     FuzzingEnrichment,
-    CrashSignature,
-    CoverageMetrics,
-    enrich_fuzzing_corpus,
 )
 from peachtree.peachfuzz_harness import (
     PeachFuzzHarness,
     FuzzTarget,
-    CorpusItem,
     build_peachfuzz_harness,
 )
 from peachtree.enhanced_planner import (
     EnhancedLearningTree,
-    TrainingInferencePath,
     build_fuzzing_learning_tree,
     build_security_learning_tree,
 )
 from peachtree.security_quality import (
     SecurityQualityScorer,
-    SecurityQualityMetrics,
-    score_fuzzing_dataset,
 )
 from peachtree.corpus_optimization import (
     CorpusOptimizer,
-    CorpusSeed,
     optimize_fuzzing_corpus,
 )
 
@@ -300,7 +290,7 @@ class TestEnhancedLearningTree:
         tree.build_with_pathways()
         
         train_path = tmp_path / "training.json"
-        result = tree.export_training_workflow(str(train_path))
+        tree.export_training_workflow(str(train_path))
         
         if tree.training_paths:
             assert train_path.exists()

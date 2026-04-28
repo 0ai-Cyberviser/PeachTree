@@ -228,7 +228,7 @@ peachtree --version
 
 ### Cryptocurrency Exchange Vulnerability Patterns
 
-**Supported Platforms**: HackerOne, Bugcrowd (Crypto.com, OKX, Coinbase, Binance)
+**Supported Platforms**: HackerOne, Bugcrowd (Crypto.com, OKX, Robinhood, Bitstamp, Coinbase, Binance)
 
 **Multi-Platform Assessment**:
 - **Web2**: Traditional web vulnerabilities (RCE, SQLi, XSS, CSRF, SSRF)
@@ -256,6 +256,9 @@ Low: $50-$600 (open redirects, info leaks, common CSRF)
 3. **Wallet Extensions**: Same vuln across Chrome/Edge/Safari = 1 report
 4. **AI Disclosure**: Must disclose AI tool usage in discovery/reporting
 5. **Leaked Credentials**: Report immediately, authenticate once only
+6. **Tier-Based Rewards**: Robinhood uses 3-tier system (Tier 1: $100-$25K, Tier 2/3: lower)
+7. **Financial Limits**: Robinhood $1K USD cap on unbounded loss testing
+8. **Mandatory Headers**: Robinhood requires X-Bug-Bounty and X-Test-Account-Email
 
 **Out of Scope** (Common):
 - Automated scanner reports | Self-XSS | DoS/DDoS

@@ -5,7 +5,7 @@ applyTo:
   - "**/security-research/**/*.md"
   - "**/*crypto-exchange*/**"
   - "**/*web3*/**"
-description: "Guidance for cryptocurrency exchange bug bounty research and Web3 vulnerability documentation. Use when working with crypto exchange security reports, wallet vulnerabilities, or blockchain-specific security issues. Applies to HackerOne/Bugcrowd submissions for exchanges like Crypto.com, OKX, Coinbase, Binance."
+description: "Guidance for cryptocurrency exchange bug bounty research and Web3 vulnerability documentation. Use when working with crypto exchange security reports, wallet vulnerabilities, or blockchain-specific security issues. Applies to HackerOne/Bugcrowd submissions for exchanges like Crypto.com, OKX, Robinhood, Bitstamp, Coinbase, Binance."
 ---
 
 # Cryptocurrency Exchange Bug Bounty Research
@@ -358,6 +358,24 @@ Report: 1 submission documenting all platforms
 - ❌ Sensitive data in private app directory (expected behavior)
 - ❌ Clients not downloaded from official sources
 
+### Robinhood-Specific Out of Scope
+- ❌ Subdomain takeover without actually taking over the subdomain
+- ❌ Cache poisoning
+- ❌ Email list or notification setting configuration issues
+- ❌ Clickjacking without demonstrable impact
+- ❌ Disclosure of publicly available information
+- ❌ Lack of security flags in cookies (except session cookies)
+- ❌ Lack of security headers unless exploitable
+- ❌ Out-of-date browsers or browser add-ons
+- ❌ Out-of-date Android/iOS versions (no longer maintained)
+- ❌ Mobile root/jailbreak detection
+- ❌ DNS records (SPF, DKIM, DMARC, DNSSEC)
+- ❌ Unsafe SSL/TLS cipher suites unless exploitable
+- ❌ Lack of EXIF stripping on uploads (unless publicly accessible)
+- ❌ Logout CSRF
+- ❌ Say Technologies: Voting info disclosure via IDOR, contact/support forms
+- ❌ Third-party integrations: shop.robinhood.com, content.research.robinhood.com, etc.
+
 ### Edge Cases (Case-by-Case)
 - ⚠️ Compliance-related reports
 - ⚠️ Public 0-days with patches <1 month old
@@ -450,9 +468,236 @@ peachtree build \
   --output data/datasets/crypto-security-training.jsonl
 ```
 
+## Robinhood & Bitstamp Program Patterns
+
+### Overview
+Robinhood (with acquired Bitstamp) uses a tier-based reward system with CVSSv3 sliding scale bounties.
+
+**Program Type**: HackerOne  
+**Response Time**: 7h first response, 1d 21h triage  
+**Gold Standard Safe Harbor**: Yes  
+**VIP Program**: Available for consistent researchers (3-5+ quality reports)
+
+### Tier System
+
+**Tier 1** (Highest Rewards):
+```
+Critical: $10,000-$25,000
+High: $5,000-$10,000
+Medium: $500-$5,000
+Low: $100-$500
+```
+
+**Assets**:
+- `*.robinhood.com`, `*.rhinternal.net`, `*.rhapollo.net`
+- `api.robinhood.com`, `nummus.robinhood.com` (crypto trading)
+- `oak.robinhood.net` (internal admin - very sensitive)
+- iOS apps: 1634080733 (Wallet), 6462308655 (Credit Card), 938003185 (Trading)
+- Android apps: com.robinhood.android, com.robinhood.gateway, com.robinhood.money, com.robinhood.global
+- `www.bitstamp.net` (main host)
+
+**Tier 2** (Medium Rewards):
+```
+High: $3,000-$6,000
+Medium: $1,000-$3,000
+```
+
+**Assets**:
+- `*.saytechnologies.com`, `*.say.rocks`
+
+**Tier 3** (Lower Rewards):
+```
+High: $6,000-$8,000
+Medium: $3,000-$6,000
+Low: $500-$3,000
+Info: $100-$500
+```
+
+**Assets**:
+- `*.bitstamp.net` (subdomains)
+- Bitstamp iOS (Id1406825640), Android (net.bitstamp.app)
+- `*.x1.co`, `*.x1creditcard.com`, `*.1integrations.com`
+- `fusion.tradepmr.com`, `www.tradepmr.com`, `insight2.tradepmr.com`
+
+### Special Requirements
+
+**Mandatory Headers**:
+All requests to Robinhood assets MUST include:
+```http
+X-Bug-Bounty: <HackerOne_Username>
+X-Test-Account-Email: <Your_Test_Account_Email>
+```
+
+**Example**:
+```bash
+curl -H "X-Bug-Bounty: researcher123" \
+     -H "X-Test-Account-Email: test@example.com" \
+     https://api.robinhood.com/accounts/
+```
+
+### Financial Testing Limits
+
+**CRITICAL**: $1,000 USD limit for unbounded loss vulnerabilities
+
+**Rule**: When testing unbounded loss bugs:
+1. Stop at $1,000 USD in demonstrated loss
+2. File report with verification completed so far
+3. Internal teams verify collaboratively with you
+4. Testing over $1,000 may result in program termination
+
+**Example Scenarios**:
+- ❌ Testing withdrawal bug: Withdrew $5,000 to demonstrate → VIOLATION
+- ✅ Testing withdrawal bug: Withdrew $1,000, documented method → COMPLIANT
+
+### Program-Specific Rules
+
+**Do NOT**:
+- ❌ Test against accounts you don't own
+- ❌ Make financial transactions with other users' accounts
+- ❌ Cause service disruption or resource-intensive tests
+- ❌ Send large volumes to websockets
+- ❌ Create mass support tickets
+- ❌ Exfiltrate or retain sensitive data (SSN, PII, credentials)
+- ❌ Disclose reports outside HackerOne (EVER)
+
+**Special Considerations**:
+- Account Takeover (ATO) findings typically not accepted (may get small bonus if novel)
+- Impact must be demonstrable, not theoretical
+- Demonstrate actual data accessed, not "could access"
+- Mitigations reduce severity (compensating controls, auth requirements, unlikely conditions)
+
+### Zero-Day Policy
+
+**Accepted**: Third-party zero-days directly compromising Robinhood confidentiality/integrity
+
+**Requirements**:
+- Must permit vendor disclosure
+- Cannot test against third parties/vendors
+- Submit via HackerOne
+
+**Not Accepted**:
+- Zero-days without vendor disclosure permission
+- Third-party testing without authorization
+
+### CVSSv3 Scoring Adjustments
+
+**Severity Decreases When**:
+- Exploitation mitigated by compensating controls
+- Only exploitable internally (behind Okta, requires privileges)
+- Requires unlikely user interaction/conditions
+- Already fixed before triage (no bounty)
+- Already known internally (no bounty)
+
+**Impact Requirements**:
+- ✅ "Here is the SSN I accessed via this IDOR" → High/Critical
+- ❌ "This IDOR could allow SSN access" → Medium/Low
+
+### VIP Bug Bounty Program
+
+**Eligibility**: Consistent quality researchers with 3-5+ reports over time
+
+**Benefits**:
+- Pre-release feature access
+- Test features before public launch
+- Higher visibility to security team
+
+### Bitstamp Integration
+
+**Status**: Acquired by Robinhood, integrated into Tier 1/Tier 3
+
+**Tier 1 Assets**:
+- `www.bitstamp.net` (main host)
+
+**Tier 3 Assets**:
+- `*.bitstamp.net` (all subdomains and supporting services)
+- Bitstamp iOS app (Id1406825640)
+- Bitstamp Android app (net.bitstamp.app)
+- API documentation: https://www.bitstamp.net/api/
+
+**Out of Scope**:
+- `sandbox.bitstamp.net` (testing environment)
+- Third-party subdomains
+
+### Common Rejection Reasons
+
+1. **Informative Impact**: Theoretical vs demonstrated
+2. **Fixed Issues**: No bounty if fixed before triage
+3. **Known Issues**: Already known internally
+4. **Root Cause Duplicates**: Same underlying component across hosts
+5. **Missing Demonstrable Impact**: "Could access" vs "I accessed"
+6. **Third-Party Issues**: Must directly exploit Robinhood
+
+### Testing Workflow
+
+```bash
+# 1. Create test account with HackerOne email
+# Account must meet Robinhood requirements
+
+# 2. Set up headers
+export BB_USERNAME="your_h1_username"
+export TEST_EMAIL="test@example.com"
+
+# 3. Test authenticated endpoints
+curl -H "X-Bug-Bounty: $BB_USERNAME" \
+     -H "X-Test-Account-Email: $TEST_EMAIL" \
+     -H "Authorization: Bearer YOUR_TOKEN" \
+     https://api.robinhood.com/accounts/
+
+# 4. Test nummus (crypto)
+curl -H "X-Bug-Bounty: $BB_USERNAME" \
+     -H "X-Test-Account-Email: $TEST_EMAIL" \
+     https://nummus.robinhood.com/accounts/
+
+# 5. Document CVSS breakdown
+# Include in report:
+# - CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N
+# - Breakdown explanation
+# - Demonstrable impact (actual data accessed)
+
+# 6. Stop if you hit sensitive data
+# Report immediately, do not retain
+```
+
+### Dataset Creation (Post-Disclosure)
+
+```bash
+# After 90+ days or official disclosure
+cat > reports/robinhood-idor-2026.md <<'EOF'
+# Robinhood IDOR on Trading Endpoint (Disclosed)
+
+**Program**: Robinhood HackerOne
+**Tier**: 1
+**Disclosed**: 2026-03-15
+**Bounty**: $15,000 (High)
+**CVSS**: 7.5 (High)
+
+## Vulnerability
+IDOR on /api/orders/{order_id} allowed viewing other users' trading orders
+
+## Headers Used
+X-Bug-Bounty: researcher123
+X-Test-Account-Email: test@example.com
+
+## Demonstrable Impact
+Successfully accessed 5 other users' order details including:
+- Stock symbols, quantities, prices
+- Order timestamps
+- Account IDs (partially masked)
+EOF
+
+# Ingest (90+ days post-fix)
+peachtree ingest \
+  --repo /tmp/disclosed-robinhood \
+  --pattern "**/*.md" \
+  --output data/raw/robinhood-vulns.jsonl \
+  --metadata '{"program": "robinhood", "tier": "1", "platform": "web2"}'
+```
+
 ## Quick Reference
 
-**Severity**: Extreme (>$30K) | Critical ($5-30K) | High ($2-5K) | Medium ($600-2K) | Low ($50-600)
+**Severity**: 
+- Extreme (>$30K) | Critical ($5-30K) | High ($2-5K) | Medium ($600-2K) | Low ($50-600) ← General
+- Robinhood Tier 1: Critical ($10-25K) | High ($5-10K) | Medium ($500-5K) | Low ($100-500)
 
 **Platforms**: Web2 (traditional), Web3 (wallet/blockchain), Mobile (iOS/Android), Desktop (Win/Mac)
 
@@ -460,7 +705,11 @@ peachtree build \
 
 **Must Include**: Reproduction steps, video PoC (if requested), business impact, CVSS score
 
+**Robinhood Specific**: X-Bug-Bounty and X-Test-Account-Email headers, $1K USD limit on unbounded loss testing
+
 **Out of Scope**: Scanners, self-XSS, known libs, DoS, root/jailbreak, social engineering
+
+**Programs Covered**: Crypto.com ($10-$2M), OKX ($50-$1M), Robinhood ($100-$25K), Bitstamp (Tier 3), Coinbase, Binance
 
 **Tools**: BugBountyAgent, bug-bounty-workflows skill, generate-dataset-card prompt
 

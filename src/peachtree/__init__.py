@@ -80,6 +80,11 @@ from .dataset_sampling import DatasetSampler, RandomSampler, StratifiedSampler, 
 from .dataset_migration import DatasetMigrationEngine, MigrationRule, MigrationPlan, MigrationResult
 from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatistics, ArchiveMetadata, ArchiveIndex, ArchiveStatus, CompressionLevel, RetentionPolicy
 from .hancock_integration import HancockDataIngester, HancockIngestionConfig, HancockSource, hancock_ingestion_workflow
+from .fuzzing_enrichment import FuzzingEnrichment, CrashSignature, CoverageMetrics, enrich_fuzzing_corpus
+from .peachfuzz_harness import PeachFuzzHarness, FuzzTarget, CorpusItem, build_peachfuzz_harness
+from .enhanced_planner import EnhancedLearningTree, TrainingInferencePath, build_fuzzing_learning_tree, build_security_learning_tree
+from .security_quality import SecurityQualityScorer, SecurityQualityMetrics, score_fuzzing_dataset
+from .corpus_optimization import CorpusOptimizer, CorpusSeed, optimize_fuzzing_corpus
 
 __all__ = [
     "DatasetBuilder",
@@ -474,6 +479,25 @@ __all__ = [
     "HancockIngestionConfig",
     "HancockSource",
     "hancock_ingestion_workflow",
+    # Fuzzing and Security Enhancements
+    "FuzzingEnrichment",
+    "CrashSignature",
+    "CoverageMetrics",
+    "enrich_fuzzing_corpus",
+    "PeachFuzzHarness",
+    "FuzzTarget",
+    "CorpusItem",
+    "build_peachfuzz_harness",
+    "EnhancedLearningTree",
+    "TrainingInferencePath",
+    "build_fuzzing_learning_tree",
+    "build_security_learning_tree",
+    "SecurityQualityScorer",
+    "SecurityQualityMetrics",
+    "score_fuzzing_dataset",
+    "CorpusOptimizer",
+    "CorpusSeed",
+    "optimize_fuzzing_corpus",
 ]
 
 __version__ = "0.9.0"

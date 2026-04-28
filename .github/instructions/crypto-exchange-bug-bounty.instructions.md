@@ -471,7 +471,232 @@ peachtree build \
 ## Robinhood & Bitstamp Program Patterns
 
 ### Overview
-Robinhood (with acquired Bitstamp) uses a tier-based reward system with CVSSv3 sliding scale bounties.
+Robinhood (with acquired Bitstamp) uses a tier-based reward system with CVSSv3 sliding scale bounties. Testing must follow strict financial limits and mandatory header requirements.
+
+### Robinhood Tier System
+
+**Tier 1: Core Financial Infrastructure** ($100-$25,000)
+- robinhood.com (main trading platform)
+- api.robinhood.com (trading APIs)
+- Web and mobile app authentication flows
+- Fund transfer and withdrawal endpoints
+- Order execution systems
+- Account management backend
+
+**Tier 2: Supporting Services** ($1,000-$6,000)
+- Robinhood Crypto infrastructure
+- Instant deposit systems
+- Margin trading components
+- Gold membership features
+- Cash management APIs
+
+**Tier 3: Public Assets** ($100-$8,000)
+- learn.robinhood.com (educational content)
+- newsroom.robinhood.com (press releases)
+- blog.robinhood.com (company blog)
+- Other public-facing subdomains
+
+### CVSSv3 Sliding Scale Methodology
+
+Robinhood uses **CVSS v3.1 Base Score** to calculate rewards within tier ranges:
+
+```
+Formula: Base Reward + (CVSS Multiplier × Tier Range)
+
+Example (Tier 1):
+- Low (CVSS 0.1-3.9): $100-$500
+- Medium (CVSS 4.0-6.9): $500-$5,000
+- High (CVSS 7.0-8.9): $5,000-$15,000
+- Critical (CVSS 9.0-10.0): $15,000-$25,000
+
+Example (Tier 3):
+- Low (CVSS 0.1-3.9): $100-$500
+- Medium (CVSS 4.0-6.9): $500-$2,000
+- High (CVSS 7.0-8.9): $2,000-$5,000
+- Critical (CVSS 9.0-10.0): $5,000-$8,000
+```
+
+**Adjustment Factors**:
+- **Impact Severity**: Direct fund loss > data breach > availability
+- **Reproducibility**: Always reproducible > intermittent > race condition
+- **Attack Complexity**: No interaction > single click > multiple steps
+- **Privileges Required**: None > low privilege > high privilege
+- **User Interaction**: None > single user > multiple users
+
+### Robinhood Special Considerations
+
+**1. Financial Testing Limits**
+```
+CRITICAL: Maximum $1,000 USD cap on unbounded loss testing
+```
+
+**Examples of Acceptable Testing**:
+- ✅ Test with $1 withdrawal to different account
+- ✅ Create test account with $10, test balance manipulation
+- ✅ Test order placement with minimum trade amounts
+- ✅ Verify IDOR with <$100 test positions
+
+**Examples Requiring Prior Approval**:
+- ❌ Testing that could result in >$1K losses
+- ❌ High-frequency trading to test rate limits
+- ❌ Large fund transfers to validate controls
+- ❌ Margin calls or liquidation testing
+
+**2. Mandatory HTTP Headers**
+
+All authenticated API testing **must include**:
+
+```http
+X-Bug-Bounty: yes
+X-Test-Account-Email: your_verified_email@example.com
+```
+
+**Why Required**:
+- Flags traffic as authorized security research
+- Prevents false positive fraud alerts
+- Ensures test accounts aren't auto-banned
+- Helps security team correlate testing activity
+
+**Example Request**:
+```http
+POST /api/v1/accounts/withdraw HTTP/1.1
+Host: api.robinhood.com
+Authorization: Bearer YOUR_TOKEN
+X-Bug-Bounty: yes
+X-Test-Account-Email: researcher@example.com
+Content-Type: application/json
+
+{"amount": "1.00", "currency": "USD", "destination": "test_account"}
+```
+
+**3. No Account Takeover (ATO) Typically**
+
+Robinhood **does not typically reward** classic ATO vulnerabilities such as:
+- ❌ Password reset flows
+- ❌ Email verification bypass
+- ❌ Session fixation
+- ❌ Weak password policies
+- ❌ Brute force protection gaps
+
+**Exceptions** (may be rewarded):
+- ✅ ATO leading to direct fund theft
+- ✅ Mass ATO affecting >100 accounts
+- ✅ ATO bypassing 2FA/MFA completely
+- ✅ Privilege escalation to admin/internal systems
+
+**4. VIP Program & Bonus Rewards**
+
+**Invitation-Only VIP Program**:
+- 10-20% bonus on all submissions
+- Faster triage times (24-48 hours)
+- Direct communication channel
+- Quarterly recognition
+
+**Qualification Criteria**:
+- 5+ valid High/Critical findings
+- Consistent high-quality reports
+- Minimal duplicates/informational
+- Active participation (≥2 reports/quarter)
+
+**Bonus Multipliers**:
+- 🎯 First report of new vulnerability class: +20%
+- 🎯 Chain exploits (multi-stage): +15%
+- 🎯 Automated PoC tool provided: +10%
+- 🎯 Detailed remediation guidance: +5%
+
+### Bitstamp Subdomain Structure
+
+Bitstamp (acquired by Robinhood 2023) maintains separate infrastructure with its own tier classification:
+
+**Tier 1: Core Trading Platform** ($500-$30,000)
+- www.bitstamp.net (main exchange)
+- api.bitstamp.net (trading APIs)
+- Mobile apps (iOS/Android)
+
+**Tier 2: Financial Services** ($200-$15,000)
+- pro.bitstamp.net (professional trading)
+- Institutional trading APIs
+- OTC desk infrastructure
+
+**Tier 3: Public Resources** ($100-$5,000)
+- blog.bitstamp.net
+- support.bitstamp.net
+- status.bitstamp.net
+- Other non-financial subdomains
+
+**Important**: www.bitstamp.net is classified as **Tier 3** in Robinhood's program scope (not Tier 1) due to integration status.
+
+### Bitstamp API Testing Patterns
+
+**REST API Endpoints**:
+```bash
+# Public endpoints (no auth required)
+GET https://www.bitstamp.net/api/v2/ticker/{currency_pair}/
+GET https://www.bitstamp.net/api/v2/order_book/{currency_pair}/
+
+# Private endpoints (require API key + signature)
+POST https://www.bitstamp.net/api/v2/balance/
+POST https://www.bitstamp.net/api/v2/buy/{currency_pair}/
+POST https://www.bitstamp.net/api/v2/withdrawal-requests/
+```
+
+**Testing Focus Areas**:
+1. **Signature Verification**: Test HMAC-SHA256 signature validation
+2. **Nonce Handling**: Check for replay attack protections
+3. **Rate Limiting**: Verify per-key and per-IP limits
+4. **Authorization**: Test cross-account API key usage
+5. **Parameter Validation**: SQLi, NoSQLi, command injection
+
+**Example Vulnerability Pattern**:
+```http
+# Potential IDOR on withdrawal status
+GET /api/v2/withdrawal-requests/12345/ HTTP/1.1
+Host: www.bitstamp.net
+Authorization: Bearer USER_A_TOKEN
+
+# Test: Can USER_A access USER_B's withdrawal ID 12346?
+```
+
+### Special Testing Notes
+
+**Robinhood + Bitstamp Integration**:
+- Test cross-platform vulnerabilities (Robinhood account → Bitstamp access)
+- Verify separate session management
+- Check for confused deputy issues
+- Test API key inheritance/sharing
+
+**Cryptocurrency-Specific Vectors**:
+- Blockchain address validation bypass
+- Memo/tag manipulation on withdrawals
+- Smart contract interaction bugs (Robinhood Wallet)
+- Gas estimation manipulation
+- Transaction confirmation spoofing
+
+**Recommended Testing Workflow**:
+```bash
+# 1. Set up test accounts
+# Robinhood: Create with test email, enable 2FA
+# Bitstamp: Separate test account with minimal funds
+
+# 2. Configure proxy with mandatory headers
+# Burp Suite → Proxy → Options → Match and Replace
+# Add: X-Bug-Bounty: yes
+# Add: X-Test-Account-Email: your_email@example.com
+
+# 3. Test authentication boundaries
+# - Cross-account access (IDOR)
+# - Session handling (fixation, theft)
+# - API key scope validation
+
+# 4. Test fund operations within $1K limit
+# - Minimum withdrawal amounts
+# - Test deposits from verified source
+# - Validate transfer limits
+
+# 5. Document CVSS scoring
+# Use https://www.first.org/cvss/calculator/3.1
+# Include in report for transparency
+```
 
 **Program Type**: HackerOne  
 **Response Time**: 7h first response, 1d 21h triage  

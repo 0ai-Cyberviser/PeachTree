@@ -27,6 +27,69 @@ from .release_bundle import ReleaseBundleBuilder
 from .trainer_handoff import TrainerHandoffBuilder
 from .lora_job import LoraJobCardBuilder, LoraHyperparameters
 from .training_plan import DryRunTrainingPlanner
+from .health_monitor import DatasetHealthMonitor
+from .optimizer import DatasetOptimizer
+from .batch_processor import BatchHealthMonitor, BatchOptimizer, BatchQualityScorer
+from .status_dashboard import StatusDashboard
+from .dataset_comparison import DatasetComparator
+from .dataset_versions import DatasetVersionManager
+from .workflows import WorkflowEngine, create_standard_pipeline
+from .quality_trends import QualityTrendAnalyzer
+from .dataset_operations import DatasetMerger, DatasetSplitter
+from .smart_sampling import SmartSampler
+from .performance import PerformanceProfiler
+from .dataset_validation import DatasetValidator, RequiredFieldRule, FieldTypeRule, ContentLengthRule
+from .incremental_update import IncrementalUpdater, ChangeTracker
+from .dataset_catalog import DatasetCatalog
+from .security_scanner import DatasetSecurityScanner
+from .advanced_exporters import AdvancedExporters, get_advanced_format_names
+from .lineage_visualizer import LineageVisualizer
+from .dataset_diff import DatasetDiffEngine
+from .policy_templates import PolicyTemplateLibrary
+from .dataset_analytics import DatasetAnalyticsEngine
+from .dataset_migration import DatasetMigrationEngine, MigrationPlan, MigrationRule
+from .quality_enhancement import QualityEnhancementEngine
+from .dataset_metrics import DatasetMetricsDashboard
+from .backup_restore import DatasetBackupRestore, BackupMetadata
+from .export_formats_v2 import ExportFormatsV2
+from .quality_gates import QualityGateEngine, QualityGateConfig, GateRule
+from .dataset_profiler import DatasetProfiler
+from .dataset_testing import DatasetTestFramework, TestSuite, SchemaValidator, PropertyTester
+from .dataset_monitoring import DatasetMonitor, MonitoringConfig, HealthStatus
+from .dataset_sync import DatasetSynchronizer, SyncState, ConflictResolution
+from .dataset_transform import DatasetTransformer, TransformationPipeline, TransformationStep
+from .dataset_recommend import DatasetRecommender
+from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo, DatasetChange, ChangeType, ReviewStatus
+from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation, ComplianceStatus
+from .dataset_cache import DatasetCacheOptimizer, CacheStrategy
+from .dataset_scheduler import DatasetScheduler, ScheduleType, TaskType
+from .dataset_notifications import DatasetNotificationSystem, NotificationType, EventType, NotificationChannel
+from .dataset_webhooks import DatasetWebhookManager, WebhookEvent
+from .dataset_templates import DatasetTemplateManager, TemplateCategory, TemplateComplexity
+from .dataset_plugins import PluginManager, PluginType, PluginStatus
+from .dataset_audit_log import DatasetAuditLog, AuditAction, AuditSeverity, AuditStatus, AuditContext as AuditLogContext
+from .dataset_streaming import DatasetStreamReader, DatasetStreamWriter, DatasetStreamProcessor, StreamingPipeline, StreamConfig, StreamMode, BufferStrategy
+from .dataset_sharding import DatasetSharder, ShardRouter, ShardRebalancer, ShardingConfig, ShardingStrategy, ShardStatus
+from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, CheckpointConfig, CheckpointStrategy, CheckpointStatus, ProcessingState
+from .dataset_parallelization import ParallelExecutor, ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelMode
+from .dataset_indexing import DatasetIndexBuilder, QueryOptimizer, IndexType, IndexStatus
+from .dataset_compression import DatasetCompressor, StreamingCompressor, CompressionAnalyzer, BatchCompressor, CompressionAlgorithm, CompressionLevel
+from .dataset_versioning import DatasetVersionControl, VersionStatus
+from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, QueryOperator, LogicalOperator
+from .dataset_benchmarking import DatasetBenchmark, BenchmarkCategory
+from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionAlgorithm, EncryptionPolicyManager, BatchEncryptor, EncryptionStatus
+from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicationStrategy, SyncMode, IncrementalReplicator, ReplicationMonitor
+from .dataset_observability import DatasetObservability, MetricsCollector, StructuredLogger, TraceCollector, MetricType, LogLevel, SpanKind
+from .dataset_provenance import ProvenanceTracker, DatasetProvenanceRecorder, ProvenanceValidator, ProvenanceEventType, EntityType, ProvenanceRelation
+from .dataset_federation import FederatedQueryExecutor, EndpointRegistry, QueryPlanner, FederatedQuery, FederationStrategy, DatasetEndpoint
+from .dataset_visualization import DatasetVisualizer, ChartType, ExportFormat
+from .dataset_sampling import DatasetSampler, SamplingStrategy, SampleValidationLevel, SamplingConfig
+from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatus, CompressionLevel, RetentionPolicy
+from .hancock_integration import HancockDataIngester, HancockIngestionConfig, hancock_ingestion_workflow
+from .fuzzing_enrichment import FuzzingEnrichment
+from .peachfuzz_harness import PeachFuzzHarness
+from .corpus_optimization import CorpusOptimizer
+from .security_quality import SecurityQualityScorer
 
 
 def run_plan(args: argparse.Namespace) -> int:
@@ -543,6 +606,2911 @@ def run_train_plan(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_health(args: argparse.Namespace) -> int:
+    monitor = DatasetHealthMonitor(
+        history_dir=args.history_dir,
+        quality_warning=args.quality_warning,
+        quality_critical=args.quality_critical,
+        duplicate_warning=args.duplicate_warning,
+        duplicate_critical=args.duplicate_critical,
+    )
+    
+    if args.trend:
+        trend = monitor.analyze_trend(args.dataset, days=args.days)
+        content = json.dumps(trend.to_dict(), indent=2, sort_keys=True)
+        if args.output:
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.output).write_text(content + "\n", encoding="utf-8")
+        print(content)
+        return 0 if trend.trend_direction != "degrading" else 2
+    else:
+        snapshot = monitor.check_health(args.dataset, save_history=not args.no_save)
+        if args.json_output or args.markdown_output:
+            json_path = Path(args.json_output or "reports/health-snapshot.json")
+            json_path.parent.mkdir(parents=True, exist_ok=True)
+            json_path.write_text(snapshot.to_json() + "\n", encoding="utf-8")
+            if args.markdown_output:
+                md_path = Path(args.markdown_output)
+                md_path.parent.mkdir(parents=True, exist_ok=True)
+                md_path.write_text(snapshot.to_markdown() + "\n", encoding="utf-8")
+        if args.format == "markdown":
+            print(snapshot.to_markdown())
+        else:
+            print(snapshot.to_json())
+        return 0 if snapshot.is_healthy else 2
+
+
+def run_optimize(args: argparse.Namespace) -> int:
+    optimizer = DatasetOptimizer()
+    
+    if args.output:
+        output_path = args.output
+    else:
+        dataset_name = Path(args.dataset).stem
+        output_path = str(Path(args.output_dir) / f"{dataset_name}-optimized.jsonl")
+    
+    report = optimizer.optimize(
+        args.dataset,
+        output_path=output_path,
+        remove_duplicates=not args.skip_dedup,
+        filter_low_quality=not args.skip_filter,
+        quality_threshold=args.quality_threshold,
+    )
+    
+    if args.report_json or args.report_markdown:
+        optimizer.write_report(
+            report,
+            args.report_json or "reports/optimization.json",
+            args.report_markdown,
+        )
+    
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    
+    return 0
+
+
+def run_batch(args: argparse.Namespace) -> int:
+    """Run batch operation on multiple datasets"""
+    if args.operation == "health":
+        monitor = BatchHealthMonitor(
+            quality_warning=args.quality_warning,
+            quality_critical=args.quality_critical,
+            duplicate_warning=args.duplicate_warning,
+            duplicate_critical=args.duplicate_critical,
+        )
+        batch_report = monitor.check_directory(args.directory, args.pattern)
+    elif args.operation == "optimize":
+        optimizer = BatchOptimizer()
+        batch_report = optimizer.optimize_directory(
+            args.directory,
+            args.output_dir,
+            args.pattern,
+            skip_on_error=not args.fail_on_error,
+            remove_duplicates=not args.skip_dedup,
+            filter_low_quality=not args.skip_filter,
+            quality_threshold=args.quality_threshold,
+        )
+    elif args.operation == "score":
+        scorer = BatchQualityScorer(
+            min_record_score=args.min_record_score,
+            min_average_score=args.min_average_score,
+            max_failed_ratio=args.max_failed_ratio,
+            min_records=args.min_records,
+        )
+        batch_report = scorer.score_directory(args.directory, args.pattern)
+    else:
+        print(f"Unknown operation: {args.operation}")
+        return 1
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(batch_report.to_json() + "\n", encoding="utf-8")
+    
+    if args.markdown_output:
+        Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.markdown_output).write_text(batch_report.to_markdown() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(batch_report.to_markdown())
+    else:
+        print(batch_report.to_json())
+    
+    return 0 if batch_report.failed == 0 else 1
+
+
+def run_status(args: argparse.Namespace) -> int:
+    """Show dataset status dashboard"""
+    dashboard = StatusDashboard(
+        quality_warning=args.quality_warning,
+        quality_critical=args.quality_critical,
+        duplicate_warning=args.duplicate_warning,
+        duplicate_critical=args.duplicate_critical,
+        min_average_score=args.min_average_score,
+        max_failed_ratio=args.max_failed_ratio,
+    )
+    
+    if args.all or args.directory:
+        directory = args.directory or "data/datasets"
+        status = dashboard.get_directory_status(directory, args.pattern)
+        
+        if args.json_output or args.markdown_output:
+            dashboard.write_status(
+                status,
+                args.json_output,
+                args.markdown_output,
+            )
+        
+        if args.format == "markdown":
+            print(status.to_markdown())
+        else:
+            print(status.to_json())
+        
+        return 0 if status.ready_datasets == status.total_datasets else 2
+    else:
+        # Single dataset status
+        status = dashboard.get_status(args.dataset)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(status.to_json() + "\n", encoding="utf-8")
+        
+        print(status.to_json())
+        return 0 if status.overall_ready else 2
+
+
+def run_compare(args: argparse.Namespace) -> int:
+    """Compare two datasets to analyze improvements"""
+    comparator = DatasetComparator()
+    
+    comparison = comparator.compare(args.baseline, args.candidate)
+    
+    if args.json_output or args.markdown_output:
+        comparator.write_comparison(
+            comparison,
+            args.json_output,
+            args.markdown_output,
+        )
+    
+    if args.format == "markdown":
+        print(comparison.to_markdown())
+    else:
+        print(comparison.to_json())
+    
+    # Exit code based on whether candidate is an improvement
+    if args.fail_on_regression and not comparison.is_improvement:
+        return 2
+    
+    return 0
+
+
+def run_version(args: argparse.Namespace) -> int:
+    """Manage dataset versions"""
+    manager = DatasetVersionManager(args.version_dir)
+    
+    if args.operation == "create":
+        version = manager.create_version(
+            dataset_path=args.dataset,
+            version=args.version,
+            message=args.message,
+            author=args.author,
+            tags=args.tags.split(",") if args.tags else None,
+        )
+        print(version.to_json())
+        return 0
+    
+    elif args.operation == "list":
+        versions = manager.list_versions(args.dataset_name)
+        output = {"dataset": args.dataset_name, "versions": [v.to_dict() for v in versions]}
+        print(json.dumps(output, indent=2))
+        return 0
+    
+    elif args.operation == "rollback":
+        output_path = manager.rollback(args.dataset_name, args.target_version, args.output)
+        print(json.dumps({"rolled_back_to": args.target_version, "output": str(output_path)}, indent=2))
+        return 0
+    
+    elif args.operation == "changelog":
+        changelog = manager.generate_changelog(args.dataset_name, args.output)
+        if not args.output:
+            print(changelog)
+        return 0
+    
+    elif args.operation == "tag":
+        manager.tag_version(args.dataset_name, args.version, args.tag)
+        print(json.dumps({"tagged": args.version, "tag": args.tag}, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_workflow(args: argparse.Namespace) -> int:
+    """Execute automated workflows"""
+    engine = WorkflowEngine()
+    
+    if args.operation == "run":
+        # Load and execute workflow
+        workflow = engine.load_workflow(args.workflow_file)
+        result = engine.execute(workflow)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+        
+        if args.markdown_output:
+            Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.markdown_output).write_text(result.to_summary() + "\n", encoding="utf-8")
+        
+        if args.format == "markdown":
+            print(result.to_summary())
+        else:
+            print(result.to_json())
+        
+        return 0 if result.success else 1
+    
+    elif args.operation == "create-standard":
+        # Create standard pipeline workflow
+        workflow = create_standard_pipeline()
+        engine.save_workflow(workflow, args.output or "workflows/standard-pipeline.json")
+        print(f"Created standard pipeline workflow at {args.output or 'workflows/standard-pipeline.json'}")
+        return 0
+    
+    return 1
+
+
+def run_trend(args: argparse.Namespace) -> int:
+    """Analyze quality trends"""
+    analyzer = QualityTrendAnalyzer(args.trend_dir)
+    
+    if args.operation == "record":
+        snapshot = analyzer.record_snapshot(args.dataset)
+        print(json.dumps(snapshot.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "analyze":
+        report = analyzer.analyze_trend(args.dataset_name)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+        
+        if args.markdown_output:
+            Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+        
+        if args.format == "markdown":
+            print(report.to_markdown())
+        else:
+            print(report.to_json())
+        
+        return 0
+    
+    elif args.operation == "report":
+        report = analyzer.generate_report(args.dataset_name, args.output)
+        if not args.output:
+            print(report)
+        return 0
+    
+    return 1
+
+
+def run_merge(args: argparse.Namespace) -> int:
+    """Merge multiple datasets"""
+    merger = DatasetMerger()
+    
+    result = merger.merge(
+        source_datasets=args.sources,
+        output_path=args.output,
+        remove_duplicates=not args.keep_duplicates,
+        preserve_source_metadata=args.preserve_metadata,
+    )
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(result.to_summary())
+    else:
+        print(result.to_json())
+    
+    return 0
+
+
+def run_split(args: argparse.Namespace) -> int:
+    """Split dataset into parts"""
+    splitter = DatasetSplitter()
+    
+    if args.strategy == "count":
+        result = splitter.split_by_count(
+            args.dataset,
+            args.output_dir,
+            args.split_count,
+            args.prefix,
+        )
+    elif args.strategy == "ratio":
+        # Parse ratios
+        ratios = {}
+        for ratio_str in args.ratios:
+            name, value = ratio_str.split("=")
+            ratios[name] = float(value)
+        
+        result = splitter.split_by_ratio(
+            args.dataset,
+            args.output_dir,
+            ratios,
+            shuffle=args.shuffle,
+            seed=args.seed,
+        )
+    elif args.strategy == "size":
+        result = splitter.split_by_size(
+            args.dataset,
+            args.output_dir,
+            args.max_records,
+            args.prefix,
+        )
+    else:
+        print(f"Unknown strategy: {args.strategy}")
+        return 1
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(result.to_summary())
+    else:
+        print(result.to_json())
+    
+    return 0
+
+
+def run_sample(args: argparse.Namespace) -> int:
+    """Sample dataset using various strategies"""
+    sampler = SmartSampler(seed=args.seed)
+    
+    if args.strategy == "random":
+        result = sampler.random_sample(
+            args.dataset,
+            args.output,
+            sample_size=args.size,
+            sample_ratio=args.ratio,
+        )
+    elif args.strategy == "quality":
+        result = sampler.quality_based_sample(
+            args.dataset,
+            args.output,
+            args.size,
+            min_quality_score=args.min_quality,
+        )
+    elif args.strategy == "stratified":
+        result = sampler.stratified_sample(
+            args.dataset,
+            args.output,
+            args.ratio,
+            stratify_field=args.stratify_field,
+        )
+    elif args.strategy == "reservoir":
+        result = sampler.reservoir_sample(
+            args.dataset,
+            args.output,
+            args.size,
+        )
+    elif args.strategy == "diversity":
+        result = sampler.diversity_sample(
+            args.dataset,
+            args.output,
+            args.size,
+            diversity_field=args.diversity_field,
+        )
+    elif args.strategy == "time":
+        result = sampler.time_based_sample(
+            args.dataset,
+            args.output,
+            args.ratio,
+            time_field=args.time_field,
+            recent_first=args.recent_first,
+        )
+    else:
+        print(f"Unknown strategy: {args.strategy}")
+        return 1
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(result.to_summary())
+    else:
+        print(result.to_json())
+    
+    return 0
+
+
+def run_profile(args: argparse.Namespace) -> int:
+    """Profile dataset processing performance"""
+    profiler = PerformanceProfiler()
+    
+    if args.operation == "pipeline":
+        report = profiler.profile_full_pipeline(
+            args.dataset,
+            include_read=not args.skip_read,
+            include_dedup=not args.skip_dedup,
+            include_quality=not args.skip_quality,
+        )
+    elif args.operation == "read":
+        profiler.profile_dataset_read(args.dataset)
+        report = profiler.generate_report(args.dataset)
+    elif args.operation == "dedup":
+        profiler.profile_deduplication(args.dataset)
+        report = profiler.generate_report(args.dataset)
+    elif args.operation == "quality":
+        profiler.profile_quality_scoring(args.dataset)
+        report = profiler.generate_report(args.dataset)
+    else:
+        print(f"Unknown operation: {args.operation}")
+        return 1
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+    
+    if args.markdown_output:
+        Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    
+    return 0
+
+
+def run_validate(args: argparse.Namespace) -> int:
+    """Validate dataset with schema and rules"""
+    validator = DatasetValidator()
+    
+    if args.schema:
+        # Load schema from file
+        with open(args.schema) as f:
+            schema = json.load(f)
+        report = validator.validate_with_schema(args.dataset, schema)
+    else:
+        # Use default rules
+        if args.required_fields:
+            validator.add_rule(RequiredFieldRule(args.required_fields))
+        
+        report = validator.validate_dataset(args.dataset, stop_on_error=args.stop_on_error)
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+    
+    if args.markdown_output:
+        Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    
+    return 0 if report.is_valid() else 1
+
+
+def run_incremental(args: argparse.Namespace) -> int:
+    """Incremental dataset updates"""
+    updater = IncrementalUpdater(id_field=args.id_field)
+    
+    if args.operation == "detect":
+        # Detect changes between datasets
+        delta = updater.detect_changes(args.baseline, args.updated)
+        
+        if args.save_delta:
+            updater.save_delta(delta, args.save_delta)
+        
+        print(delta.to_json())
+        return 0
+    
+    elif args.operation == "apply":
+        # Apply delta to dataset
+        if args.delta_file:
+            delta = updater.load_delta(args.delta_file)
+        elif args.updated:
+            delta = updater.detect_changes(args.baseline, args.updated)
+        else:
+            print("Error: Must specify --delta-file or --updated for apply operation")
+            return 1
+        
+        result = updater.apply_delta(args.baseline, delta, output_path=args.output)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+        
+        if args.format == "markdown":
+            print(result.to_summary())
+        else:
+            print(result.to_json())
+        
+        return 0
+    
+    elif args.operation == "history":
+        # View change history
+        tracker = ChangeTracker(args.history_dir or "data/history")
+        
+        if args.changelog:
+            changelog = tracker.generate_changelog(args.dataset_name, output_path=args.changelog)
+            print(changelog)
+        else:
+            history = tracker.get_history(args.dataset_name)
+            print(json.dumps(history, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_catalog(args: argparse.Namespace) -> int:
+    """Dataset catalog and discovery"""
+    catalog = DatasetCatalog(args.index or "data/catalog.json")
+    
+    if args.operation == "index":
+        # Index a dataset
+        entry = catalog.index_dataset(
+            args.dataset,
+            tags=args.tags,
+            metadata=json.loads(args.metadata) if args.metadata else None,
+        )
+        catalog.save()
+        print(json.dumps(entry.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "search":
+        # Search catalog
+        results = catalog.search(
+            query=args.query,
+            tags=args.tags,
+            min_quality=args.min_quality,
+            min_records=args.min_records,
+            source_repo=args.source_repo,
+        )
+        
+        if args.format == "json":
+            print(json.dumps([r.to_dict() for r in results], indent=2))
+        else:
+            print(f"Found {len(results)} dataset(s):\n")
+            for result in results:
+                entry = result.entry
+                print(f"- {entry.dataset_name} ({entry.record_count:,} records, {entry.file_size_mb:.1f} MB)")
+                print(f"  Quality: {entry.quality_score or 'N/A'}, Tags: {', '.join(entry.tags)}")
+                if result.match_reasons:
+                    print(f"  Matches: {', '.join(result.match_reasons)}")
+                print()
+        
+        return 0
+    
+    elif args.operation == "list":
+        # List all datasets
+        entries = catalog.list_all(sort_by=args.sort_by)
+        
+        if args.format == "json":
+            print(json.dumps([e.to_dict() for e in entries], indent=2))
+        elif args.format == "markdown":
+            print(catalog.generate_report())
+        else:
+            for entry in entries:
+                print(f"{entry.dataset_name}: {entry.record_count:,} records, {entry.file_size_mb:.1f} MB")
+        
+        return 0
+    
+    elif args.operation == "update":
+        # Update catalog entry
+        catalog.update_entry(
+            args.dataset,
+            quality_score=args.quality_score,
+            tags=args.tags,
+            metadata=json.loads(args.metadata) if args.metadata else None,
+        )
+        catalog.save()
+        print(f"Updated catalog entry for {args.dataset}")
+        return 0
+    
+    return 1
+
+
+def run_security_scan(args: argparse.Namespace) -> int:
+    """Scan dataset for security issues"""
+    scanner = DatasetSecurityScanner()
+    
+    if args.operation == "scan":
+        report = scanner.scan_dataset(args.dataset, stop_on_critical=args.stop_on_critical)
+    elif args.operation == "scan-field":
+        report = scanner.scan_field(args.dataset, args.field)
+    elif args.operation == "quick-scan":
+        report = scanner.quick_scan(args.dataset, sample_size=args.sample_size)
+    else:
+        print(f"Unknown operation: {args.operation}")
+        return 1
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+    
+    if args.markdown_output:
+        Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+    
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    
+    # Return error code if critical issues found
+    return 0 if report.is_safe() else 1
+
+
+def run_export_advanced(args: argparse.Namespace) -> int:
+    """Export dataset to advanced formats"""
+    exporters = AdvancedExporters()
+    
+    if args.format == "llama3":
+        result = exporters.export_llama3(args.source, args.output, system_prompt=args.system_prompt)
+    elif args.format == "gemini":
+        result = exporters.export_gemini(args.source, args.output)
+    elif args.format == "claude":
+        result = exporters.export_claude(args.source, args.output, system_prompt=args.system_prompt)
+    elif args.format == "hancock_cybersecurity":
+        result = exporters.export_hancock_cybersecurity(args.source, args.output)
+    elif args.format == "mistral":
+        result = exporters.export_mistral(args.source, args.output)
+    elif args.format == "qwen":
+        result = exporters.export_qwen(args.source, args.output, system_prompt=args.system_prompt)
+    elif args.format == "unsloth":
+        result = exporters.export_unsloth(args.source, args.output)
+    elif args.format == "jsonl_conversation":
+        result = exporters.export_jsonl_with_conversation(args.source, args.output)
+    else:
+        print(f"Unknown format: {args.format}")
+        print(f"Available formats: {', '.join(get_advanced_format_names())}")
+        return 1
+    
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(json.dumps(result.to_dict(), indent=2) + "\n", encoding="utf-8")
+    
+    print(f"Exported {result.records_exported} records to {result.output_path}")
+    print(f"Format: {result.export_format}")
+    
+    return 0
+
+
+def run_lineage(args: argparse.Namespace) -> int:
+    """Generate dataset lineage visualizations"""
+    visualizer = LineageVisualizer()
+    
+    if args.source_type == "manifest":
+        visualizer.build_from_manifest(args.source)
+    elif args.source_type == "catalog":
+        visualizer.build_from_catalog(args.source)
+    else:
+        print(f"Unknown source type: {args.source_type}")
+        return 1
+    
+    # Save in requested formats
+    if args.format == "dot" or args.all_formats:
+        output = args.output or "lineage.dot"
+        visualizer.save_dot(output)
+        print(f"Saved DOT format to {output}")
+    
+    if args.format == "mermaid" or args.all_formats:
+        output = args.output or "lineage.mmd"
+        visualizer.save_mermaid(output)
+        print(f"Saved Mermaid format to {output}")
+    
+    if args.format == "ascii" or args.all_formats:
+        output = args.output or "lineage.txt"
+        visualizer.save_ascii(output)
+        print(f"Saved ASCII format to {output}")
+    
+    if args.format == "markdown" or args.all_formats:
+        output = args.output or "lineage.md"
+        visualizer.save_markdown_with_mermaid(output, title=args.title or "Dataset Lineage")
+        print(f"Saved Markdown with Mermaid to {output}")
+    
+    # Print to console if no output file
+    if not args.output and not args.all_formats:
+        if args.format == "dot":
+            print(visualizer.to_dot())
+        elif args.format == "mermaid":
+            print(visualizer.to_mermaid())
+        elif args.format == "ascii":
+            print(visualizer.to_ascii())
+        elif args.format == "markdown":
+            print(visualizer.generate_markdown_with_mermaid())
+    
+    return 0
+
+
+def run_diff(args: argparse.Namespace) -> int:
+    """Generate dataset diff report"""
+    diff_engine = DatasetDiffEngine()
+    
+    if args.operation == "diff":
+        report = diff_engine.diff(args.base, args.compare, compare_content=not args.no_content_compare)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+        
+        if args.markdown_output:
+            Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+        
+        if args.format == "markdown":
+            print(report.to_markdown())
+        else:
+            print(report.to_json())
+        
+        return 0
+    
+    elif args.operation == "patch":
+        # Generate patch file
+        op_count = diff_engine.generate_patch(args.base, args.compare, args.output)
+        print(f"Generated patch with {op_count} operations: {args.output}")
+        return 0
+    
+    elif args.operation == "apply":
+        # Apply patch file
+        record_count = diff_engine.apply_patch(args.base, args.patch, args.output)
+        print(f"Applied patch, output has {record_count} records: {args.output}")
+        return 0
+    
+    elif args.operation == "find-duplicates":
+        # Find duplicates between datasets
+        duplicates = diff_engine.find_duplicates_between_datasets(args.base, args.compare)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(json.dumps(duplicates, indent=2) + "\n", encoding="utf-8")
+        
+        print(f"Found {len(duplicates)} duplicate records between datasets")
+        for id1, id2 in duplicates[:10]:  # Show first 10
+            print(f"  {id1} <-> {id2}")
+        if len(duplicates) > 10:
+            print(f"  ... and {len(duplicates) - 10} more")
+        
+        return 0
+    
+    return 1
+
+
+def run_policy_template(args: argparse.Namespace) -> int:
+    """Manage policy templates"""
+    
+    if args.operation == "list":
+        templates = PolicyTemplateLibrary.list_templates()
+        print(f"Available policy templates ({len(templates)}):\n")
+        for template_id in templates:
+            template = PolicyTemplateLibrary.get_template(template_id)
+            print(f"- {template_id}: {template.name}")
+            print(f"  {template.description}")
+            print()
+        return 0
+    
+    elif args.operation == "get":
+        template = PolicyTemplateLibrary.get_template(args.template_id)
+        
+        if args.output:
+            PolicyTemplateLibrary.save_template(template, args.output)
+            print(f"Saved template to {args.output}")
+        else:
+            print(template.to_json())
+        
+        return 0
+    
+    elif args.operation == "save":
+        template = PolicyTemplateLibrary.get_template(args.template_id)
+        PolicyTemplateLibrary.save_template(template, args.output)
+        print(f"Saved {args.template_id} to {args.output}")
+        return 0
+    
+    return 1
+
+
+def run_analytics(args: argparse.Namespace) -> int:
+    """Generate dataset analytics reports"""
+    analytics = DatasetAnalyticsEngine()
+    
+    if args.operation == "analyze":
+        report = analytics.analyze(args.dataset, compute_quality=not args.skip_quality)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+        
+        if args.markdown_output:
+            Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+        
+        if args.format == "markdown":
+            print(report.to_markdown())
+        else:
+            print(report.to_json())
+        
+        return 0
+    
+    elif args.operation == "compare":
+        comparison = analytics.compare_datasets(args.dataset1, args.dataset2)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(json.dumps(comparison, indent=2) + "\n", encoding="utf-8")
+        
+        print(json.dumps(comparison, indent=2))
+        return 0
+    
+    elif args.operation == "outliers":
+        outliers = analytics.find_outliers(args.dataset, threshold=args.threshold)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(json.dumps(outliers, indent=2) + "\n", encoding="utf-8")
+        
+        print(f"Found {len(outliers)} outlier records:")
+        for outlier in outliers[:20]:  # Show first 20
+            print(f"  {outlier['record_id']}: {outlier['type']} (z={outlier['z_score']})")
+        if len(outliers) > 20:
+            print(f"  ... and {len(outliers) - 20} more")
+        
+        return 0
+    
+    elif args.operation == "summary":
+        summary = analytics.generate_summary_statistics(args.dataset)
+        print(json.dumps(summary, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_migrate(args: argparse.Namespace) -> int:
+    engine = DatasetMigrationEngine()
+    
+    if args.operation == "migrate":
+        # Load migration plan
+        plan = engine.load_plan(args.plan)
+        
+        # Validate plan
+        errors = engine.validate_plan(plan)
+        if errors:
+            print("Migration plan validation errors:")
+            for error in errors:
+                print(f"  - {error}")
+            return 1
+        
+        # Execute migration
+        result = engine.migrate_dataset(args.source, args.output, plan)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(json.dumps(result.to_dict(), indent=2) + "\n", encoding="utf-8")
+        
+        print(f"Migration complete: {result.migrated_records}/{result.source_records} records migrated")
+        if result.failed_records > 0:
+            print(f"  Failed: {result.failed_records} records")
+        
+        return 0 if result.failed_records == 0 else 1
+    
+    elif args.operation == "create-plan":
+        # Create new migration plan
+        plan = engine.create_simple_plan(
+            plan_id=args.plan_id,
+            source_schema=args.source_schema,
+            target_schema=args.target_schema,
+        )
+        
+        # Save plan
+        engine.save_plan(plan, args.output)
+        print(f"Created migration plan: {args.output}")
+        return 0
+    
+    elif args.operation == "add-rule":
+        # Load existing plan
+        plan = engine.load_plan(args.plan)
+        
+        # Add rule
+        rule = MigrationRule(
+            rule_type=args.rule_type,
+            target_field=args.target_field,
+            params=json.loads(args.params) if args.params else {},
+        )
+        plan.add_rule(rule)
+        
+        # Save updated plan
+        engine.save_plan(plan, args.plan)
+        print(f"Added {args.rule_type} rule for field '{args.target_field}'")
+        return 0
+    
+    return 1
+
+
+def run_enhance(args: argparse.Namespace) -> int:
+    engine = QualityEnhancementEngine()
+    
+    if args.operation == "analyze":
+        report = engine.analyze_dataset(args.dataset, args.json_output)
+        
+        if args.markdown_output:
+            # Generate markdown report
+            lines = [
+                f"# Quality Enhancement Report\n",
+                f"**Total Records:** {report.total_records}  ",
+                f"**Records with Issues:** {report.records_with_issues} ({report.records_with_issues / report.total_records * 100:.1f}%)  ",
+                f"**Total Issues:** {report.total_issues}  ",
+                f"**Auto-Fixable:** {report.auto_fixable_count} records  \n",
+                "## Issue Summary\n",
+            ]
+            
+            # Count by type
+            issue_counts: dict[str, int] = {}
+            for suggestion in report.suggestions:
+                for issue in suggestion.issues:
+                    issue_counts[issue.issue_type] = issue_counts.get(issue.issue_type, 0) + 1
+            
+            for issue_type, count in sorted(issue_counts.items(), key=lambda x: x[1], reverse=True):
+                lines.append(f"- **{issue_type}**: {count} issues")
+            
+            Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.markdown_output).write_text("\n".join(lines) + "\n", encoding="utf-8")
+        
+        if args.format == "json":
+            print(report.to_json())
+        else:
+            print(f"Total records: {report.total_records}")
+            print(f"Records with issues: {report.records_with_issues} ({report.records_with_issues / report.total_records * 100:.1f}%)")
+            print(f"Total issues: {report.total_issues}")
+            print(f"Auto-fixable: {report.auto_fixable_count} records")
+        
+        return 0
+    
+    elif args.operation == "auto-fix":
+        fixed_count = engine.apply_auto_fixes(args.dataset, args.output)
+        print(f"Applied automatic fixes to {fixed_count} records")
+        print(f"Output: {args.output}")
+        return 0
+    
+    return 1
+
+
+def run_dashboard(args: argparse.Namespace) -> int:
+    dashboard_engine = DatasetMetricsDashboard()
+    
+    if args.operation == "generate":
+        dashboard = dashboard_engine.generate_dashboard(
+            args.dataset,
+            dataset_id=args.dataset_id or Path(args.dataset).stem,
+        )
+        
+        # Save outputs
+        if args.json_output:
+            dashboard_engine.save_dashboard(dashboard, args.json_output, format="json")
+        
+        if args.markdown_output:
+            dashboard_engine.save_dashboard(dashboard, args.markdown_output, format="markdown")
+        
+        # Display
+        if args.format == "markdown":
+            print(dashboard.to_markdown())
+        else:
+            print(dashboard.to_json())
+        
+        # Alert summary
+        if dashboard.alerts:
+            print(f"\n🚨 {len(dashboard.alerts)} alert(s):")
+            for alert in dashboard.alerts:
+                print(f"  - {alert}")
+        
+        return 0
+    
+    elif args.operation == "compare":
+        # Generate both dashboards
+        dashboard1 = dashboard_engine.generate_dashboard(args.dataset1, dataset_id="dataset1")
+        dashboard2 = dashboard_engine.generate_dashboard(args.dataset2, dataset_id="dataset2")
+        
+        # Compare
+        comparison = dashboard_engine.compare_dashboards(dashboard1, dashboard2)
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(json.dumps(comparison, indent=2) + "\n", encoding="utf-8")
+        
+        print(json.dumps(comparison, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_backup(args: argparse.Namespace) -> int:
+    backup_restore = DatasetBackupRestore(backup_dir=args.backup_dir or "data/backups")
+    
+    if args.operation == "create":
+        # Create full backup
+        metadata = backup_restore.create_full_backup(
+            args.dataset,
+            args.dataset_id,
+            tags=json.loads(args.tags) if args.tags else None,
+        )
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(metadata.to_json() + "\n", encoding="utf-8")
+        
+        print(f"Backup created: {metadata.backup_id}")
+        print(f"Records: {metadata.record_count}")
+        print(f"Size: {metadata.total_bytes} bytes")
+        return 0
+    
+    elif args.operation == "incremental":
+        # Create incremental backup
+        metadata = backup_restore.create_incremental_backup(
+            args.dataset,
+            args.dataset_id,
+            args.parent_backup_id,
+            tags=json.loads(args.tags) if args.tags else None,
+        )
+        
+        print(f"Incremental backup created: {metadata.backup_id}")
+        print(f"New/changed records: {metadata.record_count}")
+        return 0
+    
+    elif args.operation == "restore":
+        # Restore backup
+        result = backup_restore.restore_backup(
+            args.backup_id,
+            args.dataset_id,
+            args.output,
+            verify_checksum=not args.skip_checksum,
+        )
+        
+        print(f"Restored {result.records_restored} records to {result.dataset_path}")
+        if result.checksum_verified:
+            print("✓ Checksum verified")
+        return 0
+    
+    elif args.operation == "list":
+        # List backups
+        inventory = backup_restore.list_backups(args.dataset_id)
+        
+        if args.format == "json":
+            print(inventory.to_json())
+        else:
+            print(f"Backups for {inventory.dataset_id}:")
+            for backup in inventory.backups:
+                print(f"  {backup.backup_id}: {backup.record_count} records, {backup.backup_type}, {backup.timestamp}")
+        
+        return 0
+    
+    elif args.operation == "validate":
+        # Validate backup
+        valid = backup_restore.validate_backup(args.backup_id, args.dataset_id)
+        
+        if valid:
+            print(f"✓ Backup {args.backup_id} is valid")
+            return 0
+        else:
+            print(f"✗ Backup {args.backup_id} is invalid")
+            return 1
+    
+    elif args.operation == "delete":
+        # Delete backup
+        deleted = backup_restore.delete_backup(args.backup_id, args.dataset_id)
+        
+        if deleted:
+            print(f"Deleted backup {args.backup_id}")
+            return 0
+        else:
+            print(f"Backup {args.backup_id} not found")
+            return 1
+    
+    elif args.operation == "cleanup":
+        # Cleanup old backups
+        deleted = backup_restore.cleanup_old_backups(args.dataset_id, keep_count=args.keep)
+        print(f"Deleted {deleted} old backups")
+        return 0
+    
+    return 1
+
+
+def run_export_v2(args: argparse.Namespace) -> int:
+    exporter = ExportFormatsV2()
+    
+    if args.operation == "export":
+        # Export to single format
+        result = exporter.export_to_format(
+            args.source,
+            args.output,
+            args.format,
+            system_prompt=args.system_prompt,
+        )
+        
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(json.dumps(result.to_dict(), indent=2) + "\n", encoding="utf-8")
+        
+        print(f"Exported {result.records_exported} records to {result.format_name} format")
+        print(f"Output: {result.output_path}")
+        return 0
+    
+    elif args.operation == "batch":
+        # Export to multiple formats
+        formats = args.formats.split(",")
+        results = exporter.batch_export(args.source, args.output_dir, formats)
+        
+        print(f"Batch export complete: {len(results)} formats")
+        for format_name, result in results.items():
+            print(f"  {format_name}: {result.records_exported} records")
+        
+        return 0
+    
+    elif args.operation == "list-formats":
+        # List supported formats
+        formats = exporter.get_supported_formats()
+        print("Supported export formats:")
+        for fmt in formats:
+            print(f"  - {fmt}")
+        return 0
+    
+    return 1
+
+
+def run_gate(args: argparse.Namespace) -> int:
+    gate_engine = QualityGateEngine()
+    
+    if args.operation == "evaluate":
+        # Load gate config
+        if args.config:
+            config = gate_engine.load_config(args.config)
+        elif args.strict:
+            config = gate_engine.create_standard_gate(strict=True)
+        elif args.ci:
+            config = gate_engine.create_ci_gate()
+        else:
+            config = gate_engine.create_standard_gate(strict=False)
+        
+        # Evaluate gate
+        report = gate_engine.evaluate_gate(config, args.dataset, args.dataset_id or "dataset")
+        
+        # Save outputs
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(report.to_json() + "\n", encoding="utf-8")
+        
+        if args.markdown_output:
+            Path(args.markdown_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.markdown_output).write_text(report.to_markdown() + "\n", encoding="utf-8")
+        
+        # Display result
+        if args.format == "markdown":
+            print(report.to_markdown())
+        else:
+            print(report.to_json())
+        
+        # Exit with appropriate code
+        return 0 if report.gate_passed else 1
+    
+    elif args.operation == "create-config":
+        # Create gate config
+        if args.strict:
+            config = gate_engine.create_standard_gate(gate_id=args.gate_id, strict=True)
+        elif args.ci:
+            config = gate_engine.create_ci_gate()
+        else:
+            config = gate_engine.create_standard_gate(gate_id=args.gate_id, strict=False)
+        
+        # Save config
+        gate_engine.save_config(config, args.output)
+        print(f"Gate config created: {args.output}")
+        return 0
+    
+    return 1
+
+
+def run_optimize(args: argparse.Namespace) -> int:
+    optimizer = DatasetOptimizer(output_dir=args.output_dir)
+    report = optimizer.optimize(
+        dataset_path=args.dataset,
+        remove_duplicates=not args.skip_dedup,
+        filter_low_quality=not args.skip_filter,
+        quality_threshold=args.quality_threshold,
+        output_path=args.output,
+    )
+    if args.report_json or args.report_markdown:
+        json_path = Path(args.report_json or "reports/optimization-report.json")
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(report.to_json() + "\n", encoding="utf-8")
+        if args.report_markdown:
+            md_path = Path(args.report_markdown)
+            md_path.parent.mkdir(parents=True, exist_ok=True)
+            md_path.write_text(report.to_markdown() + "\n", encoding="utf-8")
+    if args.format == "markdown":
+        print(report.to_markdown())
+    else:
+        print(report.to_json())
+    return 0 if report.status == "completed" else 1
+
+
+def run_profiler(args: argparse.Namespace) -> int:
+    """Profile dataset for statistical analysis"""
+    profiler = DatasetProfiler()
+    
+    profile = profiler.profile_dataset(
+        Path(args.dataset),
+        dataset_id=args.dataset_id or "dataset",
+        compute_tokens=args.compute_tokens,
+    )
+    
+    # Save profile
+    if args.json_output:
+        profiler.save_profile(profile, Path(args.json_output), format="json")
+    
+    if args.markdown_output:
+        profiler.save_profile(profile, Path(args.markdown_output), format="markdown")
+    
+    # Compare profiles if requested
+    if args.compare:
+        baseline_profile = profiler.profile_dataset(
+            Path(args.compare),
+            dataset_id="baseline",
+            compute_tokens=args.compute_tokens,
+        )
+        comparison = profiler.compare_profiles(baseline_profile, profile)
+        print(json.dumps(comparison, indent=2))
+        return 0
+    
+    # Display profile
+    if args.format == "markdown":
+        print(profile.to_markdown())
+    else:
+        print(profile.to_json())
+    
+    return 0
+
+
+def run_test(args: argparse.Namespace) -> int:
+    """Run automated dataset tests"""
+    framework = DatasetTestFramework()
+    
+    if args.operation == "generate":
+        # Generate synthetic test dataset
+        records = framework.generate_test_dataset(
+            num_records=args.num_records,
+            output_path=Path(args.output),
+        )
+        print(f"Generated {len(records)} test records: {args.output}")
+        return 0
+    
+    elif args.operation == "validate-schema":
+        # Validate schema
+        test_case = framework.run_schema_tests(
+            Path(args.dataset),
+            required_fields=args.required_fields.split(",") if args.required_fields else ["id", "content"],
+        )
+        
+        print(f"Schema validation: {'PASSED' if test_case.passed else 'FAILED'}")
+        if not test_case.passed:
+            print(f"Error: {test_case.error_message}")
+        
+        return 0 if test_case.passed else 1
+    
+    elif args.operation == "regression":
+        # Run regression tests
+        test_case = framework.run_regression_tests(
+            Path(args.baseline),
+            Path(args.current),
+        )
+        
+        print(f"Regression test: {'PASSED' if test_case.passed else 'FAILED'}")
+        if not test_case.passed:
+            print(f"Error: {test_case.error_message}")
+        
+        return 0 if test_case.passed else 1
+    
+    elif args.operation == "property":
+        # Run property tests
+        # Define property function based on property name
+        if args.property_name == "has_content":
+            prop_func = lambda r: bool(r.get("content", "").strip())
+        elif args.property_name == "has_id":
+            prop_func = lambda r: "id" in r
+        elif args.property_name == "quality_above_threshold":
+            threshold = args.property_threshold or 70.0
+            prop_func = lambda r: r.get("quality_score", 0.0) >= threshold
+        else:
+            print(f"Unknown property: {args.property_name}")
+            return 1
+        
+        test_case = framework.run_property_tests(
+            Path(args.dataset),
+            args.property_name,
+            prop_func,
+        )
+        
+        print(f"Property test '{args.property_name}': {'PASSED' if test_case.passed else 'FAILED'}")
+        if not test_case.passed:
+            print(f"Error: {test_case.error_message}")
+        
+        return 0 if test_case.passed else 1
+    
+    return 1
+
+
+def run_monitor(args: argparse.Namespace) -> int:
+    """Monitor dataset health"""
+    
+    if args.operation == "health":
+        # Perform health check
+        config = MonitoringConfig(
+            dataset_id=args.dataset_id or "dataset",
+            quality_threshold=args.quality_threshold,
+            min_record_count=args.min_record_count,
+            max_age_hours=args.max_age_hours,
+        )
+        
+        monitor = DatasetMonitor(config)
+        status = monitor.check_health(Path(args.dataset))
+        
+        # Save status
+        if args.json_output:
+            monitor.save_health_status(status, Path(args.json_output))
+        
+        # Display status
+        print(status.to_json())
+        
+        return 0 if status.overall_status == "healthy" else 1
+    
+    elif args.operation == "dashboard":
+        # Generate monitoring dashboard
+        config = MonitoringConfig(
+            dataset_id=args.dataset_id or "dataset",
+            quality_threshold=args.quality_threshold,
+            min_record_count=args.min_record_count,
+        )
+        
+        monitor = DatasetMonitor(config)
+        # Perform initial health check to populate metrics
+        monitor.check_health(Path(args.dataset))
+        
+        return 0
+    
+    return 1
+
+
+def run_sync(args: argparse.Namespace) -> int:
+    """Synchronize datasets across environments"""
+    synchronizer = DatasetSynchronizer()
+    
+    # Determine conflict resolution strategy
+    resolution = ConflictResolution.NEWEST_WINS
+    if args.conflict_resolution == "source":
+        resolution = ConflictResolution.SOURCE_WINS
+    elif args.conflict_resolution == "target":
+        resolution = ConflictResolution.TARGET_WINS
+    
+    # Perform sync operation
+    if args.bidirectional:
+        result = synchronizer.bidirectional_sync(
+            Path(args.source),
+            Path(args.target),
+            resolution=resolution,
+        )
+    else:
+        result = synchronizer.sync(
+            Path(args.source),
+            Path(args.target),
+            resolution=resolution,
+        )
+    
+    # Save report if requested
+    if args.json_output:
+        Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+    
+    # Display results
+    print(f"Sync complete: {result.added_records} added, {result.updated_records} updated, {result.deleted_records} deleted")
+    print(f"Conflicts resolved: {result.conflicts_resolved}")
+    
+    return 0
+
+
+def run_transform(args: argparse.Namespace) -> int:
+    """Transform datasets using ETL pipelines"""
+    transformer = DatasetTransformer()
+    
+    if args.operation == "apply":
+        # Load pipeline and apply transformation
+        pipeline = transformer.load_pipeline(Path(args.pipeline))
+        result = transformer.apply_pipeline(
+            Path(args.source),
+            Path(args.output),
+            pipeline,
+        )
+        
+        # Save report
+        if args.json_output:
+            Path(args.json_output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.json_output).write_text(result.to_json() + "\n", encoding="utf-8")
+        
+        print(f"Transformation complete: {result.input_records} → {result.output_records} records")
+        print(f"Filtered: {result.filtered_records}, Transformed fields: {result.transformed_fields}")
+        
+        return 0 if result.success else 1
+    
+    elif args.operation == "create-standard":
+        # Create standard ETL pipeline
+        pipeline = transformer.create_standard_pipeline(args.pipeline_id or "standard_etl")
+        transformer.save_pipeline(pipeline, Path(args.output))
+        
+        print(f"Created standard pipeline: {args.output}")
+        return 0
+    
+    return 1
+
+
+def run_recommend(args: argparse.Namespace) -> int:
+    """Generate dataset configuration recommendations"""
+    recommender = DatasetRecommender()
+    
+    if args.operation == "generate":
+        # Generate recommendations
+        report = recommender.generate_recommendations(Path(args.dataset))
+        
+        # Save report
+        if args.output:
+            recommender.save_recommendations(report, Path(args.output))
+        
+        # Display summary
+        if args.format == "markdown":
+            print(f"# Dataset Recommendations for {report.dataset_path}\n")
+            print(f"## Summary\n")
+            print(f"- Total recommendations: {report.summary['total_recommendations']}")
+            print(f"- High impact: {report.summary['high_impact']}")
+            print(f"- Medium impact: {report.summary['medium_impact']}")
+            print(f"- Low impact: {report.summary['low_impact']}")
+            print(f"- Avg confidence: {report.summary['avg_confidence']:.2f}\n")
+            print(f"## Recommendations\n")
+            for rec in report.recommendations:
+                print(f"### {rec.category.title()}: {rec.parameter}")
+                print(f"- Current: {rec.current_value}")
+                print(f"- Recommended: {rec.recommended_value}")
+                print(f"- Impact: {rec.impact}")
+                print(f"- Reason: {rec.score.reason}\n")
+        else:
+            print(report.to_json())
+        
+        return 0
+    
+    elif args.operation == "apply":
+        # Load and apply recommendations
+        report = recommender.load_recommendations(Path(args.report))
+        
+        # Create config from recommendations
+        current_config = json.loads(args.config) if args.config else {}
+        new_config = recommender.apply_recommendations(
+            report,
+            current_config,
+            impact_threshold=args.impact_threshold or "medium",
+        )
+        
+        # Save updated config
+        if args.output:
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.output).write_text(json.dumps(new_config, indent=2) + "\n", encoding="utf-8")
+        
+        print(f"Applied recommendations with impact >= {args.impact_threshold or 'medium'}")
+        print(json.dumps(new_config, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_collaborate(args: argparse.Namespace) -> int:
+    """Manage dataset collaboration sessions"""
+    engine = DatasetCollaborationEngine()
+    
+    if args.operation == "create":
+        # Create new collaboration session
+        owner = CollaboratorInfo(
+            user_id=args.user_id or "owner",
+            username=args.username or "owner",
+            email=args.email or "owner@example.com",
+            role="owner",
+            joined_at=json.dumps({"timestamp": "now"}),
+        )
+        
+        session = engine.create_session(Path(args.dataset), owner)
+        
+        # Save session
+        if args.output:
+            engine.save_session(session.session_id, Path(args.output))
+        
+        print(f"Created session: {session.session_id}")
+        print(session.to_json())
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Load session and show stats
+        session = engine.load_session(Path(args.session))
+        stats = engine.get_collaboration_stats(session.session_id)
+        
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_compliance(args: argparse.Namespace) -> int:
+    """Check dataset compliance with regulations"""
+    tracker = DatasetComplianceTracker()
+    
+    if args.operation == "check":
+        # Parse regulations
+        regulations = [ComplianceRegulation(r) for r in args.regulations.split(",")]
+        
+        # Load metadata if provided
+        metadata = {}
+        if args.metadata:
+            metadata = json.loads(Path(args.metadata).read_text(encoding="utf-8"))
+        
+        # Run compliance check
+        report = tracker.check_compliance(
+            Path(args.dataset),
+            regulations,
+            metadata,
+        )
+        
+        # Save report
+        if args.output:
+            tracker.save_report(report, Path(args.output))
+        
+        # Display summary
+        print(f"Compliance Score: {report.summary['compliance_score']:.2%}")
+        print(f"Total Checks: {report.summary['total_checks']}")
+        print(f"Compliant: {report.summary['compliant']}")
+        print(f"Non-Compliant: {report.summary['non_compliant']}")
+        print(f"Partially Compliant: {report.summary['partially_compliant']}")
+        
+        if args.json_output:
+            print("\nFull Report:")
+            print(report.to_json())
+        
+        return 0 if report.summary['compliance_score'] >= 0.8 else 1
+    
+    elif args.operation == "remediate":
+        # Load report and generate remediation plan
+        report = tracker.load_report(Path(args.report))
+        plan = tracker.get_remediation_plan(report)
+        
+        print("Remediation Plan:\n")
+        
+        if plan["critical"]:
+            print("CRITICAL (Must Fix):")
+            for item in plan["critical"]:
+                print(f"  - {item}")
+            print()
+        
+        if plan["important"]:
+            print("IMPORTANT (Should Fix):")
+            for item in plan["important"]:
+                print(f"  - {item}")
+            print()
+        
+        if plan["recommended"]:
+            print("RECOMMENDED (Nice to Fix):")
+            for item in plan["recommended"]:
+                print(f"  - {item}")
+        
+        return 0
+    
+    return 1
+
+
+def run_cache(args: argparse.Namespace) -> int:
+    """Manage dataset caching and performance optimization"""
+    optimizer = DatasetCacheOptimizer(
+        max_memory_mb=args.max_memory_mb,
+        max_disk_mb=args.max_disk_mb,
+    )
+    
+    if args.operation == "enable":
+        # Cache dataset
+        cache_key = optimizer.cache_dataset(
+            Path(args.dataset),
+            use_disk=args.use_disk,
+        )
+        
+        print(f"Dataset cached with key: {cache_key}")
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show cache statistics
+        stats = optimizer.get_cache_statistics()
+        
+        print("Cache Statistics:")
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "clear":
+        # Clear cache
+        optimizer.clear_all_cache()
+        
+        print("Cache cleared")
+        
+        return 0
+    
+    elif args.operation == "recommend":
+        # Recommend cache size
+        recommendations = optimizer.recommend_cache_size(
+            Path(args.dataset),
+            target_hit_rate=args.target_hit_rate,
+        )
+        
+        print("Cache Recommendations:")
+        print(json.dumps(recommendations, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_schedule(args: argparse.Namespace) -> int:
+    """Manage scheduled dataset tasks"""
+    scheduler = DatasetScheduler()
+    
+    if args.operation == "create":
+        # Create scheduled task
+        task_type = TaskType(args.task_type)
+        schedule_type = ScheduleType(args.schedule_type)
+        
+        # Parse schedule config
+        schedule_config = json.loads(args.schedule_config) if args.schedule_config else {}
+        
+        # Parse params
+        params = json.loads(args.params) if args.params else {}
+        
+        task = scheduler.create_task(
+            task_id=args.task_id,
+            task_type=task_type,
+            schedule_type=schedule_type,
+            schedule_config=schedule_config,
+            dataset_path=Path(args.dataset),
+            params=params,
+        )
+        
+        if args.output:
+            scheduler.save_tasks(Path(args.output))
+        
+        print(f"Created task: {task.task_id}")
+        print(json.dumps(task.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "list":
+        # Load and list tasks
+        if args.tasks_file:
+            scheduler.load_tasks(Path(args.tasks_file))
+        
+        print("Scheduled Tasks:")
+        for task in scheduler.tasks.values():
+            status = "Enabled" if task.enabled else "Disabled"
+            print(f"  {task.task_id}: {task.task_type.value} ({status})")
+            print(f"    Next run: {task.next_run or 'N/A'}")
+        
+        return 0
+    
+    elif args.operation == "run":
+        # Load tasks and run due tasks
+        if args.tasks_file:
+            scheduler.load_tasks(Path(args.tasks_file))
+        
+        executions = scheduler.run_due_tasks()
+        
+        print(f"Executed {len(executions)} tasks:")
+        for execution in executions:
+            status = execution.status.value
+            print(f"  {execution.task_id}: {status}")
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show task statistics
+        if args.tasks_file:
+            scheduler.load_tasks(Path(args.tasks_file))
+        
+        stats = scheduler.get_task_statistics(args.task_id)
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_notify(args: argparse.Namespace) -> int:
+    """Manage dataset notifications"""
+    notifier = DatasetNotificationSystem()
+    
+    if args.operation == "create-rule":
+        # Create notification rule
+        event_type = EventType(args.event_type)
+        notification_type = NotificationType(args.notification_type)
+        channels = [NotificationChannel(c) for c in args.channels.split(",")]
+        recipients = args.recipients.split(",") if args.recipients else []
+        
+        rule = notifier.create_rule(
+            rule_id=args.rule_id,
+            event_type=event_type,
+            notification_type=notification_type,
+            channels=channels,
+            recipients=recipients,
+        )
+        
+        if args.output:
+            notifier.save_rules(Path(args.output))
+        
+        print(f"Created rule: {rule.rule_id}")
+        print(json.dumps(rule.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "emit":
+        # Emit event
+        if args.rules_file:
+            notifier.load_rules(Path(args.rules_file))
+        
+        event_type = EventType(args.event_type)
+        metadata = json.loads(args.metadata) if args.metadata else {}
+        
+        event = notifier.emit_event(
+            event_type=event_type,
+            dataset_path=Path(args.dataset),
+            metadata=metadata,
+        )
+        
+        print(f"Emitted event: {event.event_id}")
+        print(f"Type: {event.event_type.value}")
+        
+        return 0
+    
+    elif args.operation == "list-events":
+        # List recent events
+        events = notifier.get_events(limit=args.limit)
+        
+        print(f"Recent Events ({len(events)}):")
+        for event in events:
+            print(f"  {event.event_id}: {event.event_type.value} - {event.timestamp}")
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show notification statistics
+        stats = notifier.get_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_webhook(args: argparse.Namespace) -> int:
+    """Manage dataset webhooks"""
+    webhook_manager = DatasetWebhookManager()
+    
+    if args.operation == "create":
+        # Create webhook endpoint
+        events = [WebhookEvent(e) for e in args.events.split(",")]
+        
+        endpoint = webhook_manager.create_endpoint(
+            endpoint_id=args.endpoint_id,
+            url=args.url,
+            events=events,
+            secret=args.secret,
+        )
+        
+        if args.output:
+            webhook_manager.save_endpoints(Path(args.output))
+        
+        print(f"Created webhook endpoint: {endpoint.endpoint_id}")
+        print(json.dumps(endpoint.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "trigger":
+        # Trigger webhook
+        if args.endpoints_file:
+            webhook_manager.load_endpoints(Path(args.endpoints_file))
+        
+        event = WebhookEvent(args.event)
+        data = json.loads(args.data) if args.data else {}
+        
+        deliveries = webhook_manager.trigger_webhook(
+            event=event,
+            dataset_path=Path(args.dataset),
+            data=data,
+        )
+        
+        print(f"Triggered {len(deliveries)} webhook(s)")
+        for delivery in deliveries:
+            print(f"  {delivery.endpoint_id}: {delivery.status.value}")
+        
+        return 0
+    
+    elif args.operation == "test":
+        # Test webhook endpoint
+        if args.endpoints_file:
+            webhook_manager.load_endpoints(Path(args.endpoints_file))
+        
+        delivery = webhook_manager.test_endpoint(args.endpoint_id)
+        
+        print(f"Test delivery sent: {delivery.status.value}")
+        print(json.dumps(delivery.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show webhook statistics
+        if args.endpoint_id:
+            stats = webhook_manager.get_endpoint_statistics(args.endpoint_id)
+        else:
+            stats = webhook_manager.get_statistics()
+        
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "alerts":
+        # Check for alerts
+        config = MonitoringConfig(
+            dataset_id=args.dataset_id or "dataset",
+            quality_threshold=args.quality_threshold,
+            min_record_count=args.min_record_count,
+        )
+        
+        monitor = DatasetMonitor(config)
+        metrics = monitor._compute_metrics(Path(args.dataset))
+        alerts = monitor.check_alerts(metrics)
+        
+        print(f"Found {len(alerts)} alerts:")
+        for alert in alerts:
+            print(f"  [{alert.severity.upper()}] {alert.alert_name}: {alert.message}")
+        
+        return 0 if len(alerts) == 0 else 1
+    
+    return 1
+
+
+def run_stream(args: argparse.Namespace) -> int:
+    """Handle stream commands."""
+    config = StreamConfig(
+        buffer_size=args.buffer_size,
+        buffer_strategy=BufferStrategy(args.buffer_strategy),
+        max_memory_mb=args.max_memory_mb,
+    )
+    
+    if args.operation == "read":
+        # Stream read records
+        reader = DatasetStreamReader(config)
+        
+        count = 0
+        for record in reader.stream_records(Path(args.input)):
+            if args.sample and count >= args.sample:
+                break
+            if args.print:
+                print(json.dumps(record, sort_keys=True))
+            count += 1
+        
+        stats = reader.get_statistics()
+        print(f"\nStreamed {stats.records_processed} records ({stats.bytes_read} bytes)")
+        print(f"Throughput: {stats.throughput_records_per_sec:.2f} records/sec")
+        
+        return 0
+    
+    elif args.operation == "transform":
+        # Stream transform
+        processor = DatasetStreamProcessor(config)
+        
+        def identity_transform(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+            return record
+        
+        result = processor.process(
+            Path(args.input),
+            Path(args.output),
+            identity_transform,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    elif args.operation == "merge":
+        # Merge streams
+        processor = DatasetStreamProcessor(config)
+        
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        result = processor.merge_streams(
+            input_paths,
+            Path(args.output),
+            dedup=args.dedup,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    elif args.operation == "split":
+        # Split stream
+        processor = DatasetStreamProcessor(config)
+        
+        def split_fn(record: Dict[str, Any]) -> str:
+            return str(hash(json.dumps(record, sort_keys=True)) % args.num_splits)
+        
+        result = processor.split_stream(
+            Path(args.input),
+            Path(args.output_dir),
+            split_fn,
+            max_splits=args.num_splits,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_shard(args: argparse.Namespace) -> int:
+    """Handle shard commands."""
+    if args.operation == "create":
+        # Create shards
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field,
+            strategy=ShardingStrategy(args.strategy),
+            replication_factor=args.replication_factor,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        shards = sharder.shard_dataset(
+            Path(args.input),
+            Path(args.output_dir),
+            prefix=args.prefix,
+        )
+        
+        print(f"Created {len(shards)} shards in {args.output_dir}")
+        
+        if args.manifest:
+            sharder.save_shard_manifest(Path(args.manifest))
+            print(f"Saved manifest to {args.manifest}")
+        
+        stats = sharder.get_shard_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "merge":
+        # Merge shards
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field or "id",
+            strategy=ShardingStrategy.HASH,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        result = sharder.merge_shards(
+            Path(args.shard_dir),
+            Path(args.output),
+            prefix=args.prefix,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    elif args.operation == "stats":
+        # Show shard statistics
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field or "id",
+            strategy=ShardingStrategy.HASH,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        if args.manifest:
+            sharder.load_shard_manifest(Path(args.manifest))
+        
+        stats = sharder.get_shard_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "balance":
+        # Check shard balance
+        config = ShardingConfig(
+            num_shards=args.num_shards,
+            shard_key_field=args.shard_key_field or "id",
+            strategy=ShardingStrategy.HASH,
+        )
+        
+        sharder = DatasetSharder(config)
+        
+        if args.manifest:
+            sharder.load_shard_manifest(Path(args.manifest))
+        
+        rebalancer = ShardRebalancer(sharder)
+        analysis = rebalancer.analyze_balance()
+        suggestion = rebalancer.suggest_rebalancing()
+        
+        print("Balance Analysis:")
+        print(json.dumps(analysis, indent=2))
+        print("\nRebalancing Suggestion:")
+        print(json.dumps(suggestion, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_checkpoint(args: argparse.Namespace) -> int:
+    """Handle checkpoint commands."""
+    config = CheckpointConfig(
+        strategy=CheckpointStrategy(args.strategy),
+        interval_seconds=args.interval_seconds,
+        interval_records=args.interval_records,
+        max_checkpoints=args.max_checkpoints,
+        checkpoint_dir=Path(args.checkpoint_dir) if args.checkpoint_dir else None,
+    )
+    
+    manager = CheckpointManager(config)
+    
+    if args.operation == "list":
+        # List checkpoints
+        checkpoints = manager.list_checkpoints(
+            operation=args.filter_operation,
+            status=CheckpointStatus(args.filter_status) if args.filter_status else None,
+        )
+        
+        print(f"Found {len(checkpoints)} checkpoints:")
+        for checkpoint in checkpoints:
+            print(f"  {checkpoint.checkpoint_id}: {checkpoint.status.value} - {checkpoint.records_processed} records")
+        
+        return 0
+    
+    elif args.operation == "load":
+        # Load checkpoint state
+        state = manager.load_checkpoint(args.checkpoint_id)
+        
+        if state:
+            print(json.dumps(state.to_dict(), indent=2))
+            return 0
+        else:
+            print(f"Checkpoint {args.checkpoint_id} not found or corrupted")
+            return 1
+    
+    elif args.operation == "delete":
+        # Delete checkpoint
+        success = manager.delete_checkpoint(args.checkpoint_id)
+        
+        if success:
+            print(f"Deleted checkpoint {args.checkpoint_id}")
+            return 0
+        else:
+            print(f"Checkpoint {args.checkpoint_id} not found")
+            return 1
+    
+    elif args.operation == "stats":
+        # Show checkpoint statistics
+        stats = manager.get_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    elif args.operation == "process":
+        # Process with checkpointing
+        processor = CheckpointedStreamProcessor(manager)
+        
+        def identity_transform(record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+            return record
+        
+        result = processor.process(
+            Path(args.input),
+            Path(args.output),
+            identity_transform,
+        )
+        
+        print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_parallel(args: argparse.Namespace) -> int:
+    """Handle parallel processing commands."""
+    config = ParallelConfig(
+        mode=ParallelMode(args.mode),
+        max_workers=args.max_workers,
+        chunk_size=args.chunk_size,
+    )
+    
+    if args.operation == "transform":
+        processor = ParallelDatasetProcessor(config)
+        
+        def identity_transform(record: Dict[str, Any]) -> Dict[str, Any]:
+            return record
+        
+        result = processor.transform(
+            Path(args.input),
+            Path(args.output),
+            identity_transform,
+        )
+        
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    elif args.operation == "filter":
+        processor = ParallelDatasetProcessor(config)
+        
+        def allow_all(record: Dict[str, Any]) -> bool:
+            return True
+        
+        result = processor.filter(
+            Path(args.input),
+            Path(args.output),
+            allow_all,
+        )
+        
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    elif args.operation == "merge":
+        batch_processor = ParallelBatchProcessor(config)
+        
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        result = batch_processor.merge_datasets(input_paths, Path(args.output))
+        
+        print(json.dumps(result, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_index(args: argparse.Namespace) -> int:
+    """Handle indexing commands."""
+    builder = DatasetIndexBuilder(Path(args.index_dir) if args.index_dir else None)
+    
+    if args.operation == "build":
+        if args.index_type == "hash":
+            metadata = builder.build_hash_index(
+                Path(args.dataset),
+                args.field,
+                index_id=args.index_id,
+            )
+        elif args.index_type == "inverted":
+            metadata = builder.build_inverted_index(
+                Path(args.dataset),
+                args.field,
+                index_id=args.index_id,
+            )
+        else:
+            print(f"Unknown index type: {args.index_type}")
+            return 1
+        
+        print(f"Built index: {metadata.index_id}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        
+        if args.save:
+            builder.save_index(metadata.index_id)
+            print(f"Saved index to disk")
+        
+        return 0
+    
+    elif args.operation == "lookup":
+        if args.load:
+            builder.load_index(args.index_id)
+        
+        results = builder.lookup(args.index_id, args.value)
+        print(f"Found {len(results)} records")
+        print(json.dumps(results, indent=2))
+        
+        return 0
+    
+    elif args.operation == "search":
+        if args.load:
+            builder.load_index(args.index_id)
+        
+        results = list(builder.search(args.index_id, args.query))
+        print(f"Found {len(results)} records")
+        print(json.dumps(results, indent=2))
+        
+        return 0
+    
+    elif args.operation == "list":
+        indexes = builder.list_indexes()
+        print(f"Found {len(indexes)} indexes:")
+        for idx in indexes:
+            print(f"  {idx.index_id}: {idx.index_type.value} on {idx.field_name} ({idx.record_count} records)")
+        
+        return 0
+    
+    elif args.operation == "drop":
+        success = builder.drop_index(args.index_id)
+        
+        if success:
+            print(f"Dropped index: {args.index_id}")
+            return 0
+        else:
+            print(f"Index not found: {args.index_id}")
+            return 1
+    
+    elif args.operation == "stats":
+        stats = builder.get_statistics()
+        print(json.dumps(stats, indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_compress(args: argparse.Namespace) -> int:
+    """Handle compression commands."""
+    if args.operation == "compress":
+        algorithm = CompressionAlgorithm(args.algorithm)
+        
+        if args.streaming:
+            compressor = StreamingCompressor(algorithm)
+            metadata = compressor.compress_stream(
+                Path(args.input),
+                Path(args.output),
+                level=args.level,
+            )
+        else:
+            compressor = DatasetCompressor(algorithm)
+            metadata = compressor.compress_file(
+                Path(args.input),
+                Path(args.output),
+                level=args.level,
+            )
+        
+        print(f"Compressed: {metadata.original_size_bytes} -> {metadata.compressed_size_bytes} bytes")
+        print(f"Compression ratio: {metadata.compression_ratio:.2%}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        
+        return 0
+    
+    elif args.operation == "decompress":
+        algorithm = CompressionAlgorithm(args.algorithm)
+        
+        if args.streaming:
+            compressor = StreamingCompressor(algorithm)
+            size = compressor.decompress_stream(Path(args.input), Path(args.output))
+        else:
+            compressor = DatasetCompressor(algorithm)
+            size = compressor.decompress_file(Path(args.input), Path(args.output))
+        
+        print(f"Decompressed: {size} bytes")
+        
+        return 0
+    
+    elif args.operation == "benchmark":
+        analyzer = CompressionAnalyzer()
+        results = analyzer.benchmark_algorithms(Path(args.dataset))
+        
+        print("Compression benchmark results:")
+        for result in results:
+            print(f"  {result.algorithm.value}: {result.compression_ratio:.2%} ratio ({result.compressed_size_bytes} bytes)")
+        
+        best = analyzer.recommend_algorithm(Path(args.dataset))
+        print(f"\nRecommended: {best.value}")
+        
+        return 0
+    
+    elif args.operation == "batch":
+        algorithm = CompressionAlgorithm(args.algorithm)
+        batch_compressor = BatchCompressor(algorithm)
+        
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        results = batch_compressor.compress_datasets(
+            input_paths,
+            Path(args.output_dir),
+            level=args.level,
+        )
+        
+        stats = batch_compressor.get_statistics(results)
+        print(json.dumps(stats.to_dict(), indent=2))
+        
+        return 0
+    
+    return 1
+
+
+def run_version(args: argparse.Namespace) -> int:
+    """Handle dataset versioning commands."""
+    vc = DatasetVersionControl(Path(args.repository))
+    
+    if args.operation == "commit":
+        metadata = vc.commit(
+            Path(args.dataset),
+            args.message,
+            args.author,
+            tags=args.tags.split(",") if args.tags else None,
+        )
+        print(f"Created version: {metadata.version_id}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "checkout":
+        success = vc.checkout(args.version_id, Path(args.output))
+        if success:
+            print(f"Checked out version {args.version_id} to {args.output}")
+            return 0
+        else:
+            print(f"Version {args.version_id} not found")
+            return 1
+    
+    elif args.operation == "diff":
+        diff = vc.diff(args.from_version, args.to_version)
+        print(json.dumps(diff.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "list":
+        versions = vc.list_versions()
+        print(f"Found {len(versions)} versions:")
+        for v in versions:
+            print(f"  {v.version_id}: {v.message} by {v.author} ({v.record_count} records)")
+        return 0
+    
+    elif args.operation == "tag":
+        success = vc.tag_version(args.version_id, args.tag)
+        if success:
+            print(f"Tagged version {args.version_id} with '{args.tag}'")
+            return 0
+        else:
+            print(f"Version {args.version_id} not found")
+            return 1
+    
+    elif args.operation == "history":
+        history = vc.get_history(args.version_id)
+        print(f"Version history ({len(history)} versions):")
+        for v in history:
+            print(f"  {v.version_id}: {v.message}")
+        return 0
+    
+    elif args.operation == "stats":
+        stats = vc.get_statistics()
+        print(json.dumps(stats, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_query(args: argparse.Namespace) -> int:
+    """Handle dataset query commands."""
+    engine = DatasetQueryEngine()
+    
+    # Build query
+    if args.sql:
+        parser = QueryParser()
+        query = parser.parse(args.sql)
+    else:
+        builder = QueryBuilder()
+        
+        if args.field and args.operator:
+            op = QueryOperator(args.operator)
+            builder.where(args.field, op, args.value)
+        
+        if args.select:
+            fields = [f.strip() for f in args.select.split(",")]
+            builder.select(*fields)
+        
+        if args.limit:
+            builder.limit(args.limit)
+        
+        if args.offset:
+            builder.offset(args.offset)
+        
+        if args.order_by:
+            builder.order_by(args.order_by, ascending=not args.descending)
+        
+        query = builder.build()
+    
+    # Execute operation
+    if args.operation == "execute":
+        results = engine.execute(Path(args.dataset), query)
+        print(f"Found {len(results)} records")
+        print(json.dumps(results, indent=2))
+        return 0
+    
+    elif args.operation == "count":
+        count = engine.count(Path(args.dataset), query)
+        print(f"Count: {count}")
+        return 0
+    
+    elif args.operation == "aggregate":
+        result = engine.aggregate(Path(args.dataset), query, args.field, args.agg_func)
+        print(f"{args.agg_func.upper()}({args.field}): {result}")
+        return 0
+    
+    elif args.operation == "group":
+        groups = engine.group_by(Path(args.dataset), query, args.field)
+        print(f"Grouped by {args.field} ({len(groups)} groups):")
+        for key, records in groups.items():
+            print(f"  {key}: {len(records)} records")
+        return 0
+    
+    elif args.operation == "distinct":
+        values = engine.distinct(Path(args.dataset), query, args.field)
+        print(f"Distinct values for {args.field} ({len(values)} unique):")
+        print(json.dumps(values, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_benchmark(args: argparse.Namespace) -> int:
+    """Handle dataset benchmarking commands."""
+    bench = DatasetBenchmark()
+    
+    if args.operation == "read":
+        result = bench.benchmark_read(Path(args.dataset), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "write":
+        result = bench.benchmark_write(Path(args.dataset), Path(args.output), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "transform":
+        def identity(r):
+            return r
+        result = bench.benchmark_transform(Path(args.dataset), identity, Path(args.output), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "filter":
+        def allow_all(r):
+            return True
+        result = bench.benchmark_filter(Path(args.dataset), allow_all, Path(args.output), args.benchmark_id)
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == BenchmarkStatus.COMPLETED else 1
+    
+    elif args.operation == "compare":
+        comparison = bench.compare(args.baseline_id, args.current_id, args.regression_threshold)
+        print(json.dumps(comparison.to_dict(), indent=2))
+        return 0 if not comparison.is_regression else 1
+    
+    elif args.operation == "stats":
+        stats = bench.get_statistics()
+        print(json.dumps(stats, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_encrypt(args: argparse.Namespace) -> int:
+    """Handle dataset encryption commands."""
+    key_manager = KeyManager(Path(args.key_store))
+    encryptor = DatasetEncryptor(key_manager)
+    
+    if args.operation == "encrypt":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        result = encryptor.encrypt_dataset(
+            Path(args.dataset),
+            Path(args.output),
+            key_id=args.key_id,
+            algorithm=algorithm,
+        )
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.status == EncryptionStatus.COMPLETED else 1
+    
+    elif args.operation == "decrypt":
+        result = encryptor.decrypt_dataset(
+            Path(args.encrypted),
+            Path(args.output),
+            args.key_id,
+        )
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.success else 1
+    
+    elif args.operation == "generate-key":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        key = key_manager.generate_key(algorithm)
+        print(json.dumps(key.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "rotate-key":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        new_key = key_manager.rotate_key(args.key_id, algorithm)
+        print(f"Rotated key {args.key_id} to {new_key.key_id}")
+        print(json.dumps(new_key.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "list-keys":
+        keys = key_manager.list_keys(active_only=args.active_only)
+        print(f"Found {len(keys)} keys:")
+        for key in keys:
+            print(f"  {key.key_id}: {key.algorithm.value} (active={key.is_active})")
+        return 0
+    
+    elif args.operation == "batch":
+        algorithm = EncryptionAlgorithm(args.algorithm)
+        batch = BatchEncryptor(encryptor)
+        input_paths = [Path(p) for p in args.inputs.split(",")]
+        results = batch.encrypt_batch(input_paths, Path(args.output_dir), algorithm)
+        stats = batch.get_statistics(results)
+        print(json.dumps(stats, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_replicate(args: argparse.Namespace) -> int:
+    """Handle dataset replication commands."""
+    replica_manager = ReplicaManager(Path(args.config))
+    strategy = ReplicationStrategy(args.strategy) if hasattr(args, "strategy") else ReplicationStrategy.MASTER_SLAVE
+    replicator = DatasetReplicator(replica_manager, strategy)
+    
+    if args.operation == "replicate":
+        log = replicator.replicate(
+            Path(args.dataset),
+            args.source_site,
+            args.target_site,
+        )
+        print(json.dumps(log.to_dict(), indent=2))
+        return 0 if log.status == ReplicationStatus.COMPLETED else 1
+    
+    elif args.operation == "sync":
+        sync_mode = SyncMode(args.sync_mode) if hasattr(args, "sync_mode") else SyncMode.PUSH
+        result = replicator.sync_sites(
+            args.source_site,
+            args.target_site,
+            mode=sync_mode,
+        )
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0 if result.success else 1
+    
+    elif args.operation == "add-site":
+        from .dataset_replication import ReplicaSite
+        site = ReplicaSite(
+            site_id=args.site_id,
+            location=args.location,
+            endpoint=args.endpoint,
+            is_master=args.is_master,
+        )
+        replica_manager.add_site(site)
+        print(f"Added site {args.site_id}")
+        return 0
+    
+    elif args.operation == "list-sites":
+        sites = replica_manager.list_sites(active_only=args.active_only)
+        print(f"Found {len(sites)} sites:")
+        for site in sites:
+            print(f"  {site.site_id}: {site.location} (master={site.is_master})")
+        return 0
+    
+    elif args.operation == "status":
+        status = replicator.get_replication_status()
+        print(json.dumps(status, indent=2))
+        return 0
+    
+    elif args.operation == "health":
+        monitor = ReplicationMonitor(replicator)
+        health = monitor.check_health()
+        print(json.dumps(health, indent=2))
+        return 0
+    
+    return 1
+
+
+def run_observe(args: argparse.Namespace) -> int:
+    """Handle dataset observability commands."""
+    metrics = MetricsCollector()
+    logger = StructuredLogger(Path(args.log_output) if hasattr(args, "log_output") and args.log_output else None)
+    traces = TraceCollector()
+    observability = DatasetObservability(metrics, logger, traces)
+    
+    if args.operation == "record-metric":
+        metric_type = MetricType(args.metric_type)
+        if metric_type == MetricType.COUNTER:
+            metrics.record_counter(args.name, args.value, labels=json.loads(args.labels) if hasattr(args, "labels") and args.labels else None)
+        elif metric_type == MetricType.GAUGE:
+            metrics.record_gauge(args.name, args.value, labels=json.loads(args.labels) if hasattr(args, "labels") and args.labels else None)
+        else:
+            metrics.record_histogram(args.name, args.value, labels=json.loads(args.labels) if hasattr(args, "labels") and args.labels else None)
+        print(f"Recorded {metric_type.value} metric: {args.name} = {args.value}")
+        return 0
+    
+    elif args.operation == "log":
+        level = LogLevel(args.level)
+        logger.log(level, args.message, args.log_operation, context=json.loads(args.context) if hasattr(args, "context") and args.context else None)
+        print(f"Logged {level.value}: {args.message}")
+        return 0
+    
+    elif args.operation == "start-trace":
+        kind = SpanKind(args.span_kind) if hasattr(args, "span_kind") else SpanKind.INTERNAL
+        span = traces.start_span(args.trace_name, args.trace_id, kind=kind)
+        print(f"Started trace span: {span.span_id}")
+        print(json.dumps(span.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "end-trace":
+        from .dataset_observability import SpanStatus
+        status = SpanStatus.OK if not hasattr(args, "error") or not args.error else SpanStatus.ERROR
+        traces.end_span(args.span_id, status)
+        span = traces.get_span(args.span_id)
+        print(f"Ended trace span: {args.span_id} ({status.value})")
+        if span:
+            print(json.dumps(span.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "report":
+        report = observability.get_telemetry_report()
+        print(json.dumps(report, indent=2))
+        return 0
+    
+    elif args.operation == "export":
+        observability.export_all(Path(args.export_dir))
+        print(f"Exported telemetry to {args.export_dir}")
+        return 0
+    
+    return 1
+
+
+def run_provenance(args: argparse.Namespace) -> int:
+    """Handle provenance tracking commands."""
+    tracker = ProvenanceTracker(Path(args.storage) if hasattr(args, "storage") and args.storage else None)
+    recorder = DatasetProvenanceRecorder(tracker)
+    
+    if args.operation == "register-entity":
+        entity_type = EntityType(args.entity_type)
+        entity = tracker.register_entity(
+            args.entity_id,
+            entity_type,
+            args.name,
+            attributes=json.loads(args.attributes) if hasattr(args, "attributes") and args.attributes else None,
+        )
+        print(json.dumps(entity.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "record-creation":
+        dataset_id = recorder.record_creation(
+            Path(args.dataset),
+            args.agent_id,
+            source_paths=[Path(p) for p in args.sources.split(",")] if hasattr(args, "sources") and args.sources else None,
+        )
+        print(f"Recorded creation: {dataset_id}")
+        return 0
+    
+    elif args.operation == "record-transformation":
+        dataset_id = recorder.record_transformation(
+            Path(args.input_dataset),
+            Path(args.output_dataset),
+            args.transformation_name,
+            args.agent_id,
+        )
+        print(f"Recorded transformation: {dataset_id}")
+        return 0
+    
+    elif args.operation == "get-chain":
+        chain = tracker.get_chain(args.entity_id)
+        print(json.dumps(chain.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "get-ancestors":
+        ancestors = tracker.get_ancestors(args.entity_id)
+        print(f"Found {len(ancestors)} ancestors:")
+        for ancestor in ancestors:
+            print(f"  {ancestor.entity_id}: {ancestor.name}")
+        return 0
+    
+    elif args.operation == "validate":
+        validator = ProvenanceValidator(tracker)
+        result = validator.validate_chain(args.entity_id)
+        print(json.dumps(result, indent=2))
+        return 0 if result["valid"] else 1
+    
+    elif args.operation == "export":
+        tracker.export_provenance(Path(args.output))
+        print(f"Exported provenance to {args.output}")
+        return 0
+    
+    return 1
+
+
+def run_federate(args: argparse.Namespace) -> int:
+    """Handle federated query commands."""
+    registry = EndpointRegistry(Path(args.registry) if hasattr(args, "registry") and args.registry else None)
+    planner = QueryPlanner(registry)
+    executor = FederatedQueryExecutor(registry, planner)
+    
+    if args.operation == "register-endpoint":
+        endpoint = DatasetEndpoint(
+            endpoint_id=args.endpoint_id,
+            name=args.name,
+            location=Path(args.location),
+            endpoint_type=args.endpoint_type if hasattr(args, "endpoint_type") else "local",
+        )
+        registry.register_endpoint(endpoint)
+        print(f"Registered endpoint: {args.endpoint_id}")
+        return 0
+    
+    elif args.operation == "list-endpoints":
+        endpoints = registry.list_endpoints(available_only=args.available_only if hasattr(args, "available_only") else False)
+        print(f"Found {len(endpoints)} endpoints:")
+        for ep in endpoints:
+            print(f"  {ep.endpoint_id}: {ep.name} ({ep.location})")
+        return 0
+    
+    elif args.operation == "query":
+        from .dataset_federation import FederationCatalog
+        
+        query = FederatedQuery(
+            query_id=args.query_id,
+            endpoints=args.endpoints.split(","),
+            query_text=args.query_text,
+            query_type="select",
+        )
+        
+        strategy = FederationStrategy(args.strategy) if hasattr(args, "strategy") else FederationStrategy.PARALLEL
+        result = executor.execute(query, strategy)
+        
+        print(json.dumps(result.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "index":
+        from .dataset_federation import FederationCatalog
+        catalog = FederationCatalog(registry)
+        catalog.index_endpoint(args.endpoint_id)
+        print(f"Indexed endpoint: {args.endpoint_id}")
+        return 0
+    
+    return 1
+
+
+def run_visualize(args: argparse.Namespace) -> int:
+    """Handle dataset visualization commands."""
+    visualizer = DatasetVisualizer()
+    
+    if args.operation == "create":
+        chart_type = ChartType(args.chart_type)
+        visualization = visualizer.visualize_dataset(
+            Path(args.dataset),
+            chart_type,
+            args.field,
+            title=args.title if hasattr(args, "title") else None,
+        )
+        print(f"Created visualization: {visualization.visualization_id}")
+        print(json.dumps(visualization.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "export":
+        # Re-create visualization
+        chart_type = ChartType(args.chart_type)
+        visualization = visualizer.visualize_dataset(
+            Path(args.dataset),
+            chart_type,
+            args.field,
+        )
+        
+        export_format = ExportFormat(args.format)
+        visualizer.export_visualization(visualization, Path(args.output), export_format)
+        print(f"Exported visualization to {args.output}")
+        return 0
+    
+    elif args.operation == "stats":
+        stats = visualizer.get_statistics(Path(args.dataset), args.field)
+        print(json.dumps(stats.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "dashboard":
+        fields = args.fields.split(",")
+        generated_files = visualizer.create_dashboard(
+            Path(args.dataset),
+            fields,
+            Path(args.output_dir),
+        )
+        print(f"Created dashboard with {len(generated_files)} files")
+        print(f"Index: {Path(args.output_dir) / 'index.html'}")
+        return 0
+    
+    return 1
+
+
+def run_archive(args: argparse.Namespace) -> int:
+    """Handle dataset archival commands."""
+    archiver = DatasetArchiver(Path(args.archive_dir))
+    index_manager = ArchiveIndexManager(Path(args.archive_dir) / "index.json")
+    
+    if args.operation == "create":
+        retention = RetentionPolicy(args.retention)
+        compression = CompressionLevel(args.compression)
+        
+        metadata = archiver.archive_dataset(
+            Path(args.dataset),
+            retention_policy=retention,
+            compression_level=compression,
+        )
+        
+        index_manager.add_archive(metadata)
+        
+        print(f"Archive created: {metadata.archive_id}")
+        print(json.dumps(metadata.to_dict(), indent=2))
+        return 0
+    
+    elif args.operation == "restore":
+        metadata = index_manager.get_archive(args.archive_id)
+        if not metadata:
+            print(f"Archive not found: {args.archive_id}")
+            return 1
+        
+        success = archiver.restore_dataset(metadata, Path(args.output))
+        if success:
+            print(f"Archive restored to {args.output}")
+            return 0
+        else:
+            print(f"Failed to restore archive {args.archive_id}")
+            return 1
+    
+    elif args.operation == "list":
+        status = ArchiveStatus(args.status) if args.status else None
+        archives = index_manager.list_archives(status=status)
+        
+        print(f"Found {len(archives)} archives:")
+        for archive in archives:
+            print(f"  {archive.archive_id}: {archive.original_path} ({archive.status.value})")
+        
+        return 0
+    
+    elif args.operation == "delete":
+        metadata = index_manager.get_archive(args.archive_id)
+        if not metadata:
+            print(f"Archive not found: {args.archive_id}")
+            return 1
+        
+        success = archiver.delete_archive(metadata)
+        if success:
+            index_manager.remove_archive(args.archive_id)
+            print(f"Archive deleted: {args.archive_id}")
+            return 0
+        else:
+            print(f"Failed to delete archive {args.archive_id}")
+            return 1
+    
+    elif args.operation == "apply-retention":
+        policy_mgr = RetentionPolicyManager(index_manager)
+        result = policy_mgr.apply_retention_policies()
+        
+        print(f"Retention policies applied:")
+        print(f"  Deleted: {result['deleted_count']} archives")
+        if result['errors']:
+            print(f"  Errors: {len(result['errors'])}")
+            for error in result['errors']:
+                print(f"    - {error}")
+        
+        return 0 if not result['errors'] else 1
+    
+    return 1
+
+
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="peachtree", description="Recursive learning-tree dataset engine")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -819,15 +3787,542 @@ def make_parser() -> argparse.ArgumentParser:
     train_plan.add_argument("--markdown-output")
     train_plan.set_defaults(func=run_train_plan)
 
-    policy = sub.add_parser("policy", help="show collection safety policy")
-    policy.set_defaults(func=run_policy)
+    health = sub.add_parser("health", help="monitor dataset health and quality trends")
+    health.add_argument("--dataset", required=True, help="dataset JSONL file to monitor")
+    health.add_argument("--trend", action="store_true", help="analyze trend over time instead of single snapshot")
+    health.add_argument("--days", type=int, default=7, help="days of history for trend analysis")
+    health.add_argument("--history-dir", default="data/health-history", help="directory for health history storage")
+    health.add_argument("--quality-warning", type=float, default=75.0, help="quality score warning threshold")
+    health.add_argument("--quality-critical", type=float, default=60.0, help="quality score critical threshold")
+    health.add_argument("--duplicate-warning", type=float, default=0.15, help="duplicate ratio warning threshold")
+    health.add_argument("--duplicate-critical", type=float, default=0.30, help="duplicate ratio critical threshold")
+    health.add_argument("--no-save", action="store_true", help="do not save snapshot to history")
+    health.add_argument("--format", choices=["json", "markdown"], default="json")
+    health.add_argument("--output", help="output file (for trend analysis)")
+    health.add_argument("--json-output", help="JSON output file (for snapshot)")
+    health.add_argument("--markdown-output", help="markdown output file (for snapshot)")
+    health.set_defaults(func=run_health)
+
+    optimize = sub.add_parser("optimize", help="optimize dataset by removing duplicates and low-quality records")
+    optimize.add_argument("--dataset", required=True, help="source dataset JSONL file")
+    optimize.add_argument("--output", help="output optimized dataset file")
+    optimize.add_argument("--output-dir", default="data/optimized", help="output directory for optimized datasets")
+    optimize.add_argument("--skip-dedup", action="store_true", help="skip duplicate removal")
+    optimize.add_argument("--skip-filter", action="store_true", help="skip quality filtering")
+    optimize.add_argument("--quality-threshold", type=int, default=60, help="minimum quality score to keep records")
+    optimize.add_argument("--format", choices=["json", "markdown"], default="json")
+    optimize.add_argument("--report-json", help="JSON report output file")
+    optimize.add_argument("--report-markdown", help="markdown report output file")
+    optimize.set_defaults(func=run_optimize)
+
+    batch = sub.add_parser("batch", help="batch process multiple datasets in directory")
+    batch.add_argument("operation", choices=["health", "optimize", "score"], help="batch operation to perform")
+    batch.add_argument("--directory", required=True, help="directory containing datasets")
+    batch.add_argument("--pattern", default="*.jsonl", help="file pattern to match (default: *.jsonl)")
+    batch.add_argument("--output-dir", default="data/batch-output", help="output directory for batch operations")
+    batch.add_argument("--quality-warning", type=float, default=75.0, help="quality score warning threshold")
+    batch.add_argument("--quality-critical", type=float, default=60.0, help="quality score critical threshold")
+    batch.add_argument("--duplicate-warning", type=float, default=0.15, help="duplicate ratio warning threshold")
+    batch.add_argument("--duplicate-critical", type=float, default=0.30, help="duplicate ratio critical threshold")
+    batch.add_argument("--skip-dedup", action="store_true", help="skip duplicate removal (optimize only)")
+    batch.add_argument("--skip-filter", action="store_true", help="skip quality filtering (optimize only)")
+    batch.add_argument("--quality-threshold", type=int, default=60, help="minimum quality score (optimize/score)")
+    batch.add_argument("--min-record-score", type=int, default=60, help="minimum record score (score only)")
+    compare = sub.add_parser("compare", help="compare two datasets to analyze improvements")
+    compare.add_argument("--baseline", required=True, help="baseline dataset for comparison")
+    compare.add_argument("--candidate", required=True, help="candidate dataset to compare")
+    compare.add_argument("--format", choices=["json", "markdown"], default="json")
+    compare.add_argument("--json-output", help="JSON output file")
+    compare.add_argument("--markdown-output", help="markdown output file")
+    compare.add_argument("--fail-on-regression", action="store_true", help="exit code 2 if no improvement")
+    compare.set_defaults(func=run_compare)
+
+    version = sub.add_parser("version", help="manage dataset versions with snapshots and rollback")
+    version.add_argument("operation", choices=["create", "list", "rollback", "changelog", "tag"])
+    version.add_argument("--dataset", help="dataset file path (for create)")
+    version.add_argument("--dataset-name", help="dataset name (for list/rollback/changelog/tag)")
+    version.add_argument("--version", help="version string (e.g., v1.0.0)")
+    version.add_argument("--message", help="version commit message (for create)")
+    version.add_argument("--author", default="peachtree", help="version author")
+    version.add_argument("--tags", help="comma-separated tags (e.g., stable,production)")
+    version.add_argument("--tag", help="single tag to add (for tag operation)")
+    version.add_argument("--target-version", help="version to rollback to")
+    version.add_argument("--output", help="output file path")
+    version.add_argument("--version-dir", default=".peachtree/versions", help="version storage directory")
+    version.set_defaults(func=run_version)
+
+    workflow = sub.add_parser("workflow", help="execute automated dataset processing workflows")
+    workflow.add_argument("operation", choices=["run", "create-standard"])
+    workflow.add_argument("--workflow-file", help="workflow definition JSON file (for run)")
+    workflow.add_argument("--output", help="output workflow file (for create-standard)")
+    workflow.add_argument("--format", choices=["json", "markdown"], default="json")
+    workflow.add_argument("--json-output", help="JSON execution report output")
+    workflow.add_argument("--markdown-output", help="markdown execution report output")
+    workflow.set_defaults(func=run_workflow)
+
+    trend = sub.add_parser("trend", help="analyze dataset quality trends over time")
+    trend.add_argument("operation", choices=["record", "analyze", "report"])
+    trend.add_argument("--dataset", help="dataset file path (for record)")
+    trend.add_argument("--dataset-name", help="dataset name (for analyze/report)")
+    trend.add_argument("--trend-dir", default=".peachtree/trends", help="trend data storage directory")
+    trend.add_argument("--format", choices=["json", "markdown"], default="json")
+    trend.add_argument("--json-output", help="JSON analysis output")
+    trend.add_argument("--markdown-output", help="markdown analysis output")
+    trend.add_argument("--output", help="output file path")
+    trend.set_defaults(func=run_trend)
+
+    merge = sub.add_parser("merge", help="merge multiple datasets into one")
+    merge.add_argument("--sources", nargs="+", required=True, help="source datasets to merge")
+    merge.add_argument("--output", required=True, help="output merged dataset path")
+    merge.add_argument("--keep-duplicates", action="store_true", help="do not remove duplicates during merge")
+    merge.add_argument("--preserve-metadata", action="store_true", default=True, help="add source metadata to records")
+    merge.add_argument("--format", choices=["json", "markdown"], default="json")
+    merge.add_argument("--json-output", help="JSON report output")
+    merge.set_defaults(func=run_merge)
+
+    split = sub.add_parser("split", help="split dataset into multiple parts")
+    split.add_argument("--dataset", required=True, help="source dataset to split")
+    split.add_argument("--output-dir", required=True, help="output directory for splits")
+    split.add_argument("--strategy", required=True, choices=["count", "ratio", "size"], help="split strategy")
+    split.add_argument("--split-count", type=int, help="number of splits (for count strategy)")
+    split.add_argument("--ratios", nargs="+", help="split ratios as name=value (e.g., train=0.8 val=0.1 test=0.1)")
+    split.add_argument("--max-records", type=int, help="max records per split (for size strategy)")
+    split.add_argument("--prefix", default="split", help="prefix for output filenames")
+    split.add_argument("--shuffle", action="store_true", help="shuffle before splitting (ratio strategy)")
+    split.add_argument("--seed", type=int, help="random seed for reproducibility")
+    split.add_argument("--format", choices=["json", "markdown"], default="json")
+    split.add_argument("--json-output", help="JSON report output")
+    split.set_defaults(func=run_split)
+
+    sample = sub.add_parser("sample", help="intelligently sample dataset subsets")
+    sample.add_argument("--dataset", required=True, help="source dataset to sample")
+    sample.add_argument("--output", required=True, help="output sample path")
+    sample.add_argument("--strategy", required=True, choices=["random", "quality", "stratified", "reservoir", "diversity", "time"], help="sampling strategy")
+    sample.add_argument("--size", type=int, help="number of records to sample")
+    sample.add_argument("--ratio", type=float, help="ratio of records to sample (0.0-1.0)")
+    sample.add_argument("--min-quality", type=float, default=0.0, help="minimum quality score (quality strategy)")
+    sample.add_argument("--stratify-field", default="source_repo", help="field to stratify on (stratified strategy)")
+    sample.add_argument("--diversity-field", default="content", help="field for diversity (diversity strategy)")
+    sample.add_argument("--time-field", default="timestamp", help="timestamp field (time strategy)")
+    sample.add_argument("--recent-first", action="store_true", default=True, help="sample recent records first (time strategy)")
+    sample.add_argument("--seed", type=int, help="random seed for reproducibility")
+    sample.add_argument("--format", choices=["json", "markdown"], default="json")
+    sample.add_argument("--json-output", help="JSON report output")
+    sample.set_defaults(func=run_sample)
+
+    profile = sub.add_parser("profile", help="profile dataset processing performance")
+    profile.add_argument("--dataset", required=True, help="dataset to profile")
+    profile.add_argument("--operation", required=True, choices=["pipeline", "read", "dedup", "quality"], help="operation to profile")
+    profile.add_argument("--skip-read", action="store_true", help="skip read profiling (pipeline only)")
+    profile.add_argument("--skip-dedup", action="store_true", help="skip dedup profiling (pipeline only)")
+    profile.add_argument("--skip-quality", action="store_true", help="skip quality profiling (pipeline only)")
+    profile.add_argument("--format", choices=["json", "markdown"], default="json")
+    profile.add_argument("--json-output", help="JSON report output")
+    profile.add_argument("--markdown-output", help="markdown report output")
+    profile.set_defaults(func=run_profile)
+
+    validate = sub.add_parser("validate", help="validate dataset with schema and rules")
+    validate.add_argument("--dataset", required=True, help="dataset to validate")
+    validate.add_argument("--schema", help="JSON schema file")
+    validate.add_argument("--required-fields", nargs="+", help="required field names")
+    validate.add_argument("--stop-on-error", action="store_true", help="stop on first error")
+    validate.add_argument("--format", choices=["json", "markdown"], default="json")
+    validate.add_argument("--json-output", help="JSON report output")
+    validate.add_argument("--markdown-output", help="markdown report output")
+    validate.set_defaults(func=run_validate)
+
+    incremental = sub.add_parser("incremental", help="incremental dataset updates")
+    incremental.add_argument("--operation", required=True, choices=["detect", "apply", "history"], help="incremental operation")
+    incremental.add_argument("--baseline", help="baseline dataset")
+    incremental.add_argument("--updated", help="updated dataset (for detect/apply)")
+    incremental.add_argument("--delta-file", help="delta file (for apply)")
+    incremental.add_argument("--save-delta", help="save delta to file (detect only)")
+    incremental.add_argument("--output", help="output dataset path (apply only)")
+    incremental.add_argument("--id-field", default="id", help="record ID field")
+    incremental.add_argument("--history-dir", help="history directory (history only)")
+    incremental.add_argument("--dataset-name", help="dataset name (history only)")
+    incremental.add_argument("--changelog", help="generate changelog (history only)")
+    incremental.add_argument("--format", choices=["json", "markdown"], default="json")
+    incremental.add_argument("--json-output", help="JSON output")
+    incremental.set_defaults(func=run_incremental)
+
+    catalog = sub.add_parser("catalog", help="dataset catalog and discovery")
+    catalog.add_argument("--operation", required=True, choices=["index", "search", "list", "update"], help="catalog operation")
+    catalog.add_argument("--dataset", help="dataset path (index/update)")
+    catalog.add_argument("--index", help="catalog index file path")
+    catalog.add_argument("--tags", nargs="+", help="dataset tags")
+    catalog.add_argument("--metadata", help="JSON metadata string")
+    catalog.add_argument("--query", help="search query (search only)")
+    catalog.add_argument("--min-quality", type=float, help="minimum quality score filter")
+    catalog.add_argument("--min-records", type=int, help="minimum record count filter")
+    catalog.add_argument("--source-repo", help="source repository filter")
+    catalog.add_argument("--sort-by", choices=["modified", "created", "name", "size", "records", "quality"], default="modified", help="sort order (list only)")
+    catalog.add_argument("--quality-score", type=float, help="quality score to set (update only)")
+    catalog.add_argument("--format", choices=["json", "markdown", "text"], default="text")
+    catalog.set_defaults(func=run_catalog)
+
+    security_scan = sub.add_parser("security-scan", help="scan datasets for security issues")
+    security_scan.add_argument("--dataset", required=True, help="dataset to scan")
+    security_scan.add_argument("--operation", required=True, choices=["scan", "scan-field", "quick-scan"], help="scan operation")
+    security_scan.add_argument("--field", help="field to scan (scan-field only)")
+    security_scan.add_argument("--sample-size", type=int, default=100, help="sample size (quick-scan only)")
+    security_scan.add_argument("--stop-on-critical", action="store_true", help="stop on first critical issue")
+    security_scan.add_argument("--format", choices=["json", "markdown"], default="json")
+    security_scan.add_argument("--json-output", help="JSON report output")
+    security_scan.add_argument("--markdown-output", help="markdown report output")
+    security_scan.set_defaults(func=run_security_scan)
+
+    export_advanced = sub.add_parser("export-advanced", help="export to advanced ML framework formats")
+    export_advanced.add_argument("--source", required=True, help="source dataset")
+    export_advanced.add_argument("--output", required=True, help="output file path")
+    export_advanced.add_argument("--format", required=True, choices=get_advanced_format_names(), help="export format")
+    export_advanced.add_argument("--system-prompt", default="You are a helpful AI assistant.", help="system prompt (llama3/claude/qwen)")
+    export_advanced.add_argument("--json-output", help="JSON export result output")
+    export_advanced.set_defaults(func=run_export_advanced)
+
+    # Fuzzing and security enhancements
+    fuzz_enrich = sub.add_parser("fuzz-enrich", help="enrich dataset with fuzzing metadata")
+    fuzz_enrich.add_argument("--source", required=True, help="source dataset to enrich")
+    fuzz_enrich.add_argument("--output", required=True, help="output enriched dataset")
+    fuzz_enrich.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    fuzz_enrich.set_defaults(func=run_fuzz_enrich)
+
+    fuzz_harness = sub.add_parser("fuzz-harness", help="generate PeachFuzz harness from dataset")
+    fuzz_harness.add_argument("--dataset", required=True, help="dataset to build harness from")
+    fuzz_harness.add_argument("--output-dir", required=True, help="output directory for harness")
+    fuzz_harness.add_argument("--optimize-corpus", action="store_true", help="optimize corpus before export")
+    fuzz_harness.add_argument("--corpus-limit", type=int, default=1000, help="max corpus items")
+    fuzz_harness.add_argument("--format", choices=["json", "yaml"], default="yaml", help="harness config format")
+    fuzz_harness.set_defaults(func=run_fuzz_harness)
+
+    corpus_optimize = sub.add_parser("corpus-optimize", help="optimize fuzzing corpus")
+    corpus_optimize.add_argument("--dataset", required=True, help="dataset with corpus seeds")
+    corpus_optimize.add_argument("--output", required=True, help="output directory for optimized corpus")
+    corpus_optimize.add_argument("--strategy", choices=["balanced", "coverage", "crashes", "diverse"], default="balanced", help="optimization strategy")
+    corpus_optimize.add_argument("--max-seeds", type=int, default=1000, help="max seeds to keep")
+    corpus_optimize.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    corpus_optimize.set_defaults(func=run_corpus_optimize)
+
+    security_score = sub.add_parser("security-score", help="score dataset with security-focused quality metrics")
+    security_score.add_argument("--dataset", required=True, help="dataset to score")
+    security_score.add_argument("--output", help="output report path")
+    security_score.add_argument("--security-weight", type=float, default=0.5, help="security metrics weight (0.0-1.0)")
+    security_score.add_argument("--min-score", type=float, default=0.0, help="minimum score threshold")
+    security_score.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    security_score.set_defaults(func=run_security_score)
+
+    # Hancock cybersecurity dataset integration
+    # Hancock cybersecurity dataset integration
+    hancock = sub.add_parser("hancock-discover", help="discover Hancock data sources")
+    hancock.add_argument("--hancock-dir", help="Hancock data directory path (default: ~/Hancock/data)")
+    hancock.add_argument("--output", help="output JSON path for discovered sources")
+    hancock.add_argument("--include-sources", help="comma-separated list of source types to include (mitre,cve,kev,ghsa,atomic,kb,soc-kb)")
+    hancock.set_defaults(func=run_hancock_discover)
+
+    hancock_ingest = sub.add_parser("hancock-ingest", help="ingest Hancock cybersecurity data into PeachTree")
+    hancock_ingest.add_argument("--hancock-dir", help="Hancock data directory path (default: ~/Hancock/data)")
+    hancock_ingest.add_argument("--output-dir", default="data/hancock", help="output directory for dataset and manifests")
+    hancock_ingest.add_argument("--min-quality-score", type=float, default=0.70, help="minimum quality score threshold")
+    hancock_ingest.add_argument("--include-sources", help="comma-separated list of source types to include")
+    hancock_ingest.add_argument("--allow-unknown-license", action="store_true", help="allow sources with unknown licenses")
+    hancock_ingest.add_argument("--skip-handoff", action="store_true", help="skip trainer handoff generation")
+    hancock_ingest.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    hancock_ingest.set_defaults(func=run_hancock_ingest)
+
+    hancock_workflow = sub.add_parser("hancock-workflow", help="run complete Hancock ingestion and preparation workflow")
+    hancock_workflow.add_argument("--hancock-dir", help="Hancock data directory path (default: ~/Hancock/data)")
+    hancock_workflow.add_argument("--output-dir", default="data/hancock", help="output directory for all artifacts")
+    hancock_workflow.add_argument("--min-quality-score", type=float, default=0.70, help="minimum quality score threshold")
+    hancock_workflow.add_argument("--format", choices=["json", "markdown"], default="json", help="output format")
+    hancock_workflow.set_defaults(func=run_hancock_workflow)
 
     return parser
 
 
+def run_fuzz_enrich(args: argparse.Namespace) -> int:
+    """Enrich dataset with fuzzing metadata."""
+    enricher = FuzzingEnrichment()
+    enricher.enrich_dataset(args.source, args.output)
+    
+    result = {
+        "status": "success",
+        "source": args.source,
+        "output": args.output
+    }
+    
+    if args.format == "markdown":
+        print(f"# Fuzzing Enrichment Complete\n\n**Source**: {args.source}\n**Output**: {args.output}")
+    else:
+        print(json.dumps(result, indent=2))
+    
+    return 0
+
+
+def run_fuzz_harness(args: argparse.Namespace) -> int:
+    """Generate PeachFuzz harness from dataset."""
+    harness = PeachFuzzHarness()
+    harness.from_dataset(args.dataset)
+    
+    if args.optimize_corpus:
+        harness = harness.optimize_corpus(max_items=args.corpus_limit)
+    
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Export harness config
+    config_file = output_dir / f"harness.{args.format}"
+    harness.generate_harness_config(config_file, format=args.format)
+    
+    # Export corpus
+    corpus_dir = output_dir / "corpus"
+    harness.export_corpus_directory(corpus_dir)
+    
+    result = {
+        "status": "success",
+        "targets": len(harness.targets),
+        "corpus_items": len(harness.corpus_items),
+        "harness_config": str(config_file),
+        "corpus_dir": str(corpus_dir)
+    }
+    
+    print(json.dumps(result, indent=2))
+    return 0
+
+
+def run_corpus_optimize(args: argparse.Namespace) -> int:
+    """Optimize fuzzing corpus."""
+    import json
+    
+    optimizer = CorpusOptimizer()
+    
+    # Load dataset and add seeds
+    for line in Path(args.dataset).read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            record = json.loads(line)
+            optimizer.add_seed_from_record(record)
+    
+    # Optimize
+    stats = optimizer.optimize(strategy=args.strategy)
+    
+    # Limit seeds if requested
+    original_count = len(optimizer.seeds)
+    if args.max_seeds and len(optimizer.seeds) > args.max_seeds:
+        # Keep highest quality seeds
+        optimizer.seeds = sorted(optimizer.seeds, key=lambda s: s.quality_score, reverse=True)[:args.max_seeds]
+    
+    # Export
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    optimizer.export_optimized_corpus(output_dir)
+    
+    result = {
+        "status": "success",
+        "strategy": args.strategy,
+        "original_seeds": stats["original_count"],
+        "optimized_seeds": len(optimizer.seeds),
+        "max_seeds": args.max_seeds,
+        "output_dir": str(output_dir)
+    }
+    
+    if args.format == "markdown":
+        md = f"""# Corpus Optimization Complete
+
+**Strategy**: {args.strategy}
+**Original Seeds**: {result['original_seeds']}
+**Optimized Seeds**: {result['optimized_seeds']}
+**Output**: {result['output_dir']}
+"""
+        print(md)
+    else:
+        print(json.dumps(result, indent=2))
+    
+    return 0
+
+
+def run_security_score(args: argparse.Namespace) -> int:
+    """Score dataset with security-focused quality metrics."""
+    scorer = SecurityQualityScorer(security_weight=args.security_weight)
+    report = scorer.score_dataset(args.dataset)
+    
+    # Filter by minimum score if specified
+    if args.min_score > 0:
+        passed = [r for r in report.records if r.score >= args.min_score]
+        print(f"Records passing minimum score {args.min_score}: {len(passed)}/{report.record_count}", file=__import__("sys").stderr)
+    
+    result = report.to_dict(include_records=False)
+    
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        if args.format == "markdown":
+            md = f"""# Security Quality Report
+
+## Summary
+- **Dataset**: {args.dataset}
+- **Record Count**: {report.record_count}
+- **Average Score**: {report.average_score:.2f}
+- **Passed Records**: {report.passed_records}
+- **Failed Records**: {report.failed_records}
+
+## Security Statistics
+"""
+            if report.security_stats:
+                md += f"\n- **Vulnerability Indicators**: {report.security_stats['total_vulnerability_indicators']}\n"
+                md += f"- **Crash Reproducibility**: {report.security_stats['crash_reproducible_ratio']:.1%}\n"
+                md += f"- **Sanitizer Coverage**: {report.security_stats['sanitizer_coverage_ratio']:.1%}\n"
+            
+            Path(args.output).write_text(md, encoding="utf-8")
+        else:
+            Path(args.output).write_text(json.dumps(result, indent=2), encoding="utf-8")
+    else:
+        if args.format == "markdown":
+            print(f"# Security Quality Report\n\n**Average Score**: {report.average_score:.2f}\n**Passed**: {report.passed_records}/{report.record_count}")
+        else:
+            print(json.dumps(result, indent=2))
+    
+    return 0
+
+
+def run_hancock_discover(args: argparse.Namespace) -> int:
+    """Discover available Hancock data sources"""
+    hancock_dir = Path(args.hancock_dir).expanduser() if args.hancock_dir else Path("~/Hancock/data").expanduser()
+    
+    config = HancockIngestionConfig(
+        hancock_data_dir=hancock_dir,
+        include_sources=args.include_sources.split(",") if args.include_sources else None
+    )
+    
+    ingester = HancockDataIngester(config)
+    sources = ingester.discover_sources()
+    
+    result = {
+        "hancock_data_dir": str(hancock_dir),
+        "sources_found": len(sources),
+        "sources": [
+            {
+                "name": s.name,
+                "type": s.source_type,
+                "file_path": str(s.file_path),
+                "record_count": s.record_count,
+                "metadata": s.metadata
+            }
+            for s in sources
+        ]
+    }
+    
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    
+    print(json.dumps(result, indent=2))
+    return 0
+
+
+def run_hancock_ingest(args: argparse.Namespace) -> int:
+    """Ingest Hancock data into PeachTree dataset"""
+    hancock_dir = Path(args.hancock_dir).expanduser() if args.hancock_dir else Path("~/Hancock/data").expanduser()
+    output_dir = Path(args.output_dir)
+    
+    config = HancockIngestionConfig(
+        hancock_data_dir=hancock_dir,
+        output_dir=output_dir,
+        min_quality_score=args.min_quality_score,
+        include_sources=args.include_sources.split(",") if args.include_sources else None,
+        allow_unknown_license=args.allow_unknown_license
+    )
+    
+    ingester = HancockDataIngester(config)
+    
+    try:
+        # Ingest all sources
+        documents, manifest = ingester.ingest_all()
+        
+        # Generate trainer handoff if not skipped
+        handoff = None
+        if not args.skip_handoff:
+            handoff = ingester.generate_training_handoff(manifest)
+        
+        result = {
+            "status": "success",
+            "sources_ingested": len(ingester.sources),
+            "total_documents": len(documents),
+            "total_records": len(manifest.records),
+            "dataset_path": str(output_dir / "hancock_security_dataset.jsonl"),
+            "manifest_path": str(output_dir / "hancock_manifest.json"),
+            "handoff_path": str(output_dir / "hancock_trainer_handoff.json") if handoff else None
+        }
+        
+        if args.format == "markdown":
+            md_output = f"""# Hancock Ingestion Complete
+
+## Summary
+- **Status**: {result['status']}
+- **Sources Ingested**: {result['sources_ingested']}
+- **Total Documents**: {result['total_documents']}
+- **Total Records**: {result['total_records']}
+
+## Output Files
+- **Dataset**: `{result['dataset_path']}`
+- **Manifest**: `{result['manifest_path']}`
+- **Trainer Handoff**: `{result['handoff_path'] or 'Not generated'}`
+"""
+            print(md_output)
+        else:
+            print(json.dumps(result, indent=2))
+        
+        return 0
+    
+    except Exception as e:
+        print(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        return 1
+
+
+def run_hancock_workflow(args: argparse.Namespace) -> int:
+    """Run complete Hancock ingestion workflow"""
+    hancock_dir = Path(args.hancock_dir).expanduser() if args.hancock_dir else None
+    output_dir = Path(args.output_dir)
+    
+    try:
+        summary = hancock_ingestion_workflow(
+            hancock_data_dir=hancock_dir,
+            output_dir=output_dir,
+            min_quality_score=args.min_quality_score,
+            generate_handoff=True
+        )
+        
+        if args.format == "markdown":
+            md_output = f"""# Hancock Ingestion Workflow Complete
+
+## Summary
+- **Sources Ingested**: {summary['sources_ingested']}
+- **Total Documents**: {summary['total_documents']}
+- **Total Records**: {summary['total_records']}
+- **Quality Score**: {summary['quality_score']:.2f}
+- **Ready for Training**: {'✅ Yes' if summary['ready_for_training'] else '❌ No'}
+
+## Deduplication Statistics
+- **Duplicates Removed**: {summary['deduplication'].get('removed', 0)}
+- **Records Kept**: {summary['deduplication'].get('kept', 0)}
+
+## Output Files
+- **Dataset**: `{summary['dataset_path']}`
+- **Manifest**: `{summary['manifest_path']}`
+- **Trainer Handoff**: `{summary['handoff_path'] or 'Not generated'}`
+"""
+            print(md_output)
+        else:
+            print(json.dumps(summary, indent=2))
+        
+        return 0 if summary['ready_for_training'] else 2
+    
+    except Exception as e:
+        print(json.dumps({"status": "error", "message": str(e)}, indent=2))
+        return 1
+
+
 def main(argv: list[str] | None = None) -> int:
     args = make_parser().parse_args(argv)
-    return args.func(args)
+    result: int = args.func(args)
+    return result
 
 
 if __name__ == "__main__":

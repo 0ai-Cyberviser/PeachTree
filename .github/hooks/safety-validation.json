@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "bash -c 'if echo \"$TOOL_INPUT\" | grep -q \"git commit.*--no-verify\\|skip.*test\\|YOLO\"; then echo \"{\\\"hookSpecificOutput\\\": {\\\"hookEventName\\\": \\\"PreToolUse\\\", \\\"permissionDecision\\\": \\\"ask\\\", \\\"permissionDecisionReason\\\": \\\"Safety check: Attempting to skip tests or verification. PeachTree requires all 129+ tests to pass before commit.\\\"}}\"; exit 0; else echo \"{\\\"hookSpecificOutput\\\": {\\\"hookEventName\\\": \\\"PreToolUse\\\", \\\"permissionDecision\\\": \\\"allow\\\"}}\"; exit 0; fi'",
+        "timeout": 5
+      }
+    ],
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "bash -c 'cd /tmp/peachtree && echo \"{\\\"systemMessage\\\": \\\"PeachTree Dataset Control Plane - Safety-First Mode Active\\\\n✓ 129+ tests required to pass\\\\n✓ 0 linting violations required\\\\n✓ Local-only by default (no public scraping)\\\\n✓ Human approval required for training\\\\nRun: pytest tests/ -v && ruff check src/ tests/\\\"}\" && exit 0'",
+        "timeout": 3
+      }
+    ]
+  }
+}

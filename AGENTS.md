@@ -1,8 +1,276 @@
-# PeachTree AI Agents & Skills
+# PeachTree AI Agent System
 
-Specialized AI agents and skills for the PeachTree dataset control plane and deployment workflows.
+Specialized AI agents, skills, and instructions for the PeachTree dataset control plane and deployment workflows.
 
-## Overview
+## Quick Start for AI Agents
+
+### Essential Commands
+```bash
+# Setup
+pip install -e ".[dev]"
+
+# Testing (129+ tests must pass)
+pytest tests/ -v
+pytest tests/ --cov=src/peachtree --cov-report=html
+
+# Code Quality (must be 0 violations)
+ruff check src/ tests/
+ruff check --fix src/ tests/
+mypy src/peachtree/ --strict
+
+# CLI Commands (15 available)
+peachtree plan|ingest|build|audit|policy|quality|dedup|export|card|handoff|health|dashboard|hancock-discover|hancock-ingest|hancock-workflow
+```
+
+### Core Principles (CRITICAL)
+1. **Safety-First**: NEVER skip safety gates (secrets, licenses, provenance). Local-only by default - no automatic public GitHub scraping
+2. **Provenance Tracking**: Every record MUST have source repo, source path, SHA256 digest. Use frozen dataclasses
+3. **Quality Standards**: Min score 0.70 (open-safe) or 0.80 (commercial). Zero duplicates for production
+4. **Human Approval**: No automatic training launches. Require explicit approval + policy compliance validation
+
+### Common Pitfalls
+- Frozen dataclasses cannot be modified (create new instances)
+- JSONL format: each line is complete JSON object with provenance, not JSON array
+- Python 3.10+ required (uses modern type hints: `str | None`)
+- All 129+ tests must pass before commit
+
+### Quick Reference
+- **Project structure**: `src/peachtree/` (80+ modules), `tests/` (74+ test files mirroring src)
+- **Entry point**: `src/peachtree/cli.py` (12 commands)
+- **Core models**: `SourceDocument`, `DatasetRecord`, `LearningNode` in `models.py`
+- **Documentation**: See [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/](docs/) for details
+
+---
+
+## Development Guide (Critical API Knowledge)
+
+### Frozen Dataclass Constraints ⚠️
+
+**ALL core models use `@dataclass(frozen=True)` - they are IMMUTABLE**
+
+```python
+# ❌ WRONG - AttributeError: can't set attribute
+record.quality_score = 0.9
+
+# ✅ CORRECT - create new instance with dataclasses.replace()
+from dataclasses import replace
+new_record = replace(record, quality_score=0.9)
+```
+
+**Key Rules:**
+- **Cannot modify** fields after creation
+- Use **tuples** for collections: `tuple[str, ...]` not `list[str]`
+- Computed values via **@property** methods (e.g., `digest`, `id`)
+- Use `field(default_factory=tuple)` for mutable defaults
+
+### JSONL Format (NOT JSON Arrays)
+
+**Each line is a complete, independent JSON object:**
+
+```jsonl
+{"id": "abc123", "instruction": "...", "source_repo": "..."}
+{"id": "def456", "instruction": "...", "source_repo": "..."}
+```
+
+**Reading JSONL:**
+```python
+records = []
+for line in path.read_text(encoding="utf-8").splitlines():
+    if line.strip():
+        records.append(json.loads(line))
+```
+
+**Writing JSONL:**
+```python
+path.write_text(
+    "\n".join(json.dumps(r, sort_keys=True) for r in records) + "\n",
+    encoding="utf-8"
+)
+```
+
+### Critical API Signatures
+
+**DatasetDeduplicator** (most common error):
+```python
+# ✅ CORRECT method name
+deduplicator = DatasetDeduplicator()
+report = deduplicator.deduplicate(
+    source_path="dataset.jsonl",
+    output_path="deduped.jsonl",
+    write_output=True
+)
+
+# ❌ WRONG - does not exist
+deduplicator.deduplicate_dataset(...)  # NO SUCH METHOD
+```
+
+**SourceDocument constructor**:
+```python
+# ✅ CORRECT - uses repo_name, path (digest computed via @property)
+doc = SourceDocument(
+    repo_name="0ai-Cyberviser/PeachTree",
+    path="README.md",
+    content="...",
+    source_type="local-file"
+)
+
+# ❌ WRONG - old API (source_repo, source_path, sha256_digest params don't exist)
+doc = SourceDocument(source_repo="...", sha256_digest="...")
+```
+
+**TrainerHandoffBuilder**:
+```python
+# ✅ CORRECT method name
+handoff = handoff_builder.build()
+
+# ❌ WRONG - does not exist
+handoff = handoff_builder.create_handoff()
+```
+
+### Provenance Requirements (Mandatory)
+
+**Every DatasetRecord MUST have:**
+- `source_repo` - Repository name
+- `source_path` - File path within repo
+- `source_digest` - SHA256 hash (use `sha256_text()` from models)
+- `license_id` - License identifier
+- `created_at` - ISO timestamp (auto-generated)
+
+### Testing Patterns
+
+**Test file structure mirrors source:**
+```
+tests/
+├── test_hancock_integration.py  # Mirror of hancock_integration.py
+├── test_dedup.py                # Mirror of dedup.py
+└── [74+ test files]
+```
+
+**Common test helpers:**
+```python
+def test_example(tmp_path: Path):  # pytest provides tmp_path
+    # Create test JSONL
+    (tmp_path / "dataset.jsonl").write_text(
+        '\n'.join(json.dumps(r) for r in records) + '\n',
+        encoding="utf-8"
+    )
+    
+    # Test with path
+    result = process_dataset(tmp_path / "dataset.jsonl")
+```
+
+### Code Quality Checklist
+
+**Before every commit:**
+```bash
+# 1. All tests pass (129+ tests)
+pytest tests/ -v
+
+# 2. Zero lint violations
+ruff check src/ tests/
+
+# 3. Zero type errors
+mypy src/peachtree/ --strict
+
+# 4. CLI smoke test
+peachtree policy
+```
+
+### Hancock Integration (New)
+
+**Module**: `src/peachtree/hancock_integration.py`
+
+**CLI commands:**
+```bash
+# Discover available sources
+peachtree hancock-discover --hancock-dir ~/Hancock/data
+
+# Run complete workflow (ingest + quality + dedup + handoff)
+peachtree hancock-workflow \
+  --hancock-dir ~/Hancock/data \
+  --output-dir data/hancock \
+  --min-quality-score 0.70
+```
+
+**Python API:**
+```python
+from peachtree.hancock_integration import hancock_ingestion_workflow
+
+summary = hancock_ingestion_workflow(
+    hancock_data_dir=Path("~/Hancock/data"),
+    output_dir=Path("data/hancock"),
+    min_quality_score=0.70
+)
+```
+
+**Supported sources:** MITRE ATT&CK, NVD CVE, CISA KEV, GHSA, Atomic Red Team, KB, SOC-KB, v3 consolidated
+
+### Quick Debugging
+
+```bash
+# ModuleNotFoundError
+pip install -e ".[dev]"
+
+# Test specific file
+pytest tests/test_hancock_integration.py -v --tb=short
+
+# Verify installation
+python -c "import peachtree; print(peachtree.__file__)"
+peachtree --version
+```
+
+**For detailed architecture, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**  
+**For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md)**
+
+---
+
+## Bug Bounty & Security Research
+
+### Cryptocurrency Exchange Vulnerability Patterns
+
+**Supported Platforms**: HackerOne, Bugcrowd (Crypto.com, OKX, Robinhood, Bitstamp, Coinbase, Binance)
+
+**Multi-Platform Assessment**:
+- **Web2**: Traditional web vulnerabilities (RCE, SQLi, XSS, CSRF, SSRF)
+- **Web3**: Wallet, smart contract, blockchain-specific issues
+- **Mobile**: iOS/Android app vulnerabilities (report once per vuln type)
+- **Desktop**: Windows/macOS executable security
+- **Browser Extensions**: Chrome/Edge/Safari wallet extensions
+
+**Severity Classification** (Crypto Exchanges):
+```
+Extreme: $30K-$1M+ (fund theft >$1M, mass account takeover, KYC breach)
+Critical: $5K-$30K (RCE, SQLi core DB, admin takeover, wallet compromise)
+High: $2K-$5K (stored XSS, CSRF on critical actions, auth bypass)
+Medium: $600-$2K (reflected XSS, CSRF non-critical, limited auth bypass)
+Low: $50-$600 (open redirects, info leaks, common CSRF)
+```
+
+**Business Risk Multipliers** (OKX model):
+- Static pages: 1.0× | Auth dashboard: 1.2× | Fund actions: 1.4× | Admin: 1.5×
+- Wallet UI: 1.0× | Signature hijack: 1.5× | Smart contract: 1.4×
+
+**Key Patterns**:
+1. **IDOR**: Must demonstrate ID discovery path (not brute force)
+2. **Cross-Platform**: Same vuln across iOS/Android = 1 report
+3. **Wallet Extensions**: Same vuln across Chrome/Edge/Safari = 1 report
+4. **AI Disclosure**: Must disclose AI tool usage in discovery/reporting
+5. **Leaked Credentials**: Report immediately, authenticate once only
+6. **Tier-Based Rewards**: Robinhood uses 3-tier system (Tier 1: $100-$25K, Tier 2/3: lower)
+7. **Financial Limits**: Robinhood $1K USD cap on unbounded loss testing
+8. **Mandatory Headers**: Robinhood requires X-Bug-Bounty and X-Test-Account-Email
+
+**Out of Scope** (Common):
+- Automated scanner reports | Self-XSS | DoS/DDoS
+- Root/jailbreak required | Known vulnerable libraries without PoC
+- Certificate pinning bypass on rooted devices
+- API keys without demonstrated impact
+
+**Tools**: BugBountyAgent, bug-bounty-workflows skill
+
+---
+
+## Agent Ecosystem Overview
 
 **Created**: April 27, 2026  
 **System**: VS Code GitHub Copilot Agent Framework  
@@ -24,7 +292,8 @@ Specialized AI agents and skills for the PeachTree dataset control plane and dep
 - JSONL record management
 - Quality scoring and deduplication
 - Trainer handoff generation
-- Hancock/PeachFuzz integration
+- Hancock cybersecurity data integration (MITRE ATT&CK, CVE, KEV, GHSA, Atomic Red Team)
+- PeachFuzz integration
 
 **Invoke**: Default mode when working with PeachTree codebase
 

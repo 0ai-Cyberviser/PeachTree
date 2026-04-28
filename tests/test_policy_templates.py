@@ -1,7 +1,6 @@
 """
 Tests for policy_templates module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.policy_templates import (

@@ -1,7 +1,6 @@
 """Tests for dataset_monitoring module"""
 import json
 import time
-from pathlib import Path
 import pytest
 
 from peachtree.dataset_monitoring import (

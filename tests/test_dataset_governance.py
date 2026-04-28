@@ -446,7 +446,7 @@ class TestIntegrationScenarios:
         engine.create_user("analyst", "analyst", "analyst@example.com", roles=["viewer"])
         
         # Register data assets
-        asset1 = engine.register_asset(
+        engine.register_asset(
             asset_id="customer_data",
             name="Customer Data",
             classification=DataClassification.CONFIDENTIAL,

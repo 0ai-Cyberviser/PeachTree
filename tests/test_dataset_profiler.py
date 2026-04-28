@@ -1,11 +1,9 @@
 """Tests for dataset_profiler module"""
 import json
-from pathlib import Path
 import pytest
 
 from peachtree.dataset_profiler import (
     DatasetProfiler,
-    DatasetProfile,
     NumericStats,
     DistributionStats,
 )

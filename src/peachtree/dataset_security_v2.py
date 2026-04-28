@@ -24,17 +24,13 @@ Example:
 
 import base64
 import hashlib
-import hmac
 import json
-import os
 import re
-import secrets
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set
 
 try:
     from cryptography.fernet import Fernet
@@ -187,7 +183,6 @@ class EncryptionEngine:
     
     def rotate_key(self, new_key: Optional[str] = None) -> bytes:
         """Rotate encryption key"""
-        old_cipher = self.cipher
         
         if new_key:
             self.key = self._derive_key(new_key)

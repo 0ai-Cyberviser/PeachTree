@@ -1,11 +1,8 @@
 """Tests for dataset_benchmarking module."""
 import json
-from pathlib import Path
 import pytest
-from src.peachtree.dataset_benchmarking import (
+from peachtree.dataset_benchmarking import (
     DatasetBenchmark,
-    BenchmarkResult,
-    BenchmarkComparison,
     BenchmarkCategory,
     BenchmarkStatus,
 )
@@ -111,10 +108,10 @@ def test_compare_benchmarks(sample_dataset, tmp_path):
     bench = DatasetBenchmark()
     
     # Run baseline
-    result1 = bench.benchmark_read(sample_dataset, "baseline")
+    bench.benchmark_read(sample_dataset, "baseline")
     
     # Run current
-    result2 = bench.benchmark_read(sample_dataset, "current")
+    bench.benchmark_read(sample_dataset, "current")
     
     comparison = bench.compare("baseline", "current", threshold=0.1)
     
@@ -222,7 +219,7 @@ def test_large_dataset_benchmark(tmp_path):
     """Test benchmarking a larger dataset."""
     dataset = tmp_path / "large.jsonl"
     records = [
-        {"id": i, "data": f"x" * 100}
+        {"id": i, "data": "x" * 100}
         for i in range(1000)
     ]
     dataset.write_text("\n".join(json.dumps(r) for r in records))

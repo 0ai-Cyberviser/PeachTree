@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Any
+from typing import Dict, List, Optional, Any
 import hashlib
 import json
 
@@ -379,7 +379,7 @@ class IncrementalReplicator:
     ) -> ReplicationLog:
         """Replicate only changes since last replication."""
         key = f"{dataset_path.name}:{source_site}:{target_site}"
-        last_time = self.last_replicated.get(key)
+        self.last_replicated.get(key)
         
         # Get modifications since last replication
         # (Simplified - would use timestamps in production)

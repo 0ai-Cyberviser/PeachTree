@@ -1,0 +1,48 @@
+{
+  "pipeline": "IGRFT",
+  "cycles": 3,
+  "base_dataset": "data/hancock/training.jsonl",
+  "output_dir": "data/igrft_output",
+  "cycle_history": [
+    {
+      "cycle": 1,
+      "original_records": 957,
+      "augmented_records": 0,
+      "total_records": 957,
+      "avg_quality_score": 0.76,
+      "weak_areas_count": 0,
+      "output_dataset": "data/igrft_output/cycle1_enhanced.jsonl",
+      "training_script": "data/igrft_output/cycle1_model/train_igrft.py",
+      "timestamp": "2026-04-28T02:10:37.065337"
+    },
+    {
+      "cycle": 2,
+      "original_records": 957,
+      "augmented_records": 0,
+      "total_records": 957,
+      "avg_quality_score": 0.76,
+      "weak_areas_count": 0,
+      "output_dataset": "data/igrft_output/cycle2_enhanced.jsonl",
+      "training_script": "data/igrft_output/cycle2_model/train_igrft.py",
+      "timestamp": "2026-04-28T02:10:37.078775"
+    },
+    {
+      "cycle": 3,
+      "original_records": 957,
+      "augmented_records": 0,
+      "total_records": 957,
+      "avg_quality_score": 0.76,
+      "weak_areas_count": 0,
+      "output_dataset": "data/igrft_output/cycle3_enhanced.jsonl",
+      "training_script": "data/igrft_output/cycle3_model/train_igrft.py",
+      "timestamp": "2026-04-28T02:10:37.093259"
+    }
+  ],
+  "final_stats": {
+    "original_records": 957,
+    "final_records": 957,
+    "records_added": 0,
+    "growth_percentage": 0.0,
+    "final_quality": 0.76
+  }
+}

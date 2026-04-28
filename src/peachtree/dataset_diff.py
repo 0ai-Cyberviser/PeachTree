@@ -68,7 +68,7 @@ class DatasetDiffReport:
     def to_markdown(self) -> str:
         """Generate markdown diff report"""
         lines = [
-            f"# Dataset Diff Report",
+            "# Dataset Diff Report",
             "",
             f"**Base Dataset:** `{Path(self.base_dataset).name}`",
             f"**Compare Dataset:** `{Path(self.compare_dataset).name}`",

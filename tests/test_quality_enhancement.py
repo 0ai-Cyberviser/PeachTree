@@ -1,6 +1,5 @@
 """Tests for quality_enhancement module"""
 import json
-from pathlib import Path
 import pytest
 
 from peachtree.quality_enhancement import (

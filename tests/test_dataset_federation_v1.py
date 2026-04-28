@@ -1,17 +1,12 @@
 """Tests for dataset_federation module."""
-import json
 import pytest
-from pathlib import Path
 from peachtree.dataset_federation import (
     EndpointRegistry,
     QueryPlanner,
     FederatedQueryExecutor,
     FederatedQuery,
-    QueryExecutionPlan,
     FederatedQueryResult,
     FederationStrategy,
-    JoinType,
-    AggregationFunction,
     DatasetEndpoint,
     FederatedJoinEngine,
     FederationStatistics,

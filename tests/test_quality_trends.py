@@ -1,10 +1,8 @@
 """
 Tests for quality_trends module
 """
-from pathlib import Path
 import pytest
 import json
-import time
 from peachtree.quality_trends import (
     QualityTrendAnalyzer,
     QualityTrend,
@@ -140,7 +138,7 @@ def test_trend_volatility():
     # Add snapshots with high variance
     for score in [50, 90, 60, 85, 55, 95]:
         trend.add_snapshot(QualitySnapshot(
-            f"2026-04-27T10:00:00", "test.jsonl", float(score), 100, 80, 20, 150.0, 60.0, 100.0
+            "2026-04-27T10:00:00", "test.jsonl", float(score), 100, 80, 20, 150.0, 60.0, 100.0
         ))
     
     volatility = trend.get_volatility()
@@ -266,7 +264,7 @@ def test_compare_periods(trend_analyzer, temp_dataset):
     """Test comparing two time periods"""
     # Record snapshots with timestamps
     for i in range(4):
-        snapshot = trend_analyzer.record_snapshot(temp_dataset)
+        trend_analyzer.record_snapshot(temp_dataset)
         # Manually adjust timestamp for testing
         trend = trend_analyzer.get_trend(temp_dataset.stem)
         if len(trend.snapshots) > 0:

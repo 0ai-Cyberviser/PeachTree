@@ -1,6 +1,5 @@
 """Tests for dataset templates functionality."""
 
-from pathlib import Path
 import json
 import pytest
 

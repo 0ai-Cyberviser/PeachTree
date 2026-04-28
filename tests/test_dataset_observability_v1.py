@@ -1,9 +1,6 @@
 """Tests for dataset_observability module."""
-import json
-from pathlib import Path
-import pytest
 from datetime import datetime
-from src.peachtree.dataset_observability import (
+from peachtree.dataset_observability import (
     DatasetObservability,
     MetricsCollector,
     StructuredLogger,

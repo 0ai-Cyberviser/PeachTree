@@ -1,7 +1,6 @@
 """Advanced compression strategies for dataset storage optimization."""
 
 import gzip
-import json
 import lzma
 import zlib
 from dataclasses import dataclass, field
@@ -92,7 +91,7 @@ class DatasetCompressor:
         """Compress a file."""
         from time import time
         
-        start_time = time()
+        time()
         original_size = input_path.stat().st_size
         
         with input_path.open("rb") as in_f:
@@ -181,7 +180,7 @@ class StreamingCompressor:
         """Compress file using streaming."""
         from time import time
         
-        start_time = time()
+        time()
         original_size = 0
         compressed_size = 0
         
@@ -396,7 +395,7 @@ class BatchCompressor:
         """Compress multiple datasets."""
         from time import time
         
-        start_time = time()
+        time()
         output_dir.mkdir(parents=True, exist_ok=True)
         
         results = []

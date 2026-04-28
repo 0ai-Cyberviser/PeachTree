@@ -77,7 +77,6 @@ from .dataset_provenance import ProvenanceTracker, ProvenanceEntity, ProvenanceA
 from .dataset_federation import EndpointRegistry, QueryPlanner, FederatedQueryExecutor, FederatedQuery, QueryExecutionPlan, FederatedQueryResult, FederationStrategy, JoinType, AggregationFunction, DatasetEndpoint, FederatedJoinEngine, FederationStatistics, FederationCatalog
 from .dataset_visualization import DatasetVisualizer, ChartGenerator, DatasetAnalyzer, VisualizationExporter, ChartData, StatisticalSummary, Visualization, ChartType, ExportFormat
 from .dataset_sampling import DatasetSampler, RandomSampler, StratifiedSampler, ReservoirSampler, SystematicSampler, WeightedSampler, SampleValidator, SampleComparator, SamplingConfig, SampleResult, SampleStatistics, SamplingStrategy, SampleValidationLevel
-from .dataset_migration import DatasetMigrationEngine, MigrationRule, MigrationPlan, MigrationResult
 from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatistics, ArchiveMetadata, ArchiveIndex, ArchiveStatus, CompressionLevel, RetentionPolicy
 from .hancock_integration import HancockDataIngester, HancockIngestionConfig, HancockSource, hancock_ingestion_workflow
 from .fuzzing_enrichment import FuzzingEnrichment, CrashSignature, CoverageMetrics, enrich_fuzzing_corpus

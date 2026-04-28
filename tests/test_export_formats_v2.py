@@ -1,6 +1,5 @@
 """Tests for export_formats_v2 module"""
 import json
-from pathlib import Path
 import pytest
 
 from peachtree.export_formats_v2 import (

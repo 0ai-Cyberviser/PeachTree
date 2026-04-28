@@ -1,5 +1,4 @@
 """Tests for dataset_migration module."""
-from pathlib import Path
 import pytest
 import json
 

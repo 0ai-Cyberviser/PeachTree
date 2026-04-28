@@ -233,7 +233,7 @@ class TestDatasetSynchronizer:
         
         # First sync
         output = temp_dir / "synced1.jsonl"
-        result1 = synchronizer.sync(source_dataset, output)
+        synchronizer.sync(source_dataset, output)
         
         # Modify source
         with open(source_dataset, 'a') as f:

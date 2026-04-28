@@ -9,7 +9,6 @@ import pytest
 
 from peachtree.dataset_collaboration import (
     ChangeType,
-    CollaborationSession,
     CollaboratorInfo,
     DatasetChange,
     DatasetCollaborationEngine,

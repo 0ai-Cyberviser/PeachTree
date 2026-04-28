@@ -1,10 +1,8 @@
 """
 Tests for batch_processor module
 """
-from pathlib import Path
 import pytest
 import json
-import tempfile
 from peachtree.batch_processor import (
     BatchHealthMonitor,
     BatchOptimizer,

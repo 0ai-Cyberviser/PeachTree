@@ -22,16 +22,13 @@ Example:
     >>> total = engine.reduce(sum_func, results)
 """
 
-import asyncio
 import hashlib
-import multiprocessing as mp
 import queue
 import threading
 import time
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 import psutil
@@ -358,7 +355,6 @@ class DistributedEngine:
         
         # Execute tasks using worker pool
         results = []
-        futures = {}
         
         for task_id in task_ids:
             task = self.tasks[task_id]
@@ -372,7 +368,7 @@ class DistributedEngine:
                     result = self.worker_pool.execute_task(task, worker_id)
                     results.append(result)
                     self.completed_tasks.add(task_id)
-                except Exception as e:
+                except Exception:
                     if task.can_retry():
                         # Retry task
                         self.worker_pool.submit_task(task)

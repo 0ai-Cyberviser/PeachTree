@@ -1,11 +1,8 @@
 """Tests for dataset_versioning module."""
 import json
-from pathlib import Path
 import pytest
-from src.peachtree.dataset_versioning import (
+from peachtree.dataset_versioning import (
     DatasetVersionControl,
-    VersionMetadata,
-    VersionDiff,
     VersionStatus,
     ChangeType,
 )

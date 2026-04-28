@@ -15,15 +15,11 @@ Features:
 - Checkpoint and resume capabilities
 """
 
-from typing import Dict, List, Any, Optional, Callable, Set, Tuple
+from typing import Dict, List, Any, Optional, Callable, Tuple
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
-import json
-import hashlib
-from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import time
 
 
 class TaskStatus(Enum):
@@ -221,7 +217,7 @@ class WorkflowEngine:
             workflow.status = WorkflowStatus.COMPLETED
             workflow.completed_at = datetime.now()
             
-        except Exception as e:
+        except Exception:
             workflow.status = WorkflowStatus.FAILED
             workflow.completed_at = datetime.now()
             raise

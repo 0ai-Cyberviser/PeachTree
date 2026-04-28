@@ -1,8 +1,5 @@
 """Tests for health_monitor module"""
-from pathlib import Path
 import json
-import tempfile
-from datetime import datetime
 
 import pytest
 
@@ -130,7 +127,7 @@ def test_health_history_persistence(sample_dataset, tmp_path):
     history_dir = tmp_path / "history"
     monitor = DatasetHealthMonitor(history_dir=history_dir)
     
-    snapshot = monitor.check_health(sample_dataset, save_history=True)
+    monitor.check_health(sample_dataset, save_history=True)
     
     # Check that history file was created
     history_files = list(history_dir.glob("*.json"))

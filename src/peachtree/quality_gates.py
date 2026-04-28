@@ -83,13 +83,13 @@ class GateEvaluationReport:
         status = "✅ PASSED" if self.gate_passed else "❌ FAILED"
         
         lines = [
-            f"# Quality Gate Report",
-            f"",
+            "# Quality Gate Report",
+            "",
             f"**Dataset:** {self.dataset_id}  ",
             f"**Timestamp:** {self.timestamp}  ",
             f"**Status:** {status}  ",
             f"**Pass Rate:** {self.passed_rules}/{self.total_rules} ({self.passed_rules / self.total_rules * 100:.1f}%)  ",
-            f"",
+            "",
             "## Results",
             "",
             "| Rule | Status | Actual | Threshold | Message |",

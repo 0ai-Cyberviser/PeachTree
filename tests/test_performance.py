@@ -1,7 +1,6 @@
 """
 Tests for performance profiler module
 """
-from pathlib import Path
 import pytest
 import json
 import time
@@ -321,7 +320,7 @@ def test_profile_memory_tracking():
     
     with profiler.profile_operation("memory_test", 10):
         # Allocate some memory
-        data = ["x" * 1000 for _ in range(1000)]
+        ["x" * 1000 for _ in range(1000)]
     
     metric = profiler.metrics[0]
     assert metric.memory_peak_mb > 0
@@ -354,7 +353,7 @@ def test_profile_memory_recommendation(test_dataset, tmp_path):
         100.0,
     )
     
-    profiler = PerformanceProfiler()
+    PerformanceProfiler()
     # Manually trigger recommendation logic
     recommendations = []
     

@@ -1,0 +1,52 @@
+{
+  "alerts": [
+    "CRITICAL: Quality score (0.0) below threshold (60.0)"
+  ],
+  "dataset_path": "/tmp/pytest-of-x/pytest-119/test_batch_processor_error_han0/datasets/valid.jsonl",
+  "duplicate_ratio": 0.0,
+  "is_healthy": false,
+  "metrics": [
+    {
+      "message": "Average quality score across all records",
+      "name": "Quality Score",
+      "status": "critical",
+      "threshold_critical": 60.0,
+      "threshold_warning": 75.0,
+      "timestamp": "2026-04-28T06:45:09.240169",
+      "value": 0
+    },
+    {
+      "message": "Ratio of duplicate records in dataset",
+      "name": "Duplicate Ratio",
+      "status": "excellent",
+      "threshold_critical": 0.3,
+      "threshold_warning": 0.15,
+      "timestamp": "2026-04-28T06:45:09.240182",
+      "value": 0.0
+    },
+    {
+      "message": "Ratio of records with complete provenance",
+      "name": "Provenance Coverage",
+      "status": "good",
+      "threshold_critical": 0.75,
+      "threshold_warning": 0.9,
+      "timestamp": "2026-04-28T06:45:09.240188",
+      "value": 1.0
+    },
+    {
+      "message": "Ratio of records passing safety gates",
+      "name": "Safety Coverage",
+      "status": "critical",
+      "threshold_critical": 0.8,
+      "threshold_warning": 0.95,
+      "timestamp": "2026-04-28T06:45:09.240198",
+      "value": 0.0
+    }
+  ],
+  "overall_status": "critical",
+  "provenance_ratio": 1.0,
+  "quality_score": 0,
+  "record_count": 1,
+  "safety_ratio": 0.0,
+  "timestamp": "2026-04-28T06:45:09.239957"
+}

@@ -1,14 +1,12 @@
 """Tests for dataset_provenance module."""
 import json
 import pytest
-from pathlib import Path
 from peachtree.dataset_provenance import (
     ProvenanceTracker,
     ProvenanceEntity,
     ProvenanceActivity,
     ProvenanceAgent,
     ProvenanceRelationship,
-    ProvenanceChain,
     ProvenanceEventType,
     EntityType,
     ProvenanceRelation,
@@ -158,7 +156,6 @@ def test_export_import_provenance(tracker, temp_storage):
     assert export_path.exists()
     
     # Verify export content
-    import json
     data = json.loads(export_path.read_text())
     assert len(data["entities"]) == 2
     assert len(data["relationships"]) == 1
@@ -216,7 +213,7 @@ def test_provenance_validator_validate_chain(tracker):
 
 def test_provenance_validator_check_completeness(tracker):
     """Test integrity checking."""
-    e1 = tracker.register_entity("e1", EntityType.DATASET, "Dataset 1")
+    tracker.register_entity("e1", EntityType.DATASET, "Dataset 1")
     
     validator = ProvenanceValidator(tracker)
     result = validator.check_integrity()
@@ -326,7 +323,7 @@ def test_empty_chain(tracker):
 
 def test_persistence(tracker, temp_storage):
     """Test tracker persistence."""
-    e1 = tracker.register_entity("e1", EntityType.DATASET, "Dataset 1")
+    tracker.register_entity("e1", EntityType.DATASET, "Dataset 1")
     tracker._save()
     
     # Create new tracker with same storage

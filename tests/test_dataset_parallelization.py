@@ -3,9 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict
-from unittest.mock import Mock, patch
 
-import pytest
 
 from peachtree.dataset_parallelization import (
     ParallelExecutor,

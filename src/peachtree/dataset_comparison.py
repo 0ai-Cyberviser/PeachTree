@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 from peachtree.quality import DatasetQualityScorer
 from peachtree.dedup import DatasetDeduplicator

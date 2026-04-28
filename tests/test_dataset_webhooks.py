@@ -1,11 +1,8 @@
 """Tests for dataset webhook system."""
 
-import hashlib
-import hmac
 import json
 from pathlib import Path
 
-import pytest
 
 from peachtree.dataset_webhooks import (
     DatasetWebhookManager,
@@ -305,7 +302,7 @@ def test_retry_delivery():
     """Test retrying a failed delivery."""
     manager = DatasetWebhookManager()
     
-    endpoint = manager.create_endpoint(
+    manager.create_endpoint(
         endpoint_id="endpoint_001",
         url="https://api.example.com/webhook",
         events=[WebhookEvent.BUILD_FAILED],
@@ -449,7 +446,7 @@ def test_get_failed_deliveries():
     """Test getting failed deliveries."""
     manager = DatasetWebhookManager()
     
-    endpoint = manager.create_endpoint(
+    manager.create_endpoint(
         endpoint_id="endpoint_001",
         url="https://api.example.com/webhook",
         events=[WebhookEvent.ALL],

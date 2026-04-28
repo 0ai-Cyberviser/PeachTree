@@ -1,10 +1,7 @@
 """Tests for dataset notification system."""
 
-import json
-from datetime import datetime
 from pathlib import Path
 
-import pytest
 
 from peachtree.dataset_notifications import (
     DatasetEvent,
@@ -361,7 +358,7 @@ def test_custom_template():
         template=template,
     )
     
-    event = notifier.emit_event(
+    notifier.emit_event(
         event_type=EventType.DATASET_CREATED,
         dataset_path=Path("/data/test.jsonl"),
     )
@@ -387,7 +384,7 @@ def test_notification_with_multiple_channels():
         recipients=["team@example.com"],
     )
     
-    event = notifier.emit_event(
+    notifier.emit_event(
         event_type=EventType.BUILD_FAILED,
         dataset_path=Path("/data/test.jsonl"),
     )

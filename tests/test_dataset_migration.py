@@ -1,6 +1,5 @@
 """Tests for dataset_migration module"""
 import json
-from pathlib import Path
 import pytest
 
 from peachtree.dataset_migration import (

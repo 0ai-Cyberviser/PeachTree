@@ -114,7 +114,7 @@ def test_merge_preserve_metadata(temp_datasets, tmp_path):
     output = tmp_path / "merged-meta.jsonl"
     
     merger = DatasetMerger()
-    result = merger.merge([ds1, ds2], output, preserve_source_metadata=True)
+    merger.merge([ds1, ds2], output, preserve_source_metadata=True)
     
     # Check that merged records have metadata
     with open(output) as f:

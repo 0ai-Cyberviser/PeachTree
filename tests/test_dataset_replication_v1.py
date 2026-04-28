@@ -1,15 +1,12 @@
 """Tests for dataset_replication module."""
 import json
-from pathlib import Path
 import pytest
 from datetime import datetime
-from src.peachtree.dataset_replication import (
+from peachtree.dataset_replication import (
     DatasetReplicator,
     ReplicaManager,
     ReplicaSite,
-    ReplicationLog,
     ConflictRecord,
-    SyncResult,
     ReplicationStrategy,
     ConflictResolution,
     ReplicationStatus,

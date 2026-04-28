@@ -1,10 +1,8 @@
 """Tests for dataset scheduling functionality."""
 
-import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import pytest
 
 from peachtree.dataset_scheduler import (
     DatasetScheduler,
@@ -238,7 +236,7 @@ def test_get_due_tasks():
     
     # Create future task (not due)
     future_time = (datetime.utcnow() + timedelta(hours=1)).isoformat() + "Z"
-    task2 = scheduler.create_task(
+    scheduler.create_task(
         task_id="future_task",
         task_type=TaskType.QUALITY_CHECK,
         schedule_type=ScheduleType.ONCE,
@@ -319,7 +317,7 @@ def test_task_history():
     """Test getting task execution history."""
     scheduler = DatasetScheduler()
     
-    task = scheduler.create_task(
+    scheduler.create_task(
         task_id="hist_task",
         task_type=TaskType.BACKUP,
         schedule_type=ScheduleType.HOURLY,
@@ -341,7 +339,7 @@ def test_task_statistics():
     """Test getting task statistics."""
     scheduler = DatasetScheduler()
     
-    task = scheduler.create_task(
+    scheduler.create_task(
         task_id="stats_task",
         task_type=TaskType.QUALITY_CHECK,
         schedule_type=ScheduleType.HOURLY,

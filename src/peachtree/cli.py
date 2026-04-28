@@ -38,7 +38,7 @@ from .quality_trends import QualityTrendAnalyzer
 from .dataset_operations import DatasetMerger, DatasetSplitter
 from .smart_sampling import SmartSampler
 from .performance import PerformanceProfiler
-from .dataset_validation import DatasetValidator, RequiredFieldRule, FieldTypeRule, ContentLengthRule
+from .dataset_validation import DatasetValidator, RequiredFieldRule
 from .incremental_update import IncrementalUpdater, ChangeTracker
 from .dataset_catalog import DatasetCatalog
 from .security_scanner import DatasetSecurityScanner
@@ -47,43 +47,39 @@ from .lineage_visualizer import LineageVisualizer
 from .dataset_diff import DatasetDiffEngine
 from .policy_templates import PolicyTemplateLibrary
 from .dataset_analytics import DatasetAnalyticsEngine
-from .dataset_migration import DatasetMigrationEngine, MigrationPlan, MigrationRule
+from .dataset_migration import DatasetMigrationEngine, MigrationRule
 from .quality_enhancement import QualityEnhancementEngine
 from .dataset_metrics import DatasetMetricsDashboard
-from .backup_restore import DatasetBackupRestore, BackupMetadata
+from .backup_restore import DatasetBackupRestore
 from .export_formats_v2 import ExportFormatsV2
-from .quality_gates import QualityGateEngine, QualityGateConfig, GateRule
+from .quality_gates import QualityGateEngine
 from .dataset_profiler import DatasetProfiler
-from .dataset_testing import DatasetTestFramework, TestSuite, SchemaValidator, PropertyTester
-from .dataset_monitoring import DatasetMonitor, MonitoringConfig, HealthStatus
-from .dataset_sync import DatasetSynchronizer, SyncState, ConflictResolution
-from .dataset_transform import DatasetTransformer, TransformationPipeline, TransformationStep
+from .dataset_testing import DatasetTestFramework
+from .dataset_monitoring import DatasetMonitor, MonitoringConfig
+from .dataset_sync import DatasetSynchronizer, ConflictResolution
+from .dataset_transform import DatasetTransformer
 from .dataset_recommend import DatasetRecommender
-from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo, DatasetChange, ChangeType, ReviewStatus
-from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation, ComplianceStatus
-from .dataset_cache import DatasetCacheOptimizer, CacheStrategy
+from .dataset_collaboration import DatasetCollaborationEngine, CollaboratorInfo
+from .dataset_compliance import DatasetComplianceTracker, ComplianceRegulation
+from .dataset_cache import DatasetCacheOptimizer
 from .dataset_scheduler import DatasetScheduler, ScheduleType, TaskType
 from .dataset_notifications import DatasetNotificationSystem, NotificationType, EventType, NotificationChannel
 from .dataset_webhooks import DatasetWebhookManager, WebhookEvent
-from .dataset_templates import DatasetTemplateManager, TemplateCategory, TemplateComplexity
-from .dataset_plugins import PluginManager, PluginType, PluginStatus
-from .dataset_audit_log import DatasetAuditLog, AuditAction, AuditSeverity, AuditStatus, AuditContext as AuditLogContext
-from .dataset_streaming import DatasetStreamReader, DatasetStreamWriter, DatasetStreamProcessor, StreamingPipeline, StreamConfig, StreamMode, BufferStrategy
-from .dataset_sharding import DatasetSharder, ShardRouter, ShardRebalancer, ShardingConfig, ShardingStrategy, ShardStatus
-from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, CheckpointConfig, CheckpointStrategy, CheckpointStatus, ProcessingState
-from .dataset_parallelization import ParallelExecutor, ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelMode
-from .dataset_indexing import DatasetIndexBuilder, QueryOptimizer, IndexType, IndexStatus
+from .dataset_streaming import DatasetStreamReader, DatasetStreamProcessor, StreamConfig, BufferStrategy
+from .dataset_sharding import DatasetSharder, ShardRebalancer, ShardingConfig, ShardingStrategy
+from .dataset_checkpointing import CheckpointManager, CheckpointedStreamProcessor, CheckpointConfig, CheckpointStrategy, CheckpointStatus
+from .dataset_parallelization import ParallelDatasetProcessor, ParallelBatchProcessor, ParallelConfig, ParallelMode
+from .dataset_indexing import DatasetIndexBuilder
 from .dataset_compression import DatasetCompressor, StreamingCompressor, CompressionAnalyzer, BatchCompressor, CompressionAlgorithm, CompressionLevel
-from .dataset_versioning import DatasetVersionControl, VersionStatus
-from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, QueryOperator, LogicalOperator
-from .dataset_benchmarking import DatasetBenchmark, BenchmarkCategory
-from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionAlgorithm, EncryptionPolicyManager, BatchEncryptor, EncryptionStatus
-from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicationStrategy, SyncMode, IncrementalReplicator, ReplicationMonitor
+from .dataset_versioning import DatasetVersionControl
+from .dataset_query import DatasetQueryEngine, QueryBuilder, QueryParser, QueryOperator
+from .dataset_benchmarking import DatasetBenchmark
+from .dataset_encryption import DatasetEncryptor, KeyManager, EncryptionAlgorithm, BatchEncryptor, EncryptionStatus
+from .dataset_replication import DatasetReplicator, ReplicaManager, ReplicationStrategy, SyncMode, ReplicationMonitor
 from .dataset_observability import DatasetObservability, MetricsCollector, StructuredLogger, TraceCollector, MetricType, LogLevel, SpanKind
-from .dataset_provenance import ProvenanceTracker, DatasetProvenanceRecorder, ProvenanceValidator, ProvenanceEventType, EntityType, ProvenanceRelation
+from .dataset_provenance import ProvenanceTracker, DatasetProvenanceRecorder, ProvenanceValidator, EntityType
 from .dataset_federation import FederatedQueryExecutor, EndpointRegistry, QueryPlanner, FederatedQuery, FederationStrategy, DatasetEndpoint
 from .dataset_visualization import DatasetVisualizer, ChartType, ExportFormat
-from .dataset_sampling import DatasetSampler, SamplingStrategy, SampleValidationLevel, SamplingConfig
 from .dataset_archival import DatasetArchiver, ArchiveIndexManager, RetentionPolicyManager, ArchiveStatus, CompressionLevel, RetentionPolicy
 from .hancock_integration import HancockDataIngester, HancockIngestionConfig, hancock_ingestion_workflow
 from .fuzzing_enrichment import FuzzingEnrichment
@@ -1546,7 +1542,7 @@ def run_enhance(args: argparse.Namespace) -> int:
         if args.markdown_output:
             # Generate markdown report
             lines = [
-                f"# Quality Enhancement Report\n",
+                "# Quality Enhancement Report\n",
                 f"**Total Records:** {report.total_records}  ",
                 f"**Records with Issues:** {report.records_with_issues} ({report.records_with_issues / report.total_records * 100:.1f}%)  ",
                 f"**Total Issues:** {report.total_issues}  ",
@@ -1922,12 +1918,15 @@ def run_test(args: argparse.Namespace) -> int:
         # Run property tests
         # Define property function based on property name
         if args.property_name == "has_content":
-            prop_func = lambda r: bool(r.get("content", "").strip())
+            def prop_func(r):
+                return bool(r.get("content", "").strip())
         elif args.property_name == "has_id":
-            prop_func = lambda r: "id" in r
+            def prop_func(r):
+                return "id" in r
         elif args.property_name == "quality_above_threshold":
             threshold = args.property_threshold or 70.0
-            prop_func = lambda r: r.get("quality_score", 0.0) >= threshold
+            def prop_func(r):
+                return r.get("quality_score", 0.0) >= threshold
         else:
             print(f"Unknown property: {args.property_name}")
             return 1
@@ -2074,13 +2073,13 @@ def run_recommend(args: argparse.Namespace) -> int:
         # Display summary
         if args.format == "markdown":
             print(f"# Dataset Recommendations for {report.dataset_path}\n")
-            print(f"## Summary\n")
+            print("## Summary\n")
             print(f"- Total recommendations: {report.summary['total_recommendations']}")
             print(f"- High impact: {report.summary['high_impact']}")
             print(f"- Medium impact: {report.summary['medium_impact']}")
             print(f"- Low impact: {report.summary['low_impact']}")
             print(f"- Avg confidence: {report.summary['avg_confidence']:.2f}\n")
-            print(f"## Recommendations\n")
+            print("## Recommendations\n")
             for rec in report.recommendations:
                 print(f"### {rec.category.title()}: {rec.parameter}")
                 print(f"- Current: {rec.current_value}")
@@ -2819,7 +2818,7 @@ def run_index(args: argparse.Namespace) -> int:
         
         if args.save:
             builder.save_index(metadata.index_id)
-            print(f"Saved index to disk")
+            print("Saved index to disk")
         
         return 0
     
@@ -3499,7 +3498,7 @@ def run_archive(args: argparse.Namespace) -> int:
         policy_mgr = RetentionPolicyManager(index_manager)
         result = policy_mgr.apply_retention_policies()
         
-        print(f"Retention policies applied:")
+        print("Retention policies applied:")
         print(f"  Deleted: {result['deleted_count']} archives")
         if result['errors']:
             print(f"  Errors: {len(result['errors'])}")
@@ -4105,7 +4104,7 @@ def run_corpus_optimize(args: argparse.Namespace) -> int:
     stats = optimizer.optimize(strategy=args.strategy)
     
     # Limit seeds if requested
-    original_count = len(optimizer.seeds)
+    len(optimizer.seeds)
     if args.max_seeds and len(optimizer.seeds) > args.max_seeds:
         # Keep highest quality seeds
         optimizer.seeds = sorted(optimizer.seeds, key=lambda s: s.quality_score, reverse=True)[:args.max_seeds]

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 from peachtree.health_monitor import DatasetHealthMonitor, HealthStatus
 from peachtree.quality import DatasetQualityScorer

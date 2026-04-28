@@ -1,7 +1,6 @@
 """
 Tests for dataset_validation module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.dataset_validation import (

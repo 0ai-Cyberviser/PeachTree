@@ -1,13 +1,11 @@
 """Advanced query engine for filtering and projecting datasets with SQL-like DSL."""
 
 import json
-import operator
 import re
 from dataclasses import dataclass
-from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional
 
 
 class QueryOperator(Enum):

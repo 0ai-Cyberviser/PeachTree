@@ -1,7 +1,6 @@
 """Tests for optimizer module"""
 from pathlib import Path
 import json
-import tempfile
 
 import pytest
 
@@ -237,7 +236,7 @@ def test_output_file_created(sample_dataset_with_duplicates, tmp_path):
     output = tmp_path / "optimized.jsonl"
     optimizer = DatasetOptimizer(output_dir=tmp_path)
     
-    report = optimizer.optimize(
+    optimizer.optimize(
         sample_dataset_with_duplicates,
         output_path=output,
     )

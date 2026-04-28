@@ -161,7 +161,9 @@ def test_create_full_backup(backup_restore, sample_dataset):
 
 def test_list_backups(backup_restore, sample_dataset):
     # Create multiple backups
+    import time
     backup_restore.create_full_backup(sample_dataset, "test_dataset")
+    time.sleep(1.1)  # Ensure distinct timestamps
     backup_restore.create_full_backup(sample_dataset, "test_dataset")
     
     inventory = backup_restore.list_backups("test_dataset")

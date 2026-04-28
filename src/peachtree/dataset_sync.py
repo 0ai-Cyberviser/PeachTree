@@ -334,7 +334,7 @@ class DatasetSynchronizer:
             added, updated, deleted = self.detect_changes(source_path, target_state)
             
             # Apply changes
-            total_records = self.apply_changes(target_path, added, updated, deleted)
+            self.apply_changes(target_path, added, updated, deleted)
             
             # Update target state
             new_state = self.build_sync_state(target_path, target_env, dataset_id)

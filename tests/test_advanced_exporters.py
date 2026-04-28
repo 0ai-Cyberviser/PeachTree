@@ -1,7 +1,6 @@
 """
 Tests for advanced_exporters module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.advanced_exporters import (

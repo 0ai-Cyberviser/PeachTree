@@ -3,10 +3,8 @@ from __future__ import annotations
 
 import multiprocessing as mp
 from pathlib import Path
-from typing import Any, Dict, List
-import json
+from typing import Any, Dict
 
-import pytest
 
 from peachtree.dataset_parallelization import (
     ParallelExecutor,

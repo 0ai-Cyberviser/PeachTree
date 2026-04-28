@@ -102,12 +102,12 @@ class DatasetDashboard:
     def to_markdown(self) -> str:
         """Generate markdown dashboard report"""
         lines = [
-            f"# Dataset Metrics Dashboard",
-            f"",
+            "# Dataset Metrics Dashboard",
+            "",
             f"**Dataset:** {self.dataset_id}  ",
             f"**Timestamp:** {self.timestamp}  ",
             f"**Overall Health:** {self.overall_health:.1f}/100  ",
-            f"",
+            "",
         ]
         
         # Alerts
@@ -124,9 +124,9 @@ class DatasetDashboard:
         for category_name, category in self.categories.items():
             lines.extend([
                 f"## {category_name.replace('_', ' ').title()}",
-                f"",
+                "",
                 f"**Health Score:** {category.health_score:.1f}/100  ",
-                f"",
+                "",
                 "| Metric | Value | Unit |",
                 "|--------|-------|------|",
             ])

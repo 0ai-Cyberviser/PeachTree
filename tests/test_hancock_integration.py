@@ -13,7 +13,7 @@ from peachtree.hancock_integration import (
     HancockDataIngester,
     hancock_ingestion_workflow,
 )
-from peachtree.models import SourceDocument, DatasetManifest
+from peachtree.models import SourceDocument
 
 
 @pytest.fixture

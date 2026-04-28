@@ -1,7 +1,6 @@
 """
 Tests for status_dashboard module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.status_dashboard import (

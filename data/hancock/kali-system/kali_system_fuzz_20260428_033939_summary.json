@@ -1,0 +1,12 @@
+{
+  "timestamp": "20260428_033939",
+  "total_records": 102,
+  "sources": {
+    "tools": 18,
+    "exploits": 50,
+    "wordlists": 4,
+    "nse_scripts": 30
+  },
+  "output_file": "data/hancock/kali-system/kali_system_fuzz_20260428_033939.jsonl",
+  "system": "Kali Linux"
+}

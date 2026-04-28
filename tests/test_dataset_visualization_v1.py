@@ -1,7 +1,6 @@
 """Tests for dataset_visualization module."""
 import json
 import pytest
-from pathlib import Path
 from peachtree.dataset_visualization import (
     DatasetVisualizer,
     ChartGenerator,

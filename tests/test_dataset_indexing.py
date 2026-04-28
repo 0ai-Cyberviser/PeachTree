@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict
 
-import pytest
 
 from peachtree.dataset_indexing import (
     DatasetIndexBuilder,
@@ -277,7 +275,7 @@ def test_lookup_hash_index(tmp_path: Path):
     )
     
     builder = DatasetIndexBuilder()
-    metadata = builder.build_hash_index(dataset, "id", index_id="test-idx")
+    builder.build_hash_index(dataset, "id", index_id="test-idx")
     
     results = builder.lookup("test-idx", "key1")
     
@@ -295,7 +293,7 @@ def test_search_inverted_index(tmp_path: Path):
     )
     
     builder = DatasetIndexBuilder()
-    metadata = builder.build_inverted_index(dataset, "content", index_id="test-idx")
+    builder.build_inverted_index(dataset, "content", index_id="test-idx")
     
     results = list(builder.search("test-idx", "world"))
     

@@ -16,8 +16,8 @@ Features:
 - Data augmentation hooks
 """
 
-from typing import Dict, List, Any, Optional, Callable, Iterator, Tuple, Union
-from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional, Callable, Iterator, Tuple
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 import json

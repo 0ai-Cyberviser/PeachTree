@@ -178,7 +178,6 @@ class CheckpointManager:
         operation: str,
     ) -> CheckpointMetadata:
         """Create a checkpoint."""
-        from time import time
         
         # Create metadata
         metadata = CheckpointMetadata(

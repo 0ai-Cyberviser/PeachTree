@@ -1,7 +1,6 @@
 """
 Tests for dataset_diff module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.dataset_diff import (

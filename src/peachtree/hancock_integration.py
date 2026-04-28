@@ -15,12 +15,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from .models import SourceDocument, DatasetRecord, DatasetManifest
+from .models import SourceDocument, DatasetManifest
 from .builder import DatasetBuilder
 from .safety import SafetyGate
 from .quality import DatasetQualityScorer
 from .dedup import DatasetDeduplicator
-from .model_card import ModelCardGenerator
 from .trainer_handoff import TrainerHandoffBuilder
 
 logger = logging.getLogger(__name__)

@@ -1,8 +1,6 @@
 """
 Tests for lineage_visualizer module
 """
-from pathlib import Path
-import pytest
 import json
 from peachtree.lineage_visualizer import (
     LineageVisualizer,

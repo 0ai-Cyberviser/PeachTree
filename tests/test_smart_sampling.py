@@ -1,7 +1,6 @@
 """
 Tests for smart_sampling module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.smart_sampling import SmartSampler, SampleResult
@@ -80,10 +79,10 @@ def test_random_sample_reproducibility(test_dataset, tmp_path):
     output2 = tmp_path / "sample2.jsonl"
     
     sampler1 = SmartSampler(seed=42)
-    result1 = sampler1.random_sample(test_dataset, output1, sample_size=10)
+    sampler1.random_sample(test_dataset, output1, sample_size=10)
     
     sampler2 = SmartSampler(seed=42)
-    result2 = sampler2.random_sample(test_dataset, output2, sample_size=10)
+    sampler2.random_sample(test_dataset, output2, sample_size=10)
     
     # Both should sample same records
     content1 = output1.read_text()

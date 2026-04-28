@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 from peachtree.dataset_compression import (
     DatasetCompressor,
@@ -205,7 +204,7 @@ def test_dataset_compressor_decompress_file_lzma(tmp_path: Path):
     input_file.write_text(test_data)
     
     compressor.compress_file(input_file, compressed_file)
-    size = compressor.decompress_file(compressed_file, decompressed_file)
+    compressor.decompress_file(compressed_file, decompressed_file)
     
     assert decompressed_file.read_text() == test_data
 

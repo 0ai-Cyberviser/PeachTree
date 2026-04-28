@@ -1,9 +1,6 @@
 """Tests for dataset audit log functionality."""
 
-from pathlib import Path
 import json
-from datetime import datetime
-import pytest
 
 from peachtree.dataset_audit_log import (
     DatasetAuditLog,

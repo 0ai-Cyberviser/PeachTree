@@ -1,6 +1,5 @@
 """Tests for quality_gates module"""
 import json
-from pathlib import Path
 import pytest
 
 from peachtree.quality_gates import (

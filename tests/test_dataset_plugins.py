@@ -1,17 +1,14 @@
 """Tests for dataset plugin system functionality."""
 
-from pathlib import Path
 import json
 import pytest
 
 from peachtree.dataset_plugins import (
     PluginManager,
-    Plugin,
     PluginMetadata,
     PluginRegistration,
     PluginType,
     PluginStatus,
-    TransformerPlugin,
     ExampleTransformerPlugin,
     EXAMPLE_PLUGIN_METADATA,
 )

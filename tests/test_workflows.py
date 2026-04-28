@@ -1,7 +1,6 @@
 """
 Tests for workflows module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.workflows import (

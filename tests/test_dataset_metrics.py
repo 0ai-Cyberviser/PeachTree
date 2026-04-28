@@ -1,6 +1,5 @@
 """Tests for dataset_metrics module"""
 import json
-from pathlib import Path
 import pytest
 
 from peachtree.dataset_metrics import (

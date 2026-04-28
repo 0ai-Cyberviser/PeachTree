@@ -7,7 +7,7 @@ content length analysis, quality metrics, and trend detection.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 from typing import Any
 import json
@@ -107,7 +107,7 @@ class DatasetAnalyticsReport:
     def to_markdown(self) -> str:
         """Generate markdown analytics report"""
         lines = [
-            f"# Dataset Analytics Report",
+            "# Dataset Analytics Report",
             "",
             f"**Dataset:** `{Path(self.dataset_path).name}`",
             "",

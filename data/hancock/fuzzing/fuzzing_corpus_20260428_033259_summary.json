@@ -1,0 +1,10 @@
+{
+  "timestamp": "20260428_033259",
+  "total_records": 125,
+  "crash_records": 100,
+  "cve_records": 15,
+  "exploit_records": 10,
+  "average_quality": 59.52,
+  "output_file": "data/hancock/fuzzing/fuzzing_corpus_20260428_033259_enriched.jsonl",
+  "scenarios_used": 20
+}

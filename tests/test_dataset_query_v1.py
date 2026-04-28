@@ -1,15 +1,11 @@
 """Tests for dataset_query module."""
 import json
-from pathlib import Path
 import pytest
-from src.peachtree.dataset_query import (
+from peachtree.dataset_query import (
     DatasetQueryEngine,
     QueryBuilder,
-    QueryParser,
-    Query,
     QueryCondition,
     QueryOperator,
-    LogicalOperator,
 )
 
 
@@ -189,7 +185,7 @@ def test_query_builder_order_by():
     query = builder.order_by("age", ascending=False).build()
     
     assert query.order_by == "age"
-    assert query.ascending == False
+    assert not query.ascending
 
 
 def test_query_operator_eq(sample_dataset):

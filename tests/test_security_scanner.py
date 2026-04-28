@@ -1,7 +1,6 @@
 """
 Tests for security_scanner module
 """
-from pathlib import Path
 import pytest
 import json
 from peachtree.security_scanner import (

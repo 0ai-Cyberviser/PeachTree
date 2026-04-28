@@ -1,9 +1,7 @@
 """Tests for dataset_sampling module."""
-from pathlib import Path
 from datetime import datetime
 import pytest
 import json
-import tempfile
 
 from peachtree.dataset_sampling import (
     DatasetSampler,

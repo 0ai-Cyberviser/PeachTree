@@ -18,8 +18,8 @@ ruff check src/ tests/
 ruff check --fix src/ tests/
 mypy src/peachtree/ --strict
 
-# CLI Commands (12 available)
-peachtree plan|ingest|build|audit|policy|quality|dedup|export|card|handoff|health|dashboard
+# CLI Commands (15 available)
+peachtree plan|ingest|build|audit|policy|quality|dedup|export|card|handoff|health|dashboard|hancock-discover|hancock-ingest|hancock-workflow
 ```
 
 ### Core Principles (CRITICAL)
@@ -39,6 +39,188 @@ peachtree plan|ingest|build|audit|policy|quality|dedup|export|card|handoff|healt
 - **Entry point**: `src/peachtree/cli.py` (12 commands)
 - **Core models**: `SourceDocument`, `DatasetRecord`, `LearningNode` in `models.py`
 - **Documentation**: See [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/](docs/) for details
+
+---
+
+## Development Guide (Critical API Knowledge)
+
+### Frozen Dataclass Constraints ⚠️
+
+**ALL core models use `@dataclass(frozen=True)` - they are IMMUTABLE**
+
+```python
+# ❌ WRONG - AttributeError: can't set attribute
+record.quality_score = 0.9
+
+# ✅ CORRECT - create new instance with dataclasses.replace()
+from dataclasses import replace
+new_record = replace(record, quality_score=0.9)
+```
+
+**Key Rules:**
+- **Cannot modify** fields after creation
+- Use **tuples** for collections: `tuple[str, ...]` not `list[str]`
+- Computed values via **@property** methods (e.g., `digest`, `id`)
+- Use `field(default_factory=tuple)` for mutable defaults
+
+### JSONL Format (NOT JSON Arrays)
+
+**Each line is a complete, independent JSON object:**
+
+```jsonl
+{"id": "abc123", "instruction": "...", "source_repo": "..."}
+{"id": "def456", "instruction": "...", "source_repo": "..."}
+```
+
+**Reading JSONL:**
+```python
+records = []
+for line in path.read_text(encoding="utf-8").splitlines():
+    if line.strip():
+        records.append(json.loads(line))
+```
+
+**Writing JSONL:**
+```python
+path.write_text(
+    "\n".join(json.dumps(r, sort_keys=True) for r in records) + "\n",
+    encoding="utf-8"
+)
+```
+
+### Critical API Signatures
+
+**DatasetDeduplicator** (most common error):
+```python
+# ✅ CORRECT method name
+deduplicator = DatasetDeduplicator()
+report = deduplicator.deduplicate(
+    source_path="dataset.jsonl",
+    output_path="deduped.jsonl",
+    write_output=True
+)
+
+# ❌ WRONG - does not exist
+deduplicator.deduplicate_dataset(...)  # NO SUCH METHOD
+```
+
+**SourceDocument constructor**:
+```python
+# ✅ CORRECT - uses repo_name, path (digest computed via @property)
+doc = SourceDocument(
+    repo_name="0ai-Cyberviser/PeachTree",
+    path="README.md",
+    content="...",
+    source_type="local-file"
+)
+
+# ❌ WRONG - old API (source_repo, source_path, sha256_digest params don't exist)
+doc = SourceDocument(source_repo="...", sha256_digest="...")
+```
+
+**TrainerHandoffBuilder**:
+```python
+# ✅ CORRECT method name
+handoff = handoff_builder.build()
+
+# ❌ WRONG - does not exist
+handoff = handoff_builder.create_handoff()
+```
+
+### Provenance Requirements (Mandatory)
+
+**Every DatasetRecord MUST have:**
+- `source_repo` - Repository name
+- `source_path` - File path within repo
+- `source_digest` - SHA256 hash (use `sha256_text()` from models)
+- `license_id` - License identifier
+- `created_at` - ISO timestamp (auto-generated)
+
+### Testing Patterns
+
+**Test file structure mirrors source:**
+```
+tests/
+├── test_hancock_integration.py  # Mirror of hancock_integration.py
+├── test_dedup.py                # Mirror of dedup.py
+└── [74+ test files]
+```
+
+**Common test helpers:**
+```python
+def test_example(tmp_path: Path):  # pytest provides tmp_path
+    # Create test JSONL
+    (tmp_path / "dataset.jsonl").write_text(
+        '\n'.join(json.dumps(r) for r in records) + '\n',
+        encoding="utf-8"
+    )
+    
+    # Test with path
+    result = process_dataset(tmp_path / "dataset.jsonl")
+```
+
+### Code Quality Checklist
+
+**Before every commit:**
+```bash
+# 1. All tests pass (129+ tests)
+pytest tests/ -v
+
+# 2. Zero lint violations
+ruff check src/ tests/
+
+# 3. Zero type errors
+mypy src/peachtree/ --strict
+
+# 4. CLI smoke test
+peachtree policy
+```
+
+### Hancock Integration (New)
+
+**Module**: `src/peachtree/hancock_integration.py`
+
+**CLI commands:**
+```bash
+# Discover available sources
+peachtree hancock-discover --hancock-dir ~/Hancock/data
+
+# Run complete workflow (ingest + quality + dedup + handoff)
+peachtree hancock-workflow \
+  --hancock-dir ~/Hancock/data \
+  --output-dir data/hancock \
+  --min-quality-score 0.70
+```
+
+**Python API:**
+```python
+from peachtree.hancock_integration import hancock_ingestion_workflow
+
+summary = hancock_ingestion_workflow(
+    hancock_data_dir=Path("~/Hancock/data"),
+    output_dir=Path("data/hancock"),
+    min_quality_score=0.70
+)
+```
+
+**Supported sources:** MITRE ATT&CK, NVD CVE, CISA KEV, GHSA, Atomic Red Team, KB, SOC-KB, v3 consolidated
+
+### Quick Debugging
+
+```bash
+# ModuleNotFoundError
+pip install -e ".[dev]"
+
+# Test specific file
+pytest tests/test_hancock_integration.py -v --tb=short
+
+# Verify installation
+python -c "import peachtree; print(peachtree.__file__)"
+peachtree --version
+```
+
+**For detailed architecture, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**  
+**For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md)**
 
 ---
 
@@ -64,7 +246,8 @@ peachtree plan|ingest|build|audit|policy|quality|dedup|export|card|handoff|healt
 - JSONL record management
 - Quality scoring and deduplication
 - Trainer handoff generation
-- Hancock/PeachFuzz integration
+- Hancock cybersecurity data integration (MITRE ATT&CK, CVE, KEV, GHSA, Atomic Red Team)
+- PeachFuzz integration
 
 **Invoke**: Default mode when working with PeachTree codebase
 

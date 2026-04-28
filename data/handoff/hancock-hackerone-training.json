@@ -1,0 +1,29 @@
+{
+  "artifact_count": 1,
+  "artifacts": [
+    {
+      "kind": "dataset",
+      "name": "hackerone-enriched.jsonl",
+      "path": "data/hancock/hackerone-enriched.jsonl",
+      "required": true,
+      "sha256": "f7abe8c0bdd44e904fa3b97c4e278a8f94ca4040046616378feab58fd0baf4d7",
+      "size_bytes": 13187
+    }
+  ],
+  "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "created_at": "2026-04-28T06:09:31.945496+00:00",
+  "dataset_format": "jsonl",
+  "dataset_path": "data/hancock/hackerone-enriched.jsonl",
+  "metadata": {
+    "generated_for": "trainer_handoff"
+  },
+  "model_name": "Hancock-BugBounty-v1",
+  "safety": {
+    "does_not_call_training_apis": true,
+    "does_not_train_models": true,
+    "does_not_upload_datasets": true,
+    "dry_run_only": true,
+    "requires_human_approval_before_training": true
+  },
+  "trainer_profile": "unsloth"
+}

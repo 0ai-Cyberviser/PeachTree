@@ -1,0 +1,29 @@
+{
+  "artifact_count": 1,
+  "artifacts": [
+    {
+      "kind": "dataset",
+      "name": "unified-bugbounty-training.jsonl",
+      "path": "data/hancock/unified-bugbounty-training.jsonl",
+      "required": true,
+      "sha256": "214244ba50b88c9dfa733f79cbbdd16db4929149d15ce7eb9f5222db3c2a95c5",
+      "size_bytes": 37419
+    }
+  ],
+  "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "created_at": "2026-04-28T06:14:51.303050+00:00",
+  "dataset_format": "jsonl",
+  "dataset_path": "data/hancock/unified-bugbounty-training.jsonl",
+  "metadata": {
+    "generated_for": "trainer_handoff"
+  },
+  "model_name": "Hancock-BugBounty-Complete-v1",
+  "safety": {
+    "does_not_call_training_apis": true,
+    "does_not_train_models": true,
+    "does_not_upload_datasets": true,
+    "dry_run_only": true,
+    "requires_human_approval_before_training": true
+  },
+  "trainer_profile": "unsloth"
+}

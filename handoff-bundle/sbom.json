@@ -1,0 +1,120 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:hancock-bugbounty-v1-2026-04-28",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-04-28T06:15:23.821038+00:00",
+    "tools": [
+      {
+        "vendor": "PeachTree",
+        "name": "peachtree",
+        "version": "0.9.0"
+      }
+    ],
+    "component": {
+      "type": "data",
+      "name": "Hancock-BugBounty-Complete-v1",
+      "version": "1.0.0",
+      "description": "Comprehensive bug bounty training dataset covering HackerOne, Bugcrowd, Apple, Google, Microsoft programs"
+    }
+  },
+  "components": [
+    {
+      "type": "data",
+      "bom-ref": "hancock-hackerone-synthetic",
+      "name": "HackerOne Bug Bounty Training Data",
+      "version": "1.0.0",
+      "description": "Synthetic training data for HackerOne bug bounty programs (crypto exchanges, Web3)",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "record_count",
+          "value": "5"
+        },
+        {
+          "name": "source_type",
+          "value": "synthetic"
+        },
+        {
+          "name": "coverage",
+          "value": "HackerOne, Crypto Exchanges, Web3"
+        }
+      ]
+    },
+    {
+      "type": "data",
+      "bom-ref": "hancock-enterprise-synthetic",
+      "name": "Enterprise Bug Bounty Training Data",
+      "version": "1.0.0",
+      "description": "Synthetic training data for Apple, Google, Microsoft, Bugcrowd programs",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "record_count",
+          "value": "5"
+        },
+        {
+          "name": "source_type",
+          "value": "synthetic"
+        },
+        {
+          "name": "coverage",
+          "value": "Apple Security Bounty, Google VRP, Microsoft Bounties, Bugcrowd, Cross-Platform"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "hancock-hackerone-synthetic",
+      "dependsOn": []
+    },
+    {
+      "ref": "hancock-enterprise-synthetic",
+      "dependsOn": []
+    }
+  ],
+  "properties": [
+    {
+      "name": "dataset_path",
+      "value": "data/hancock/unified-bugbounty-training.jsonl"
+    },
+    {
+      "name": "total_records",
+      "value": "10"
+    },
+    {
+      "name": "licenses",
+      "value": "MIT"
+    },
+    {
+      "name": "quality_score_avg",
+      "value": "39"
+    },
+    {
+      "name": "provenance_complete",
+      "value": "true"
+    },
+    {
+      "name": "training_target",
+      "value": "mistralai/Mistral-7B-Instruct-v0.3"
+    },
+    {
+      "name": "trainer_profile",
+      "value": "unsloth"
+    }
+  ]
+}

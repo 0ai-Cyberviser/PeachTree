@@ -1,0 +1,56 @@
+{
+  "dataset_path": "data/hancock/unified-bugbounty-training.jsonl",
+  "record_count": 10,
+  "average_score": 39,
+  "min_score": 39,
+  "passed_records": 10,
+  "failed_records": 0,
+  "gate_passed": false,
+  "readiness_level": "not-ready",
+  "gates": [
+    {
+      "name": "min_records",
+      "passed": true,
+      "threshold": ">=1",
+      "actual": "10",
+      "message": "dataset must have enough records"
+    },
+    {
+      "name": "min_average_score",
+      "passed": false,
+      "threshold": ">=70",
+      "actual": "39",
+      "message": "dataset average quality score must meet threshold"
+    },
+    {
+      "name": "max_failed_ratio",
+      "passed": true,
+      "threshold": "<=0.15",
+      "actual": "0.0",
+      "message": "too many records failed quality scoring"
+    },
+    {
+      "name": "min_record_score",
+      "passed": false,
+      "threshold": ">=60",
+      "actual": "39",
+      "message": "all records should meet the minimum record score"
+    },
+    {
+      "name": "provenance_required",
+      "passed": true,
+      "threshold": "source_repo and source_path present",
+      "actual": "present",
+      "message": "all records must preserve provenance"
+    }
+  ],
+  "issues": [],
+  "security_statistics": {
+    "total_vulnerability_indicators": 0,
+    "avg_indicators_per_record": 0.0,
+    "crash_reproducible_count": 0,
+    "crash_reproducible_ratio": 0.0,
+    "sanitizer_coverage_count": 0,
+    "sanitizer_coverage_ratio": 0.0
+  }
+}

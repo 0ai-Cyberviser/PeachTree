@@ -1,0 +1,37 @@
+{
+  "artifact_count": 2,
+  "artifacts": [
+    {
+      "kind": "dataset",
+      "name": "comprehensive-training.jsonl",
+      "path": "data/hancock/comprehensive-training.jsonl",
+      "required": true,
+      "sha256": "9170d08ea8a04ec319d9729c05dc0abe363eb1d2ae29912e57875dd120429aef",
+      "size_bytes": 1062498
+    },
+    {
+      "kind": "quality-report",
+      "name": "comprehensive-quality.json",
+      "path": "reports/comprehensive-quality.json",
+      "required": false,
+      "sha256": "bd45dc5087f538b2908a7da765f82b1c7a6786c7a2fe4352583a4c35fd50dbc2",
+      "size_bytes": 650478
+    }
+  ],
+  "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "created_at": "2026-04-28T07:47:57.959622+00:00",
+  "dataset_format": "chatml",
+  "dataset_path": "data/hancock/comprehensive-training.jsonl",
+  "metadata": {
+    "generated_for": "trainer_handoff"
+  },
+  "model_name": "hancock-comprehensive-v1",
+  "safety": {
+    "does_not_call_training_apis": true,
+    "does_not_train_models": true,
+    "does_not_upload_datasets": true,
+    "dry_run_only": true,
+    "requires_human_approval_before_training": true
+  },
+  "trainer_profile": "unsloth"
+}

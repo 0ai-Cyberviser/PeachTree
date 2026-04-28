@@ -1,0 +1,29 @@
+{
+  "artifact_count": 1,
+  "artifacts": [
+    {
+      "kind": "dataset",
+      "name": "training.jsonl",
+      "path": "data/hancock/training.jsonl",
+      "required": true,
+      "sha256": "a4aba0192e30bc33aac5a8847ffeb9380f69fba1645ad4721f6937ed34f5eb1e",
+      "size_bytes": 548763
+    }
+  ],
+  "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "created_at": "2026-04-28T07:08:09.188143+00:00",
+  "dataset_format": "chatml",
+  "dataset_path": "data/hancock/training.jsonl",
+  "metadata": {
+    "generated_for": "trainer_handoff"
+  },
+  "model_name": "hancock-defense-v1",
+  "safety": {
+    "does_not_call_training_apis": true,
+    "does_not_train_models": true,
+    "does_not_upload_datasets": true,
+    "dry_run_only": true,
+    "requires_human_approval_before_training": true
+  },
+  "trainer_profile": "unsloth"
+}

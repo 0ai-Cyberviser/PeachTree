@@ -1,0 +1,29 @@
+{
+  "artifact_count": 1,
+  "artifacts": [
+    {
+      "kind": "dataset",
+      "name": "comprehensive-enriched.jsonl",
+      "path": "data/hancock/enterprise-bugbounty/comprehensive-enriched.jsonl",
+      "required": true,
+      "sha256": "e0074c69c2a84aa8feaafe93ddf16b871a376e90d60901e32df3d67f96ecd342",
+      "size_bytes": 24232
+    }
+  ],
+  "base_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "created_at": "2026-04-28T06:14:23.298971+00:00",
+  "dataset_format": "jsonl",
+  "dataset_path": "data/hancock/enterprise-bugbounty/comprehensive-enriched.jsonl",
+  "metadata": {
+    "generated_for": "trainer_handoff"
+  },
+  "model_name": "Hancock-Enterprise-BugBounty-v1",
+  "safety": {
+    "does_not_call_training_apis": true,
+    "does_not_train_models": true,
+    "does_not_upload_datasets": true,
+    "dry_run_only": true,
+    "requires_human_approval_before_training": true
+  },
+  "trainer_profile": "unsloth"
+}

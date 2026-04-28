@@ -1,0 +1,11 @@
+{
+  "timestamp": "20260428_033547",
+  "total_records": 90,
+  "domains": {
+    "ai_learning": 30,
+    "blockchain": 25,
+    "pentesting": 20,
+    "bug_bounty": 15
+  },
+  "output_file": "data/hancock/task-specific/multi_domain_20260428_033547.jsonl"
+}

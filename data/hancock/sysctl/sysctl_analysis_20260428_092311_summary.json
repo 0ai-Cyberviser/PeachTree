@@ -1,0 +1,10 @@
+{
+  "categories": {
+    "comprehensive_assessment": 1,
+    "network_configuration": 6,
+    "security_configuration": 17
+  },
+  "output_file": "data/hancock/sysctl/sysctl_analysis_20260428_092311.jsonl",
+  "timestamp": "20260428_092311",
+  "total_records": 24
+}

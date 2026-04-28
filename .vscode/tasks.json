@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "IGRFT: Quick Start (5 cycles)",
+      "type": "shell",
+      "command": "python -m peachtree.inference_recursive_learning --dataset data/hancock/unified-expanded.jsonl --cycles 5 --verbose",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "IGRFT: Train Cycle 1",
+      "type": "shell",
+      "command": "python models/igrft-cycles/train_cycle_1.py",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "IGRFT: Analyze Results",
+      "type": "shell",
+      "command": "cat data/hancock/igrft/igrft_summary.json | jq .",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "IGRFT: Install Dependencies",
+      "type": "shell",
+      "command": "pip install transformers peft bitsandbytes accelerate datasets sentencepiece",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}

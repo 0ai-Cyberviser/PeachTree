@@ -1,0 +1,16 @@
+{
+  "total_records": 10863,
+  "sources": [
+    {
+      "name": "Base Hancock",
+      "records": 4951
+    },
+    {
+      "name": "Kali System (kali_complete_20260428_160725.jsonl)",
+      "records": 10571
+    }
+  ],
+  "duplicates_removed": 4659,
+  "output_file": "data/hancock/ultimate-training-corpus.jsonl",
+  "timestamp": "2026-04-28T16:07:41.574135+00:00"
+}

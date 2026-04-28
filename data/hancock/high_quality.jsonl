@@ -1,0 +1,652 @@
+{
+  "id": "autonomous-0000",
+  "input": "Security Event: sql_injection_attempt (severity: critical)\nSource: 192.168.1.100\nTarget: /api/users",
+  "instruction": "Analyze sql_injection_attempt security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous_generated": true,
+    "event_type": "sql_injection_attempt",
+    "fuzzing_relevance": 0.0,
+    "severity": "critical",
+    "source_ip": "192.168.1.100",
+    "tags": [],
+    "target_asset": "/api/users",
+    "timestamp": "2026-04-27T22:45:41.654814"
+  },
+  "output": "CRITICAL: SQL injection detected: ' OR '1'='1\n\nRecommended Actions:\n- Block source IP if pattern continues\n- Review application logs\n- Check input validation\n- Alert security team",
+  "quality_score": 0.8,
+  "source_digest": "ba1e56d1759246f8",
+  "source_path": "events/sql_injection_attempt/evt-0000.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "SQL injection detected: ' OR '1'='1\n\nSecurity Analysis: This critical severity sql_injection_attempt requires immediate attention."
+}
+{
+  "id": "autonomous-0001",
+  "input": "Security Event: failed_auth (severity: medium)\nSource: 192.168.1.101\nTarget: /auth/login",
+  "instruction": "Analyze failed_auth security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous_generated": true,
+    "event_type": "failed_auth",
+    "fuzzing_relevance": 0.0,
+    "severity": "medium",
+    "source_ip": "192.168.1.101",
+    "tags": [],
+    "target_asset": "/auth/login",
+    "timestamp": "2026-04-27T22:45:41.654832"
+  },
+  "output": "MEDIUM: 5 failed login attempts in 60 seconds\n\nRecommended Actions:\n- Block source IP if pattern continues\n- Review application logs\n- Check input validation\n- Alert security team",
+  "quality_score": 0.8,
+  "source_digest": "b29dc2c510296871",
+  "source_path": "events/failed_auth/evt-0001.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "5 failed login attempts in 60 seconds\n\nSecurity Analysis: This medium severity failed_auth requires immediate attention."
+}
+{
+  "id": "autonomous-0002",
+  "input": "Security Event: xss_attempt (severity: high)\nSource: 192.168.1.102\nTarget: /api/comments",
+  "instruction": "Analyze xss_attempt security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous_generated": true,
+    "event_type": "xss_attempt",
+    "fuzzing_relevance": 0.0,
+    "severity": "high",
+    "source_ip": "192.168.1.102",
+    "tags": [],
+    "target_asset": "/api/comments",
+    "timestamp": "2026-04-27T22:45:41.654837"
+  },
+  "output": "HIGH: XSS payload detected: <script>alert('xss')</script>\n\nRecommended Actions:\n- Block source IP if pattern continues\n- Review application logs\n- Check input validation\n- Alert security team",
+  "quality_score": 0.8,
+  "source_digest": "e0de000309f6dab2",
+  "source_path": "events/xss_attempt/evt-0002.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "XSS payload detected: <script>alert('xss')</script>\n\nSecurity Analysis: This high severity xss_attempt requires immediate attention."
+}
+{
+  "id": "autonomous-0003",
+  "input": "Security Event: crash_detected (severity: high)\nSource: internal\nTarget: /api/process",
+  "instruction": "Analyze crash_detected security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous_generated": true,
+    "crash_severity": "high",
+    "crash_signature": "segfault-high",
+    "crash_type": "segfault",
+    "event_type": "crash_detected",
+    "fuzzing_relevance": 0.46,
+    "severity": "high",
+    "source_ip": "internal",
+    "tags": [
+      "severity:high",
+      "crash:segfault"
+    ],
+    "target_asset": "/api/process",
+    "timestamp": "2026-04-27T22:45:41.654841"
+  },
+  "output": "HIGH: Segmentation fault in request handler\n\nRecommended Actions:\n- Block source IP if pattern continues\n- Review application logs\n- Check input validation\n- Alert security team",
+  "quality_score": 1.0,
+  "source_digest": "90cd18215fffc6d0",
+  "source_path": "events/crash_detected/evt-0003.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "Segmentation fault in request handler\n\nSecurity Analysis: This high severity crash_detected requires immediate attention."
+}
+{
+  "id": "autonomous-0000",
+  "input": "Event: sql_injection_attempt (critical)",
+  "instruction": "Analyze sql_injection_attempt security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "event_type": "sql_injection_attempt",
+    "fuzzing_relevance": 0.0,
+    "severity": "critical",
+    "tags": []
+  },
+  "output": "CRITICAL: SQL injection detected",
+  "quality_score": 0.8,
+  "source_digest": "ba1e56d1759246f8",
+  "source_path": "events/sql_injection_attempt/evt-0000.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "SQL injection detected"
+}
+{
+  "id": "autonomous-0001",
+  "input": "Event: failed_auth (medium)",
+  "instruction": "Analyze failed_auth security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "event_type": "failed_auth",
+    "fuzzing_relevance": 0.0,
+    "severity": "medium",
+    "tags": []
+  },
+  "output": "MEDIUM: 5 failed login attempts",
+  "quality_score": 0.8,
+  "source_digest": "b29dc2c510296871",
+  "source_path": "events/failed_auth/evt-0001.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "5 failed login attempts"
+}
+{
+  "id": "autonomous-0002",
+  "input": "Event: xss_attempt (high)",
+  "instruction": "Analyze xss_attempt security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "event_type": "xss_attempt",
+    "fuzzing_relevance": 0.0,
+    "severity": "high",
+    "tags": []
+  },
+  "output": "HIGH: XSS payload detected",
+  "quality_score": 0.8,
+  "source_digest": "e0de000309f6dab2",
+  "source_path": "events/xss_attempt/evt-0002.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "XSS payload detected"
+}
+{
+  "id": "autonomous-0003",
+  "input": "Event: crash_detected (high)",
+  "instruction": "Analyze crash_detected security event and recommend defensive action",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "crash_severity": "high",
+    "crash_signature": "segfault-high",
+    "crash_type": "segfault",
+    "event_type": "crash_detected",
+    "fuzzing_relevance": 0.4,
+    "severity": "high",
+    "tags": [
+      "severity:high",
+      "crash:segfault"
+    ]
+  },
+  "output": "HIGH: Segmentation fault",
+  "quality_score": 1.0,
+  "source_digest": "90cd18215fffc6d0",
+  "source_path": "events/crash_detected/evt-0003.json",
+  "source_repo": "peachtree/autonomous-defense",
+  "text": "Segmentation fault"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}
+{
+  "id": "auto-0000",
+  "input": "Event: sql_injection",
+  "instruction": "Analyze sql_injection security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "CRITICAL: sql_injection from 192.168.1.100",
+  "quality_score": 0.8,
+  "source_digest": "5feceb66ffc86f38",
+  "source_path": "events/0000.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: sql_injection"
+}
+{
+  "id": "auto-0001",
+  "input": "Event: failed_auth",
+  "instruction": "Analyze failed_auth security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "MEDIUM: failed_auth from 192.168.1.101",
+  "quality_score": 0.8,
+  "source_digest": "6b86b273ff34fce1",
+  "source_path": "events/0001.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: failed_auth"
+}
+{
+  "id": "auto-0002",
+  "input": "Event: xss_attempt",
+  "instruction": "Analyze xss_attempt security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.0,
+    "tags": []
+  },
+  "output": "HIGH: xss_attempt from 192.168.1.102",
+  "quality_score": 0.8,
+  "source_digest": "d4735e3a265e16ee",
+  "source_path": "events/0002.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: xss_attempt"
+}
+{
+  "id": "auto-0003",
+  "input": "Event: crash",
+  "instruction": "Analyze crash security event",
+  "license": "MIT",
+  "metadata": {
+    "autonomous": true,
+    "fuzzing_relevance": 0.06,
+    "tags": []
+  },
+  "output": "HIGH: crash from internal",
+  "quality_score": 0.8,
+  "source_digest": "4e07408562bedb8b",
+  "source_path": "events/0003.json",
+  "source_repo": "peachtree/autonomous",
+  "text": "Security event: crash"
+}

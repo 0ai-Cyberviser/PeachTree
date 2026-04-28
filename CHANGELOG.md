@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Comprehensive documentation website with Material Design theme
 - GitHub Actions CI/CD workflows for testing, deployment, and releases
 - Docker support with Dockerfile and docker-compose
@@ -16,17 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deployment guide for GitHub Pages and releases
 
 ### Changed
+
 - Fixed 4 ruff linting violations (unused imports)
 - Fixed mypy type variance issue in registry.py
 - Improved documentation structure and organization
 
 ### Fixed
+
 - Removed minify plugin from mkdocs.yml (dependency issue)
 - Type checking errors in DatasetRegistryBuilder
 
 ## [0.9.0] - 2026-04-26
 
 ### Added
+
 - Initial comprehensive documentation (42 markdown files)
 - Static website generation with mkdocs (43 HTML pages)
 - CLI reference documentation (28+ commands)
@@ -38,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Troubleshooting guide
 
 ### Features
+
 - Recursive learning-tree dataset engine
 - SafetyGate for secrets and license filtering
 - Policy packs for compliance validation
@@ -48,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Registry and artifact management
 
 ### Quality
+
 - 129 unit tests with 91% code coverage
 - Type checking with mypy (0 errors)
 - Linting with ruff (0 violations)
@@ -55,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated testing in CI/CD
 
 ### Infrastructure
+
 - GitHub Actions workflows for CI/CD
 - Docker containerization support
 - Automated development setup
@@ -70,6 +77,7 @@ Refer to git history for details on previous releases.
 ## Release Process
 
 1. **Update Version**
+
    ```bash
    # In pyproject.toml
    version = "0.10.0"
@@ -80,6 +88,7 @@ Refer to git history for details on previous releases.
    - Document changes in appropriate sections
 
 3. **Create Release**
+
    ```bash
    git tag v0.10.0
    git push origin v0.10.0

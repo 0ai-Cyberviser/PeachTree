@@ -1,0 +1,1204 @@
+................................F....................................... [  4%]
+........................................FFFFFFFFF.FFFFFFFFFFFFF......F.F [  8%]
+.FF....FF..F.............FF............................................. [ 12%]
+.................................................FFF.................... [ 16%]
+......FFFFF..............F.FFF..F..F.................................... [ 21%]
+........................................................................ [ 25%]
+.....................F.....F..FFFFFFFFFFFF.....F.....FFFF............... [ 29%]
+.......................................................................F [ 33%]
+FFFFFFF.FFFFF.F.....................F...F............................... [ 38%]
+F..............................................F.......F..F..FFF.FFF.FFF [ 42%]
+.FFFFFFFFF.............................................................. [ 46%]
+..............................................F..........FFFFF.FFFF...FF [ 50%]
+..FFF.....................................F.F.FFFFFFFFFFF..F............ [ 54%]
+...................................................................FFFF. [ 59%]
+FFFFFFF................................................................. [ 63%]
+............................F.F...F..F......FF.......F.................. [ 67%]
+....................................................................F... [ 71%]
+F..................FF................................................... [ 76%]
+...................................................................F.... [ 80%]
+........F.....................................................F......F.F [ 84%]
+F....FF................................................................. [ 88%]
+...........................F............................................ [ 93%]
+....FFFF.FFFFFF...................................F..................... [ 97%]
+................................EEEEEEEEE....E                           [100%]
+==================================== ERRORS ====================================
+_______________ ERROR at setup of test_simple_workflow_execution _______________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+__________________ ERROR at setup of test_multi_step_workflow __________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+______________ ERROR at setup of test_workflow_with_dependencies _______________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+_______________ ERROR at setup of test_workflow_failure_handling _______________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+____________________ ERROR at setup of test_skip_on_failure ____________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+____________________ ERROR at setup of test_dedup_operation ____________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+__________________ ERROR at setup of test_optimize_operation ___________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+___________________ ERROR at setup of test_export_operation ____________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+________________ ERROR at setup of test_save_and_load_workflow _________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+________________ ERROR at setup of test_step_status_progression ________________
+E   TypeError: DatasetBuilder.__init__() missing 1 required positional argument: 'domain'
+=================================== FAILURES ===================================
+E   assert 0 == 2
+/tmp/peachtree/tests/test_backup_restore.py:269: assert 0 == 2
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:29: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:55: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:76: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:97: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:113: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:129: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:145: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:160: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:174: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:204: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:220: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:238: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:252: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:267: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:283: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:305: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:325: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:344: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:361: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:379: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:398: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+/tmp/peachtree/tests/test_dataset_audit_log.py:425: TypeError: AuditContext.__init__() got an unexpected keyword argument 'user_id'
+E   AssertionError: assert <BenchmarkCategory.TRANSFORMATION: 'transformation'> == <BenchmarkCategory.PROCESSING: 'processing'>
+     +  where <BenchmarkCategory.TRANSFORMATION: 'transformation'> = BenchmarkResult(benchmark_id='test_transform', name='Dataset Transform', category=<BenchmarkCategory.TRANSFORMATION: '...0.0, status=<BenchmarkStatus.COMPLETED: 'completed'>, error=None, metadata={}, timestamp='2026-04-28T06:44:24.874868Z').category
+     +  and   <BenchmarkCategory.PROCESSING: 'processing'> = BenchmarkCategory.PROCESSING
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:65: AssertionError: assert <BenchmarkCategory.TRANSFORMATION: 'transformation'> == <BenchmarkCategory.PROCESSING: 'processing'>
+E   AssertionError: assert False
+     +  where False = hasattr(BenchmarkResult(benchmark_id='test_metrics', name='Dataset Read', category=<BenchmarkCategory.IO: 'io'>, duration_seco...0.0, status=<BenchmarkStatus.COMPLETED: 'completed'>, error=None, metadata={}, timestamp='2026-04-28T06:44:25.149586Z'), 'records_per_second')
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:90: AssertionError: assert False
+E   TypeError: DatasetBenchmark.compare() got an unexpected keyword argument 'threshold'
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:116: TypeError: DatasetBenchmark.compare() got an unexpected keyword argument 'threshold'
+E   TypeError: DatasetBenchmark.compare() got an unexpected keyword argument 'threshold'
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:130: TypeError: DatasetBenchmark.compare() got an unexpected keyword argument 'threshold'
+E   AttributeError: 'BenchmarkResult' object has no attribute 'records_per_second'. Did you mean: 'records_processed'?
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:181: AttributeError: 'BenchmarkResult' object has no attribute 'records_per_second'. Did you mean: 'records_processed'?
+E   AssertionError: assert False
+     +  where False = hasattr(BenchmarkResult(benchmark_id='memory', name='Dataset Read', category=<BenchmarkCategory.IO: 'io'>, duration_seconds=0....0.0, status=<BenchmarkStatus.COMPLETED: 'completed'>, error=None, metadata={}, timestamp='2026-04-28T06:44:26.670016Z'), 'memory_mb')
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:190: AssertionError: assert False
+E   AttributeError: 'BenchmarkResult' object has no attribute 'records_per_second'. Did you mean: 'records_processed'?
+/tmp/peachtree/tests/test_dataset_benchmarking_v1.py:231: AttributeError: 'BenchmarkResult' object has no attribute 'records_per_second'. Did you mean: 'records_processed'?
+E   assert 0 > 0
+     +  where 0 = CacheStats(total_requests=0, cache_hits=0, cache_misses=0, evictions=0, total_size_bytes=1002800, entry_count=100).evictions
+     +    where CacheStats(total_requests=0, cache_hits=0, cache_misses=0, evictions=0, total_size_bytes=1002800, entry_count=100) = <peachtree.dataset_cache.DatasetCache object at 0x7f76e391f950>.stats
+/tmp/peachtree/tests/test_dataset_cache.py:169: assert 0 > 0
+E   assert 0 > 0
+     +  where 0 = CacheStats(total_requests=5, cache_hits=5, cache_misses=0, evictions=0, total_size_bytes=1022856, entry_count=102).evictions
+     +    where CacheStats(total_requests=5, cache_hits=5, cache_misses=0, evictions=0, total_size_bytes=1022856, entry_count=102) = <peachtree.dataset_cache.DatasetCache object at 0x7f76e391fbb0>.stats
+/tmp/peachtree/tests/test_dataset_cache.py:189: assert 0 > 0
+E   AttributeError: 'str' object has no attribute 'get'
+/tmp/peachtree/src/peachtree/health_monitor.py:188: AttributeError: 'str' object has no attribute 'get'
+E   AttributeError: 'str' object has no attribute 'get'
+/tmp/peachtree/src/peachtree/health_monitor.py:188: AttributeError: 'str' object has no attribute 'get'
+E   AttributeError: 'str' object has no attribute 'get'
+/tmp/peachtree/src/peachtree/health_monitor.py:188: AttributeError: 'str' object has no attribute 'get'
+E   assert 3 == 1
+     +  where 3 = <CompressionLevel.FAST: 3>.value
+     +    where <CompressionLevel.FAST: 3> = CompressionLevel.FAST
+/tmp/peachtree/tests/test_dataset_compression.py:30: assert 3 == 1
+E   TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+/tmp/peachtree/tests/test_dataset_compression.py:37: TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+E   TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+/tmp/peachtree/tests/test_dataset_compression.py:53: TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+E   TypeError: CompressionStats.__init__() got an unexpected keyword argument 'total_files'
+/tmp/peachtree/tests/test_dataset_compression.py:71: TypeError: CompressionStats.__init__() got an unexpected keyword argument 'total_files'
+E   TypeError: CompressionStats.__init__() got an unexpected keyword argument 'total_files'
+/tmp/peachtree/tests/test_dataset_compression.py:87: TypeError: CompressionStats.__init__() got an unexpected keyword argument 'total_files'
+E   AttributeError: 'CompressionAnalyzer' object has no attribute 'analyze_compression_ratio'
+/tmp/peachtree/tests/test_dataset_compression.py:322: AttributeError: 'CompressionAnalyzer' object has no attribute 'analyze_compression_ratio'
+E   AssertionError: assert False
+     +  where False = exists()
+     +    where exists = (PosixPath('/tmp/pytest-of-x/pytest-115/test_batch_compressor_compress0/compressed') / 'input1.jsonl.gz').exists
+/tmp/peachtree/tests/test_dataset_compression.py:350: AssertionError: assert False
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-x/pytest-115/test_batch_compressor_decompre0/compressed/input1.jsonl.gz'
+/usr/lib/python3.13/gzip.py:203: FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-x/pytest-115/test_batch_compressor_decompre0/compressed/input1.jsonl.gz'
+E   TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+/tmp/peachtree/tests/test_dataset_compression.py:389: TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+E   TypeError: StreamingCompressor.__init__() got an unexpected keyword argument 'chunk_size'
+/tmp/peachtree/tests/test_dataset_compression.py:449: TypeError: StreamingCompressor.__init__() got an unexpected keyword argument 'chunk_size'
+E   TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+/tmp/peachtree/tests/test_dataset_compression.py:494: TypeError: CompressionMetadata.__init__() missing 1 required positional argument: 'compression_id'
+E   assert not True
+/tmp/peachtree/tests/test_dataset_governance.py:378: assert not True
+E   AttributeError: type object 'IndexStatus' has no attribute 'UPDATING'
+/tmp/peachtree/tests/test_dataset_indexing.py:30: AttributeError: type object 'IndexStatus' has no attribute 'UPDATING'
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:70: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:77: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:90: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:104: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:113: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:127: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:136: TypeError: HashIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:151: TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:158: TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:168: TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:187: TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+/tmp/peachtree/tests/test_dataset_indexing.py:199: TypeError: InvertedIndex.__init__() takes 2 positional arguments but 3 were given
+E   TypeError: string indices must be integers, not 'str'
+/tmp/peachtree/tests/test_dataset_indexing.py:283: TypeError: string indices must be integers, not 'str'
+E   KeyError: 'total_records_indexed'
+/tmp/peachtree/tests/test_dataset_indexing.py:373: KeyError: 'total_records_indexed'
+E   TypeError: QueryOptimizer.__init__() missing 1 required positional argument: 'index_builder'
+/tmp/peachtree/tests/test_dataset_indexing.py:378: TypeError: QueryOptimizer.__init__() missing 1 required positional argument: 'index_builder'
+E   TypeError: QueryOptimizer.__init__() missing 1 required positional argument: 'index_builder'
+/tmp/peachtree/tests/test_dataset_indexing.py:384: TypeError: QueryOptimizer.__init__() missing 1 required positional argument: 'index_builder'
+E   TypeError: QueryOptimizer.__init__() missing 1 required positional argument: 'index_builder'
+/tmp/peachtree/tests/test_dataset_indexing.py:397: TypeError: QueryOptimizer.__init__() missing 1 required positional argument: 'index_builder'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:110: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:120: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:140: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:159: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:177: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   TypeError: MigrationResult.__init__() got an unexpected keyword argument 'plan_id'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:195: TypeError: MigrationResult.__init__() got an unexpected keyword argument 'plan_id'
+E   TypeError: MigrationResult.__init__() got an unexpected keyword argument 'plan_id'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:209: TypeError: MigrationResult.__init__() got an unexpected keyword argument 'plan_id'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:225: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:267: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:287: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:303: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:320: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   TypeError: MigrationResult.__init__() got an unexpected keyword argument 'plan_id'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:342: TypeError: MigrationResult.__init__() got an unexpected keyword argument 'plan_id'
+E   AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+/tmp/peachtree/tests/test_dataset_migration_v1.py:367: AttributeError: 'DatasetMigrationEngine' object has no attribute 'create_plan'
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+/tmp/peachtree/src/peachtree/dataset_monitoring.py:428: TypeError: can't compare offset-naive and offset-aware datetimes
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+/tmp/peachtree/src/peachtree/dataset_monitoring.py:428: TypeError: can't compare offset-naive and offset-aware datetimes
+E   assert 0 >= 1
+     +  where 0 = len([])
+/tmp/peachtree/tests/test_dataset_notifications.py:721: assert 0 >= 1
+E   AssertionError: assert 1 == 2
+     +  where 1 = len(['/tmp/pytest-of-x/pytest-115/test_split_by_count0/splits/split-000.jsonl'])
+     +    where ['/tmp/pytest-of-x/pytest-115/test_split_by_count0/splits/split-000.jsonl'] = SplitResult(source_dataset='/tmp/pytest-of-x/pytest-115/test_split_by_count0/datasets/dataset1.jsonl', output_files=['...plit_by_count0/splits/split-000.jsonl': 3}, total_records=3, split_timestamp='2026-04-28T01:44:30.751043', metadata={}).output_files
+/tmp/peachtree/tests/test_dataset_operations.py:134: AssertionError: assert 1 == 2
+E   AssertionError: assert 1 == 2
+     +  where 1 = len(['/tmp/pytest-of-x/pytest-115/test_split_creates_output_dire0/nonexistent/splits/split-000.jsonl'])
+     +    where ['/tmp/pytest-of-x/pytest-115/test_split_creates_output_dire0/nonexistent/splits/split-000.jsonl'] = SplitResult(source_dataset='/tmp/pytest-of-x/pytest-115/test_split_creates_output_dire0/datasets/dataset1.jsonl', outp...e0/nonexistent/splits/split-000.jsonl': 3}, total_records=3, split_timestamp='2026-04-28T01:44:30.760817', metadata={}).output_files
+/tmp/peachtree/tests/test_dataset_operations.py:261: AssertionError: assert 1 == 2
+E   AssertionError: assert 16 is None
+     +  where 16 = ParallelConfig(mode=<ParallelMode.PROCESSES: 'processes'>, max_workers=16, chunk_size=1000, timeout_seconds=None, ordered_results=True).max_workers
+/tmp/peachtree/tests/test_dataset_parallelization.py:39: AssertionError: assert 16 is None
+E   TypeError: TaskResult.__init__() missing 1 required positional argument: 'result'
+/tmp/peachtree/tests/test_dataset_parallelization.py:66: TypeError: TaskResult.__init__() missing 1 required positional argument: 'result'
+E   TypeError: ParallelStats.__init__() got an unexpected keyword argument 'total_time_seconds'. Did you mean 'total_duration_seconds'?
+/tmp/peachtree/tests/test_dataset_parallelization.py:75: TypeError: ParallelStats.__init__() got an unexpected keyword argument 'total_time_seconds'. Did you mean 'total_duration_seconds'?
+E   TypeError: ParallelStats.__init__() got an unexpected keyword argument 'total_time_seconds'. Did you mean 'total_duration_seconds'?
+/tmp/peachtree/tests/test_dataset_parallelization.py:89: TypeError: ParallelStats.__init__() got an unexpected keyword argument 'total_time_seconds'. Did you mean 'total_duration_seconds'?
+E   AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+/tmp/peachtree/tests/test_dataset_parallelization.py:117: AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+E   AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+/tmp/peachtree/tests/test_dataset_parallelization.py:134: AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+E   AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+/tmp/peachtree/tests/test_dataset_parallelization.py:153: AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+E   KeyError: 'records_processed'
+/tmp/peachtree/tests/test_dataset_parallelization.py:184: KeyError: 'records_processed'
+E   KeyError: 'records_processed'
+/tmp/peachtree/tests/test_dataset_parallelization.py:210: KeyError: 'records_processed'
+E   TypeError: ParallelDatasetProcessor.aggregate() missing 1 required positional argument: 'combine_fn'
+/tmp/peachtree/tests/test_dataset_parallelization.py:230: TypeError: ParallelDatasetProcessor.aggregate() missing 1 required positional argument: 'combine_fn'
+E   TypeError: list indices must be integers or slices, not str
+/tmp/peachtree/tests/test_dataset_parallelization.py:262: TypeError: list indices must be integers or slices, not str
+E   KeyError: 'total_datasets'
+/tmp/peachtree/tests/test_dataset_parallelization.py:281: KeyError: 'total_datasets'
+E   AttributeError: 'ParallelBatchProcessor' object has no attribute 'filter_datasets'. Did you mean: 'merge_datasets'?
+/tmp/peachtree/tests/test_dataset_parallelization.py:304: AttributeError: 'ParallelBatchProcessor' object has no attribute 'filter_datasets'. Did you mean: 'merge_datasets'?
+E   AttributeError: 'ParallelBatchProcessor' object has no attribute 'get_statistics'
+/tmp/peachtree/tests/test_dataset_parallelization.py:320: AttributeError: 'ParallelBatchProcessor' object has no attribute 'get_statistics'
+E   AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+/tmp/peachtree/tests/test_dataset_parallelization.py:334: AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+E   AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+/tmp/peachtree/tests/test_dataset_parallelization.py:349: AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+E   KeyError: 'records_processed'
+/tmp/peachtree/tests/test_dataset_parallelization.py:370: KeyError: 'records_processed'
+E   KeyError: 'total_datasets'
+/tmp/peachtree/tests/test_dataset_parallelization.py:383: KeyError: 'total_datasets'
+E   AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+/tmp/peachtree/tests/test_dataset_parallelization.py:395: AttributeError: 'ParallelExecutor' object has no attribute 'execute_tasks'
+E   AttributeError: 'Query' object has no attribute 'fields'
+/tmp/peachtree/tests/test_dataset_query_v1.py:163: AttributeError: 'Query' object has no attribute 'fields'
+E   AttributeError: 'Query' object has no attribute 'to_dict'
+/tmp/peachtree/tests/test_dataset_query_v1.py:261: AttributeError: 'Query' object has no attribute 'to_dict'
+E   TypeError: RecommendationScore.__init__() got an unexpected keyword argument 'impact'
+/tmp/peachtree/tests/test_dataset_recommend.py:52: TypeError: RecommendationScore.__init__() got an unexpected keyword argument 'impact'
+E   TypeError: RecommendationScore.__init__() got an unexpected keyword argument 'impact'
+/tmp/peachtree/tests/test_dataset_recommend.py:65: TypeError: RecommendationScore.__init__() got an unexpected keyword argument 'impact'
+E   TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+/tmp/peachtree/tests/test_dataset_recommend.py:82: TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+E   TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+/tmp/peachtree/tests/test_dataset_recommend.py:98: TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+E   TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+/tmp/peachtree/tests/test_dataset_recommend.py:125: TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+E   AttributeError: 'str' object has no attribute 'to_dict'
+/tmp/peachtree/src/peachtree/dataset_recommend.py:72: AttributeError: 'str' object has no attribute 'to_dict'
+E   AssertionError: assert 'quality_stats' in {'avg_content_length': 44, 'has_duplicates': False, 'quality_distribution': {'avg': 77.5, 'max': 99, 'min': 60}, 'source_diversity': 1, ...}
+/tmp/peachtree/tests/test_dataset_recommend.py:155: AssertionError: assert 'quality_stats' in {'avg_content_length': 44, 'has_duplicates': False, 'quality_distribution': {'avg': 77.5, 'max': 99, 'min': 60}, 'source_diversity': 1, ...}
+E   AssertionError: assert 'min_quality_score' == 'threshold'
+      
+      - threshold
+      + min_quality_score
+/tmp/peachtree/tests/test_dataset_recommend.py:177: AssertionError: assert 'min_quality_score' == 'threshold'
+E   AssertionError: assert False
+     +  where False = isinstance('low', dict)
+     +    where 'low' = Recommendation(category='safety', parameter='gate_strictness', recommended_value='low', current_value='medium', score=RecommendationScore(score=0.85, confidence=0.8, reason='Single source - use relaxed safety gates'), impact='high').recommended_value
+/tmp/peachtree/tests/test_dataset_recommend.py:237: AssertionError: assert False
+E   AssertionError: assert 'sharegpt' in ['jsonl', 'parquet', 'tfrecord', 'hf_dataset']
+     +  where 'sharegpt' = Recommendation(category='export', parameter='format', recommended_value='sharegpt', current_value='jsonl', score=RecommendationScore(score=0.75, confidence=0.7, reason='Short content - ShareGPT format suitable'), impact='medium').recommended_value
+/tmp/peachtree/tests/test_dataset_recommend.py:252: AssertionError: assert 'sharegpt' in ['jsonl', 'parquet', 'tfrecord', 'hf_dataset']
+E   TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+/tmp/peachtree/tests/test_dataset_recommend.py:291: TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+E   TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+/tmp/peachtree/tests/test_dataset_recommend.py:318: TypeError: RecommendationScore.__init__() takes 4 positional arguments but 5 were given
+E   AttributeError: 'RecommendationScore' object has no attribute 'impact'
+/tmp/peachtree/tests/test_dataset_recommend.py:340: AttributeError: 'RecommendationScore' object has no attribute 'impact'
+E   AssertionError: assert [{'category': 'cat_0', 'id': 21, 'text': 'text_21', 'value': 210}, {'category': 'cat_0', 'id': 3, 'text': 'text_3', 'v..._0', 'id': 90, 'text': 'text_90', 'value': 900}, {'category': 'cat_0', 'id': 12, 'text': 'text_12', 'value': 120}, ...] == 30
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:138: AssertionError: assert [{'category': 'cat_0', 'id': 21, 'text': 'text_21', 'value': 210}, {'category': 'cat_0', 'id': 3, 'text': 'text_3', 'v..._0', 'id': 90, 'text': 'text_90', 'value': 900}, {'category': 'cat_0', 'id': 12, 'text': 'text_12', 'value': 120}, ...] == 30
+E   TypeError: ReservoirSampler.sample() got multiple values for argument 'sample_size'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:153: TypeError: ReservoirSampler.sample() got multiple values for argument 'sample_size'
+E   TypeError: SystematicSampler.sample() got multiple values for argument 'sample_size'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:170: TypeError: SystematicSampler.sample() got multiple values for argument 'sample_size'
+E   TypeError: WeightedSampler.__init__() got an unexpected keyword argument 'weights_field'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:178: TypeError: WeightedSampler.__init__() got an unexpected keyword argument 'weights_field'
+E   TypeError: WeightedSampler.__init__() got an unexpected keyword argument 'weights_field'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:184: TypeError: WeightedSampler.__init__() got an unexpected keyword argument 'weights_field'
+E   TypeError: SampleValidator.__init__() got an unexpected keyword argument 'min_size'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:195: TypeError: SampleValidator.__init__() got an unexpected keyword argument 'min_size'
+E   TypeError: SampleValidator.__init__() got an unexpected keyword argument 'min_size'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:202: TypeError: SampleValidator.__init__() got an unexpected keyword argument 'min_size'
+E   TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:213: TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+E   TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:219: TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+E   TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:235: TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+E   TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:252: TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+E   TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:268: TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+E   TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+/tmp/peachtree/tests/test_dataset_sampling_v1.py:283: TypeError: DatasetSampler.__init__() got an unexpected keyword argument 'output_dir'
+E   TypeError: StratifiedSampler.__init__() missing 1 required positional argument: 'stratify_field'
+/tmp/peachtree/src/peachtree/dataset_sampling.py:348: TypeError: StratifiedSampler.__init__() missing 1 required positional argument: 'stratify_field'
+E   AttributeError: type object 'SyncState' has no attribute 'ADDED'
+/tmp/peachtree/tests/test_dataset_sync.py:61: AttributeError: type object 'SyncState' has no attribute 'ADDED'
+E   AttributeError: type object 'SyncState' has no attribute 'MODIFIED'
+/tmp/peachtree/tests/test_dataset_sync.py:74: AttributeError: type object 'SyncState' has no attribute 'MODIFIED'
+E   TypeError: SyncResult.__init__() got an unexpected keyword argument 'source_records'
+/tmp/peachtree/tests/test_dataset_sync.py:90: TypeError: SyncResult.__init__() got an unexpected keyword argument 'source_records'
+E   TypeError: SyncResult.__init__() got an unexpected keyword argument 'source_records'
+/tmp/peachtree/tests/test_dataset_sync.py:107: TypeError: SyncResult.__init__() got an unexpected keyword argument 'source_records'
+E   AttributeError: 'PosixPath' object has no attribute 'record_checksums'
+/tmp/peachtree/src/peachtree/dataset_sync.py:242: AttributeError: 'PosixPath' object has no attribute 'record_checksums'
+E   AttributeError: type object 'ConflictResolution' has no attribute 'SOURCE_WINS'
+/tmp/peachtree/tests/test_dataset_sync.py:164: AttributeError: type object 'ConflictResolution' has no attribute 'SOURCE_WINS'
+E   AttributeError: type object 'ConflictResolution' has no attribute 'TARGET_WINS'
+/tmp/peachtree/tests/test_dataset_sync.py:180: AttributeError: type object 'ConflictResolution' has no attribute 'TARGET_WINS'
+E   AttributeError: type object 'ConflictResolution' has no attribute 'NEWEST_WINS'
+/tmp/peachtree/tests/test_dataset_sync.py:195: AttributeError: type object 'ConflictResolution' has no attribute 'NEWEST_WINS'
+E   AttributeError: type object 'ConflictResolution' has no attribute 'NEWEST_WINS'
+/tmp/peachtree/tests/test_dataset_sync.py:209: AttributeError: type object 'ConflictResolution' has no attribute 'NEWEST_WINS'
+E   AssertionError: assert 'in_sync' in {'dataset_id': PosixPath('/tmp/tmpmbxvgv0y/target.jsonl'), 'environment': PosixPath('/tmp/tmpmbxvgv0y/source.jsonl'), 'last_sync_time': None, 'record_count': 0, ...}
+/tmp/peachtree/tests/test_dataset_sync.py:226: AssertionError: assert 'in_sync' in {'dataset_id': PosixPath('/tmp/tmpmbxvgv0y/target.jsonl'), 'environment': PosixPath('/tmp/tmpmbxvgv0y/source.jsonl'), 'last_sync_time': None, 'record_count': 0, ...}
+E   TypeError: DatasetSynchronizer.sync() missing 3 required positional arguments: 'source_env', 'target_env', and 'dataset_id'
+/tmp/peachtree/tests/test_dataset_sync.py:236: TypeError: DatasetSynchronizer.sync() missing 3 required positional arguments: 'source_env', 'target_env', and 'dataset_id'
+E   AssertionError: assert 4 < 4
+     +  where 4 = ValidationReport(dataset_path='/tmp/pytest-of-x/pytest-115/test_dataset_validator_stop_on0/test.jsonl', total_records=...'content', value=None)], errors=1, warnings=0, infos=0, validation_timestamp='2026-04-28T01:44:31.121763', metadata={}).validated_records
+     +  and   4 = ValidationReport(dataset_path='/tmp/pytest-of-x/pytest-115/test_dataset_validator_stop_on0/test.jsonl', total_records=...'content', value=None)], errors=1, warnings=0, infos=0, validation_timestamp='2026-04-28T01:44:31.121763', metadata={}).total_records
+/tmp/peachtree/tests/test_dataset_validation.py:262: AssertionError: assert 4 < 4
+E   assert 1 >= 2
+     +  where 1 = len([ValidationViolation(level=<ValidationLevel.WARNING: 'warning'>, rule_name='content_length', message="Field 'content' is too short. Length: 5, minimum: 10", record_id='1', field_name='content', value=None)])
+     +    where [ValidationViolation(level=<ValidationLevel.WARNING: 'warning'>, rule_name='content_length', message="Field 'content' is too short. Length: 5, minimum: 10", record_id='1', field_name='content', value=None)] = ValidationReport(dataset_path='/tmp/pytest-of-x/pytest-115/test_validation_with_multiple_0/test.jsonl', total_records=...'content', value=None)], errors=0, warnings=1, infos=0, validation_timestamp='2026-04-28T01:44:31.124622', metadata={}).violations
+/tmp/peachtree/tests/test_dataset_validation.py:296: assert 1 >= 2
+E   AttributeError: 'DatasetVersionControl' object has no attribute 'repository_path'
+/tmp/peachtree/tests/test_dataset_versioning_v1.py:27: AttributeError: 'DatasetVersionControl' object has no attribute 'repository_path'
+E   AssertionError: assert 'Second' == 'First'
+      
+      - First
+      + Second
+/tmp/peachtree/tests/test_dataset_versioning_v1.py:63: AssertionError: assert 'Second' == 'First'
+E   AssertionError: assert '9b6739af' == '6baece7d'
+      
+      - 6baece7d
+      + 9b6739af
+/tmp/peachtree/tests/test_dataset_versioning_v1.py:153: AssertionError: assert '9b6739af' == '6baece7d'
+E   AssertionError: assert 'total_records' in {'committed_versions': 2, 'head_version': 'a7fbb153', 'total_size_bytes': 268, 'total_tags': 0, ...}
+/tmp/peachtree/tests/test_dataset_versioning_v1.py:166: AssertionError: assert 'total_records' in {'committed_versions': 2, 'head_version': 'a7fbb153', 'total_size_bytes': 268, 'total_tags': 0, ...}
+E   AttributeError: 'VersionMetadata' object has no attribute 'timestamp'
+/tmp/peachtree/tests/test_dataset_versioning_v1.py:249: AttributeError: 'VersionMetadata' object has no attribute 'timestamp'
+E   KeyError: 't_missing'
+/tmp/peachtree/src/peachtree/dataset_workflow.py:116: KeyError: 't_missing'
+E   KeyError: 'missing'
+/tmp/peachtree/src/peachtree/dataset_workflow.py:116: KeyError: 'missing'
+E   AttributeError: 'Namespace' object has no attribute 'operation'
+/tmp/peachtree/src/peachtree/cli.py:1338: AttributeError: 'Namespace' object has no attribute 'operation'
+E   AttributeError: 'Namespace' object has no attribute 'operation'
+/tmp/peachtree/src/peachtree/cli.py:1338: AttributeError: 'Namespace' object has no attribute 'operation'
+E   AssertionError: assert 1 == 2
+     +  where 1 = len([{'dataset_name': 'test-dataset', 'delta': {'additions': [], 'deletions': [], 'modifications': [{'id': '1'}]}, 'metadata': {}, 'timestamp': '2026-04-28T01:44:31.554226'}])
+/tmp/peachtree/tests/test_incremental_update.py:300: AssertionError: assert 1 == 2
+E   AttributeError: 'Namespace' object has no attribute 'source_type'
+/tmp/peachtree/src/peachtree/cli.py:1291: AttributeError: 'Namespace' object has no attribute 'source_type'
+E   argparse.ArgumentError: argument command: invalid choice: 'policy' (choose from plan, ingest-local, build, audit, github-owned, github-plan, graph, lineage, ecosystem, export-formats, export, validate-export, diff, update-plan, review-report, score, dedup, readiness, policy-pack, license-gate, model-card, registry, sign, sbom, bundle, handoff, lora-card, train-plan, health, optimize, batch, compare, version, workflow, trend, merge, split, sample, profile, validate, incremental, catalog, security-scan, export-advanced, fuzz-enrich, fuzz-harness, corpus-optimize, security-score, hancock-discover, hancock-ingest, hancock-workflow)
+
+During handling of the above exception, another exception occurred:
+E   SystemExit: 2
+----------------------------- Captured stderr call -----------------------------
+usage: peachtree [-h]
+                 {plan,ingest-local,build,audit,github-owned,github-plan,graph,lineage,ecosystem,export-formats,export,validate-export,diff,update-plan,review-report,score,dedup,readiness,policy-pack,license-gate,model-card,registry,sign,sbom,bundle,handoff,lora-card,train-plan,health,optimize,batch,compare,version,workflow,trend,merge,split,sample,profile,validate,incremental,catalog,security-scan,export-advanced,fuzz-enrich,fuzz-harness,corpus-optimize,security-score,hancock-discover,hancock-ingest,hancock-workflow} ...
+peachtree: error: argument command: invalid choice: 'policy' (choose from plan, ingest-local, build, audit, github-owned, github-plan, graph, lineage, ecosystem, export-formats, export, validate-export, diff, update-plan, review-report, score, dedup, readiness, policy-pack, license-gate, model-card, registry, sign, sbom, bundle, handoff, lora-card, train-plan, health, optimize, batch, compare, version, workflow, trend, merge, split, sample, profile, validate, incremental, catalog, security-scan, export-advanced, fuzz-enrich, fuzz-harness, corpus-optimize, security-score, hancock-discover, hancock-ingest, hancock-workflow)
+/usr/lib/python3.13/argparse.py:2687: SystemExit: 2
+E   AssertionError: assert 0 == 50
+     +  where 0 = ProfileMetric(operation='read_dataset', duration_seconds=0.0004169940948486328, memory_peak_mb=0.026424407958984375, records_processed=0, throughput_records_per_sec=0.0, timestamp='2026-04-28T01:44:31.756278', metadata={}).records_processed
+/tmp/peachtree/tests/test_performance.py:86: AssertionError: assert 0 == 50
+E   AssertionError: assert 0 == 50
+     +  where 0 = ProfileMetric(operation='deduplication', duration_seconds=0.0004124641418457031, memory_peak_mb=0.02215290069580078, records_processed=0, throughput_records_per_sec=0.0, timestamp='2026-04-28T01:44:31.761566', metadata={}).records_processed
+/tmp/peachtree/tests/test_performance.py:111: AssertionError: assert 0 == 50
+E   AssertionError: assert 0 == 50
+     +  where 0 = ProfileMetric(operation='quality_scoring', duration_seconds=0.00043582916259765625, memory_peak_mb=0.01700878143310547, records_processed=0, throughput_records_per_sec=0.0, timestamp='2026-04-28T01:44:31.764270', metadata={}).records_processed
+/tmp/peachtree/tests/test_performance.py:122: AssertionError: assert 0 == 50
+E   AssertionError: assert 'read_dataset' in '# Performance Profile Report\n\n**Dataset:** /tmp/pytest-of-x/pytest-115/test_profile_report_to_markdow0/profile-test... total time)\n\n## 💡 Recommendations\n\n- Optimize quality_scoring operation - current throughput is 0.0 records/sec\n'
+/tmp/peachtree/tests/test_performance.py:199: AssertionError: assert 'read_dataset' in '# Performance Profile Report\n\n**Dataset:** /tmp/pytest-of-x/pytest-115/test_profile_report_to_markdow0/profile-test... total time)\n\n## 💡 Recommendations\n\n- Optimize quality_scoring operation - current throughput is 0.0 records/sec\n'
+E   assert False
+     +  where False = any(<generator object test_profile_full_pipeline.<locals>.<genexpr> at 0x7f76e0e27780>)
+/tmp/peachtree/tests/test_performance.py:216: assert False
+E   AssertionError: assert '\n' in 'Line 1 Line 2 Line 3'
+/tmp/peachtree/tests/test_quality_enhancement.py:220: AssertionError: assert '\n' in 'Line 1 Line 2 Line 3'
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+/tmp/peachtree/src/peachtree/quality_trends.py:354: AttributeError: 'DatasetQualityReport' object has no attribute 'overall_score'. Did you mean: 'average_score'?
+E   AssertionError: assert 2 >= 3
+     +  where 2 = len([SecurityIssue(issue_type='aws_key', severity='critical', message='Found aws_key in dataset', record_id='1', field_nam...id='1', field_name='content', matched_pattern='\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', line_number=1)])
+     +    where [SecurityIssue(issue_type='aws_key', severity='critical', message='Found aws_key in dataset', record_id='1', field_nam...id='1', field_name='content', matched_pattern='\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b', line_number=1)] = SecurityScanReport(dataset_path='/tmp/pytest-of-x/pytest-115/test_scan_multiple_issues_per_0/multi.jsonl', total_recor... critical_count=1, high_count=0, medium_count=1, low_count=0, scan_timestamp='2026-04-28T01:44:32.728182', metadata={}).issues
+/tmp/peachtree/tests/test_security_scanner.py:275: AssertionError: assert 2 >= 3
+=============================== warnings summary ===============================
+src/peachtree/dataset_testing.py:20
+  /tmp/peachtree/src/peachtree/dataset_testing.py:20: PytestCollectionWarning: cannot collect test class 'TestCase' because it has a __init__ constructor (from: tests/test_dataset_testing.py)
+    @dataclass
+
+src/peachtree/dataset_testing.py:42
+  /tmp/peachtree/src/peachtree/dataset_testing.py:42: PytestCollectionWarning: cannot collect test class 'TestSuite' because it has a __init__ constructor (from: tests/test_dataset_testing.py)
+    @dataclass
+
+src/peachtree/dataset_testing.py:84
+  /tmp/peachtree/src/peachtree/dataset_testing.py:84: PytestCollectionWarning: cannot collect test class 'TestResult' because it has a __init__ constructor (from: tests/test_dataset_testing.py)
+    @dataclass
+
+tests/test_backup_restore.py: 17 warnings
+  /tmp/peachtree/src/peachtree/backup_restore.py:118: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+
+tests/test_backup_restore.py: 16 warnings
+  /tmp/peachtree/src/peachtree/backup_restore.py:168: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat(),
+
+tests/test_backup_restore.py::test_restore_backup
+  /tmp/peachtree/src/peachtree/backup_restore.py:303: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    restore_timestamp=datetime.utcnow().isoformat(),
+
+tests/test_backup_restore.py::test_create_incremental_backup
+  /tmp/peachtree/src/peachtree/backup_restore.py:236: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat(),
+
+tests/test_batch_processor.py::test_batch_health_monitor_check_directory
+tests/test_batch_processor.py::test_batch_optimizer_optimize_directory
+tests/test_batch_processor.py::test_batch_quality_scorer_score_directory
+tests/test_batch_processor.py::test_batch_processor_error_handling
+  /tmp/peachtree/src/peachtree/batch_processor.py:118: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 5 warnings
+tests/test_dataset_comparison.py: 3 warnings
+tests/test_health_monitor.py: 7 warnings
+tests/test_status_dashboard.py: 8 warnings
+  /tmp/peachtree/src/peachtree/health_monitor.py:174: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 20 warnings
+tests/test_health_monitor.py: 28 warnings
+tests/test_status_dashboard.py: 32 warnings
+  /tmp/peachtree/src/peachtree/health_monitor.py:37: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+tests/test_batch_processor.py::test_batch_health_monitor_check_directory
+tests/test_batch_processor.py::test_batch_optimizer_optimize_directory
+tests/test_batch_processor.py::test_batch_quality_scorer_score_directory
+tests/test_batch_processor.py::test_batch_processor_error_handling
+  /tmp/peachtree/src/peachtree/batch_processor.py:140: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    completed_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 9 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:154: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 9 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:174: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at=datetime.utcnow().isoformat(),
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 9 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:184: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    step1.completed_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 8 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:199: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at=datetime.utcnow().isoformat(),
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 8 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:208: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    step2.completed_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 8 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:224: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at=datetime.utcnow().isoformat(),
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 8 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:244: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    step3.completed_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 9 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:264: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at=datetime.utcnow().isoformat(),
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 9 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:273: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    step4.completed_at = datetime.utcnow().isoformat()
+
+tests/test_batch_processor.py: 3 warnings
+tests/test_optimizer.py: 9 warnings
+  /tmp/peachtree/src/peachtree/optimizer.py:281: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    report.completed_at = datetime.utcnow().isoformat()
+
+tests/test_dataset_benchmarking_v1.py: 25 warnings
+  /tmp/peachtree/src/peachtree/dataset_benchmarking.py:48: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_checkpointing.py: 22 warnings
+  /tmp/peachtree/src/peachtree/dataset_checkpointing.py:187: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_checkpointing.py::test_resumable_operation_initialize_state
+  /tmp/peachtree/src/peachtree/dataset_checkpointing.py:402: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    self.current_checkpoint_id = f"{self.operation_name}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+
+tests/test_dataset_checkpointing.py::test_resumable_operation_initialize_state
+  /tmp/peachtree/src/peachtree/dataset_checkpointing.py:411: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    start_time=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_checkpointing.py::test_resumable_operation_initialize_state
+  /tmp/peachtree/src/peachtree/dataset_checkpointing.py:412: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    last_checkpoint_time=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_collaboration.py::TestDatasetChange::test_add_comment
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_review_change
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:120: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "timestamp": datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_collaboration.py: 11 warnings
+  /tmp/peachtree/tests/test_dataset_collaboration.py:48: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    joined_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_collaboration.py: 12 warnings
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:446: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat()
+
+tests/test_dataset_collaboration.py: 12 warnings
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:165: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_add_collaborator
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_remove_collaborator
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_review_change
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_get_changes_by_author
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_get_collaboration_stats
+  /tmp/peachtree/tests/test_dataset_collaboration.py:61: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    joined_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_add_collaborator
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_remove_collaborator
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_get_changes_by_author
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_get_collaboration_stats
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:192: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    session.updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_remove_collaborator
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:207: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    session.updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_collaboration.py: 16 warnings
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:452: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat()
+
+tests/test_dataset_collaboration.py: 16 warnings
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:233: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_collaboration.py: 15 warnings
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:220: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    session.updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_review_change
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_get_pending_changes
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_apply_approved_changes
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:278: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    session.updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_collaboration.py::TestDatasetCollaborationEngine::test_merge_sessions
+  /tmp/peachtree/src/peachtree/dataset_collaboration.py:377: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    target.updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_comparison.py::test_comparator_compare
+tests/test_dataset_comparison.py::test_comparator_write_comparison
+  /tmp/peachtree/src/peachtree/dataset_comparison.py:226: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat()
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_consent_documentation_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_consent_documentation_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_gdpr
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_save_and_load_report
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_get_remediation_plan_critical
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_compliance_score_calculation
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:193: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_consent_documentation_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_consent_documentation_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_gdpr
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_save_and_load_report
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_get_remediation_plan_critical
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_compliance_score_calculation
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:210: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    check_id=f"check_{requirement.requirement_id}_{datetime.utcnow().timestamp()}",
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_deletion_capability_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_deletion_capability_partial
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_gdpr
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_save_and_load_report
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_get_remediation_plan_critical
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_compliance_score_calculation
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:224: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_deletion_capability_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_deletion_capability_partial
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_gdpr
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_save_and_load_report
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_get_remediation_plan_critical
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_compliance_score_calculation
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:241: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    check_id=f"check_{requirement.requirement_id}_{datetime.utcnow().timestamp()}",
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_data_minimization_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_gdpr
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_save_and_load_report
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_get_remediation_plan_critical
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_compliance_score_calculation
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:255: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_data_minimization_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_gdpr
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_non_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_save_and_load_report
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_get_remediation_plan_critical
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_compliance_score_calculation
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:272: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    check_id=f"check_{requirement.requirement_id}_{datetime.utcnow().timestamp()}",
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_data_governance_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_data_governance_partial
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:286: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_data_governance_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_data_governance_partial
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:306: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    check_id=f"check_{requirement.requirement_id}_{datetime.utcnow().timestamp()}",
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_transparency_documentation_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:320: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_transparency_documentation_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:340: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    check_id=f"check_{requirement.requirement_id}_{datetime.utcnow().timestamp()}",
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_disclosure_documentation_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:354: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_disclosure_documentation_compliant
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_check_compliance_multiple_regulations
+tests/test_dataset_compliance.py::TestDatasetComplianceTracker::test_all_regulations_supported
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:371: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    check_id=f"check_{requirement.requirement_id}_{datetime.utcnow().timestamp()}",
+
+tests/test_dataset_compliance.py: 12 warnings
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:388: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_compliance.py: 12 warnings
+  /tmp/peachtree/src/peachtree/dataset_compliance.py:389: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    report_id = f"compliance_report_{datetime.utcnow().timestamp()}"
+
+tests/test_dataset_compression.py: 26 warnings
+tests/test_dataset_compression_v2.py: 28 warnings
+  /tmp/peachtree/src/peachtree/dataset_compression.py:42: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_indexing.py: 15 warnings
+tests/test_dataset_indexing_v2.py: 15 warnings
+  /tmp/peachtree/src/peachtree/dataset_indexing.py:40: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_indexing.py: 15 warnings
+tests/test_dataset_indexing_v2.py: 15 warnings
+  /tmp/peachtree/src/peachtree/dataset_indexing.py:41: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_indexing.py::test_save_and_load_index
+tests/test_dataset_indexing_v2.py::test_save_and_load_index
+  /tmp/peachtree/src/peachtree/dataset_indexing.py:269: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    self.metadata[index_id].updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_metrics.py: 178 warnings
+  /tmp/peachtree/src/peachtree/dataset_metrics.py:26: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    self.timestamp = datetime.utcnow().isoformat()
+
+tests/test_dataset_metrics.py::test_generate_dashboard
+tests/test_dataset_metrics.py::test_generate_dashboard_with_alerts
+tests/test_dataset_metrics.py::test_save_dashboard_json
+tests/test_dataset_metrics.py::test_save_dashboard_markdown
+tests/test_dataset_metrics.py::test_compare_dashboards
+tests/test_dataset_metrics.py::test_compare_dashboards
+tests/test_dataset_metrics.py::test_generate_alerts_low_records
+tests/test_dataset_metrics.py::test_generate_alerts_low_quality
+tests/test_dataset_metrics.py::test_generate_alerts_low_metadata_coverage
+  /tmp/peachtree/src/peachtree/dataset_metrics.py:347: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat(),
+
+tests/test_dataset_monitoring.py: 14 warnings
+  /tmp/peachtree/src/peachtree/dataset_monitoring.py:175: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_monitoring.py: 18 warnings
+  /tmp/peachtree/src/peachtree/dataset_monitoring.py:303: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_monitoring.py::test_check_alerts_quality
+tests/test_dataset_monitoring.py::test_check_alerts_size
+tests/test_dataset_monitoring.py::test_get_alert_summary
+  /tmp/peachtree/src/peachtree/dataset_monitoring.py:377: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_monitoring.py::test_get_metric_trend
+tests/test_dataset_monitoring.py::test_generate_dashboard
+  /tmp/peachtree/src/peachtree/dataset_monitoring.py:423: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    cutoff = datetime.utcnow() - timedelta(hours=hours)
+
+tests/test_dataset_monitoring.py::test_get_alert_summary
+  /tmp/peachtree/src/peachtree/dataset_monitoring.py:444: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    cutoff = datetime.utcnow() - timedelta(hours=hours)
+
+tests/test_dataset_notifications.py: 65 warnings
+  /tmp/peachtree/src/peachtree/dataset_notifications.py:209: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    event_id = f"event_{datetime.utcnow().timestamp()}"
+
+tests/test_dataset_notifications.py: 65 warnings
+  /tmp/peachtree/src/peachtree/dataset_notifications.py:215: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_notifications.py: 22 warnings
+  /tmp/peachtree/src/peachtree/dataset_notifications.py:292: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    notification_id = f"notif_{datetime.utcnow().timestamp()}"
+
+tests/test_dataset_notifications.py: 22 warnings
+  /tmp/peachtree/src/peachtree/dataset_notifications.py:360: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    notification.sent_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_plugins.py: 16 warnings
+  /tmp/peachtree/src/peachtree/dataset_plugins.py:130: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    registered_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_profiler.py: 20 warnings
+  /tmp/peachtree/src/peachtree/dataset_profiler.py:222: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_recommend.py::TestDatasetRecommender::test_generate_recommendations
+tests/test_dataset_recommend.py::TestDatasetRecommender::test_save_and_load_recommendations
+tests/test_dataset_recommend.py::TestDatasetRecommender::test_recommendation_impact_levels
+tests/test_dataset_recommend.py::TestDatasetRecommender::test_recommendation_confidence_scores
+  /tmp/peachtree/src/peachtree/dataset_recommend.py:361: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_scheduler.py: 59 warnings
+  /tmp/peachtree/src/peachtree/dataset_scheduler.py:251: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+tests/test_dataset_scheduler.py::test_schedule_type_once
+  /tmp/peachtree/tests/test_dataset_scheduler.py:139: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    run_at = (datetime.utcnow() + timedelta(hours=1)).isoformat() + "Z"
+
+tests/test_dataset_scheduler.py::test_schedule_type_hourly
+  /tmp/peachtree/tests/test_dataset_scheduler.py:167: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    assert next_run_time > datetime.utcnow()
+
+tests/test_dataset_scheduler.py::test_get_due_tasks
+  /tmp/peachtree/tests/test_dataset_scheduler.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    past_time = (datetime.utcnow() - timedelta(hours=1)).isoformat() + "Z"
+
+tests/test_dataset_scheduler.py::test_get_due_tasks
+  /tmp/peachtree/tests/test_dataset_scheduler.py:238: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    future_time = (datetime.utcnow() + timedelta(hours=1)).isoformat() + "Z"
+
+tests/test_dataset_scheduler.py::test_get_due_tasks
+tests/test_dataset_scheduler.py::test_run_due_tasks
+tests/test_dataset_scheduler.py::test_disabled_task_not_in_due
+  /tmp/peachtree/src/peachtree/dataset_scheduler.py:184: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_scheduler.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_scheduler.py:199: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    execution_id = f"exec_{task_id}_{datetime.utcnow().timestamp()}"
+
+tests/test_dataset_scheduler.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_scheduler.py:205: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    started_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_scheduler.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_scheduler.py:229: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    execution.completed_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_scheduler.py::test_run_due_tasks
+  /tmp/peachtree/tests/test_dataset_scheduler.py:298: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    past_time = (datetime.utcnow() - timedelta(hours=1)).isoformat() + "Z"
+
+tests/test_dataset_scheduler.py::test_default_task_handlers
+tests/test_dataset_scheduler.py::test_default_task_handlers
+tests/test_dataset_scheduler.py::test_default_task_handlers
+tests/test_dataset_scheduler.py::test_default_task_handlers
+tests/test_dataset_scheduler.py::test_default_task_handlers
+tests/test_dataset_scheduler.py::test_default_task_handlers
+  /tmp/peachtree/tests/test_dataset_scheduler.py:435: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    schedule_config={"run_at": (datetime.utcnow() + timedelta(hours=1)).isoformat() + "Z"},
+
+tests/test_dataset_scheduler.py::test_disabled_task_not_in_due
+  /tmp/peachtree/tests/test_dataset_scheduler.py:494: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    past_time = (datetime.utcnow() - timedelta(hours=1)).isoformat() + "Z"
+
+tests/test_dataset_sharding.py: 54 warnings
+  /tmp/peachtree/src/peachtree/dataset_sharding.py:43: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_sharding.py: 54 warnings
+  /tmp/peachtree/src/peachtree/dataset_sharding.py:44: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:125: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:126: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:179: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:180: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:218: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:219: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:255: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:256: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:294: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py: 27 warnings
+  /tmp/peachtree/src/peachtree/dataset_templates.py:295: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py::test_create_custom_template
+tests/test_dataset_templates.py::test_update_template_config
+tests/test_dataset_templates.py::test_update_template_pipeline_steps
+tests/test_dataset_templates.py::test_delete_template
+  /tmp/peachtree/src/peachtree/dataset_templates.py:362: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py::test_create_custom_template
+tests/test_dataset_templates.py::test_update_template_config
+tests/test_dataset_templates.py::test_update_template_pipeline_steps
+tests/test_dataset_templates.py::test_delete_template
+  /tmp/peachtree/src/peachtree/dataset_templates.py:363: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    updated_at=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_templates.py::test_update_template_config
+tests/test_dataset_templates.py::test_update_template_pipeline_steps
+  /tmp/peachtree/src/peachtree/dataset_templates.py:400: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    template.metadata.updated_at = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_testing.py::test_framework_run_test_suite
+  /tmp/peachtree/src/peachtree/dataset_testing.py:499: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_transform.py::TestDatasetTransformer::test_apply_pipeline
+  /tmp/peachtree/src/peachtree/dataset_transform.py:327: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_versioning_v1.py: 44 warnings
+  /tmp/peachtree/src/peachtree/dataset_versioning.py:39: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+tests/test_dataset_webhooks.py: 103 warnings
+  /tmp/peachtree/src/peachtree/dataset_webhooks.py:192: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/test_dataset_webhooks.py: 109 warnings
+  /tmp/peachtree/src/peachtree/dataset_webhooks.py:233: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    delivery_id = f"delivery_{datetime.utcnow().timestamp()}"
+
+tests/test_dataset_webhooks.py: 111 warnings
+  /tmp/peachtree/src/peachtree/dataset_webhooks.py:253: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    delivery.last_attempt = datetime.utcnow().isoformat() + "Z"
+
+tests/test_dataset_webhooks.py::test_test_endpoint
+  /tmp/peachtree/src/peachtree/dataset_webhooks.py:370: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat() + "Z",
+
+tests/test_health_monitor.py::test_trend_analysis_insufficient_history
+  /tmp/peachtree/src/peachtree/health_monitor.py:382: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    cutoff = datetime.utcnow() - timedelta(days=days)
+
+tests/test_quality_gates.py::test_evaluate_gate_pass
+tests/test_quality_gates.py::test_evaluate_gate_fail
+tests/test_quality_gates.py::test_evaluate_gate_with_warnings
+tests/test_quality_gates.py::test_evaluate_gate_fail_on_warning
+tests/test_quality_gates.py::test_gate_with_empty_dataset
+  /tmp/peachtree/src/peachtree/quality_gates.py:360: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat(),
+
+tests/test_status_dashboard.py::test_status_dashboard_get_status
+tests/test_status_dashboard.py::test_status_dashboard_get_directory_status
+tests/test_status_dashboard.py::test_status_dashboard_get_directory_status
+tests/test_status_dashboard.py::test_status_dashboard_write_status
+tests/test_status_dashboard.py::test_status_dashboard_write_status
+tests/test_status_dashboard.py::test_status_dashboard_write_status
+tests/test_status_dashboard.py::test_status_dashboard_custom_thresholds
+tests/test_status_dashboard.py::test_status_dashboard_custom_thresholds
+  /tmp/peachtree/src/peachtree/status_dashboard.py:169: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp = datetime.utcnow().isoformat()
+
+tests/test_status_dashboard.py::test_status_dashboard_get_directory_status
+tests/test_status_dashboard.py::test_status_dashboard_write_status
+tests/test_status_dashboard.py::test_status_dashboard_custom_thresholds
+tests/test_status_dashboard.py::test_status_dashboard_empty_directory
+  /tmp/peachtree/src/peachtree/status_dashboard.py:242: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow().isoformat(),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/test_workflows.py::test_simple_workflow_execution - TypeError: Da...
+ERROR tests/test_workflows.py::test_multi_step_workflow - TypeError: DatasetB...
+ERROR tests/test_workflows.py::test_workflow_with_dependencies - TypeError: D...
+ERROR tests/test_workflows.py::test_workflow_failure_handling - TypeError: Da...
+ERROR tests/test_workflows.py::test_skip_on_failure - TypeError: DatasetBuild...
+ERROR tests/test_workflows.py::test_dedup_operation - TypeError: DatasetBuild...
+ERROR tests/test_workflows.py::test_optimize_operation - TypeError: DatasetBu...
+ERROR tests/test_workflows.py::test_export_operation - TypeError: DatasetBuil...
+ERROR tests/test_workflows.py::test_save_and_load_workflow - TypeError: Datas...
+ERROR tests/test_workflows.py::test_step_status_progression - TypeError: Data...
+FAILED tests/test_backup_restore.py::test_cleanup_old_backups - assert 0 == 2
+FAILED tests/test_dataset_audit_log.py::test_log_audit_entry - TypeError: Aud...
+FAILED tests/test_dataset_audit_log.py::test_log_with_details - TypeError: Au...
+FAILED tests/test_dataset_audit_log.py::test_log_with_error - TypeError: Audi...
+FAILED tests/test_dataset_audit_log.py::test_query_by_action - TypeError: Aud...
+FAILED tests/test_dataset_audit_log.py::test_query_by_resource - TypeError: A...
+FAILED tests/test_dataset_audit_log.py::test_query_by_user - TypeError: Audit...
+FAILED tests/test_dataset_audit_log.py::test_query_by_status - TypeError: Aud...
+FAILED tests/test_dataset_audit_log.py::test_query_with_limit - TypeError: Au...
+FAILED tests/test_dataset_audit_log.py::test_get_entry - TypeError: AuditCont...
+FAILED tests/test_dataset_audit_log.py::test_get_session_entries - TypeError:...
+FAILED tests/test_dataset_audit_log.py::test_get_resource_history - TypeError...
+FAILED tests/test_dataset_audit_log.py::test_get_user_activity - TypeError: A...
+FAILED tests/test_dataset_audit_log.py::test_get_failed_operations - TypeErro...
+FAILED tests/test_dataset_audit_log.py::test_get_critical_events - TypeError:...
+FAILED tests/test_dataset_audit_log.py::test_generate_report - TypeError: Aud...
+FAILED tests/test_dataset_audit_log.py::test_export_logs - TypeError: AuditCo...
+FAILED tests/test_dataset_audit_log.py::test_load_logs - TypeError: AuditCont...
+FAILED tests/test_dataset_audit_log.py::test_clear_old_logs - TypeError: Audi...
+FAILED tests/test_dataset_audit_log.py::test_get_statistics - TypeError: Audi...
+FAILED tests/test_dataset_audit_log.py::test_audit_context_to_dict - TypeErro...
+FAILED tests/test_dataset_audit_log.py::test_audit_entry_to_dict - TypeError:...
+FAILED tests/test_dataset_audit_log.py::test_audit_entry_to_json - TypeError:...
+FAILED tests/test_dataset_benchmarking_v1.py::test_benchmark_transform - Asse...
+FAILED tests/test_dataset_benchmarking_v1.py::test_benchmark_result_metrics
+FAILED tests/test_dataset_benchmarking_v1.py::test_compare_benchmarks - TypeE...
+FAILED tests/test_dataset_benchmarking_v1.py::test_comparison_regression_detection
+FAILED tests/test_dataset_benchmarking_v1.py::test_benchmark_performance_metrics
+FAILED tests/test_dataset_benchmarking_v1.py::test_benchmark_memory_tracking
+FAILED tests/test_dataset_benchmarking_v1.py::test_large_dataset_benchmark - ...
+FAILED tests/test_dataset_cache.py::TestDatasetCache::test_cache_eviction_lru
+FAILED tests/test_dataset_cache.py::TestDatasetCache::test_cache_eviction_lfu
+FAILED tests/test_dataset_comparison.py::test_comparator_collect_metrics - At...
+FAILED tests/test_dataset_comparison.py::test_comparator_compare - AttributeE...
+FAILED tests/test_dataset_comparison.py::test_comparator_write_comparison - A...
+FAILED tests/test_dataset_compression.py::test_compression_level_enum - asser...
+FAILED tests/test_dataset_compression.py::test_compression_metadata_creation
+FAILED tests/test_dataset_compression.py::test_compression_metadata_to_dict
+FAILED tests/test_dataset_compression.py::test_compression_stats_creation - T...
+FAILED tests/test_dataset_compression.py::test_compression_stats_to_dict - Ty...
+FAILED tests/test_dataset_compression.py::test_compression_analyzer_analyze_compression_ratio
+FAILED tests/test_dataset_compression.py::test_batch_compressor_compress_datasets
+FAILED tests/test_dataset_compression.py::test_batch_compressor_decompress_datasets
+FAILED tests/test_dataset_compression.py::test_batch_compressor_get_statistics
+FAILED tests/test_dataset_compression.py::test_streaming_compressor_chunk_size
+FAILED tests/test_dataset_compression.py::test_compression_metadata_space_savings
+FAILED tests/test_dataset_governance.py::TestGovernanceEngine::test_evaluate_policies
+FAILED tests/test_dataset_indexing.py::test_index_status_enum - AttributeErro...
+FAILED tests/test_dataset_indexing.py::test_hash_index_init - TypeError: Hash...
+FAILED tests/test_dataset_indexing.py::test_hash_index_insert - TypeError: Ha...
+FAILED tests/test_dataset_indexing.py::test_hash_index_lookup - TypeError: Ha...
+FAILED tests/test_dataset_indexing.py::test_hash_index_lookup_missing - TypeE...
+FAILED tests/test_dataset_indexing.py::test_hash_index_delete - TypeError: Ha...
+FAILED tests/test_dataset_indexing.py::test_hash_index_delete_missing - TypeE...
+FAILED tests/test_dataset_indexing.py::test_hash_index_multiple_values_same_key
+FAILED tests/test_dataset_indexing.py::test_inverted_index_init - TypeError: ...
+FAILED tests/test_dataset_indexing.py::test_inverted_index_insert - TypeError...
+FAILED tests/test_dataset_indexing.py::test_inverted_index_search - TypeError...
+FAILED tests/test_dataset_indexing.py::test_inverted_index_search_no_match - ...
+FAILED tests/test_dataset_indexing.py::test_inverted_index_delete - TypeError...
+FAILED tests/test_dataset_indexing.py::test_lookup_hash_index - TypeError: st...
+FAILED tests/test_dataset_indexing.py::test_get_statistics - KeyError: 'total...
+FAILED tests/test_dataset_indexing.py::test_query_optimizer_init - TypeError:...
+FAILED tests/test_dataset_indexing.py::test_query_optimizer_recommend_index
+FAILED tests/test_dataset_indexing.py::test_query_optimizer_estimate_cost - T...
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_create_plan
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_rename_field
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_add_field - ...
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_remove_field
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_transform_field
+FAILED tests/test_dataset_migration_v1.py::test_migration_result_creation - T...
+FAILED tests/test_dataset_migration_v1.py::test_migration_result_to_dict - Ty...
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_validate_plan
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_save_plan - ...
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_multiple_rules
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_dry_run - At...
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_rollback - A...
+FAILED tests/test_dataset_migration_v1.py::test_migration_result_partial_success
+FAILED tests/test_dataset_migration_v1.py::test_migration_engine_statistics
+FAILED tests/test_dataset_monitoring.py::test_get_metric_trend - TypeError: c...
+FAILED tests/test_dataset_monitoring.py::test_generate_dashboard - TypeError:...
+FAILED tests/test_dataset_notifications.py::test_threshold_operators - assert...
+FAILED tests/test_dataset_operations.py::test_split_by_count - AssertionError...
+FAILED tests/test_dataset_operations.py::test_split_creates_output_directory
+FAILED tests/test_dataset_parallelization.py::test_parallel_config_defaults
+FAILED tests/test_dataset_parallelization.py::test_task_result_failure - Type...
+FAILED tests/test_dataset_parallelization.py::test_parallel_stats_empty - Typ...
+FAILED tests/test_dataset_parallelization.py::test_parallel_stats_with_tasks
+FAILED tests/test_dataset_parallelization.py::test_parallel_executor_execute_tasks
+FAILED tests/test_dataset_parallelization.py::test_parallel_executor_execute_with_error
+FAILED tests/test_dataset_parallelization.py::test_parallel_executor_get_statistics
+FAILED tests/test_dataset_parallelization.py::test_parallel_dataset_processor_transform
+FAILED tests/test_dataset_parallelization.py::test_parallel_dataset_processor_filter
+FAILED tests/test_dataset_parallelization.py::test_parallel_dataset_processor_aggregate
+FAILED tests/test_dataset_parallelization.py::test_parallel_batch_processor_transform_datasets
+FAILED tests/test_dataset_parallelization.py::test_parallel_batch_processor_merge_datasets
+FAILED tests/test_dataset_parallelization.py::test_parallel_batch_processor_filter_datasets
+FAILED tests/test_dataset_parallelization.py::test_parallel_batch_processor_get_statistics
+FAILED tests/test_dataset_parallelization.py::test_parallel_executor_processes_mode
+FAILED tests/test_dataset_parallelization.py::test_parallel_executor_chunk_size
+FAILED tests/test_dataset_parallelization.py::test_parallel_dataset_processor_empty_dataset
+FAILED tests/test_dataset_parallelization.py::test_parallel_batch_processor_empty_batch
+FAILED tests/test_dataset_parallelization.py::test_parallel_executor_no_workers_specified
+FAILED tests/test_dataset_query_v1.py::test_query_builder_select - AttributeE...
+FAILED tests/test_dataset_query_v1.py::test_query_serialization - AttributeEr...
+FAILED tests/test_dataset_recommend.py::TestRecommendationScore::test_score_creation
+FAILED tests/test_dataset_recommend.py::TestRecommendationScore::test_score_to_dict
+FAILED tests/test_dataset_recommend.py::TestRecommendation::test_recommendation_creation
+FAILED tests/test_dataset_recommend.py::TestRecommendation::test_recommendation_to_dict
+FAILED tests/test_dataset_recommend.py::TestRecommendationReport::test_add_recommendation
+FAILED tests/test_dataset_recommend.py::TestRecommendationReport::test_report_to_json
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_analyze_dataset
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_recommend_quality_threshold
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_recommend_safety_gates
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_recommend_export_format
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_apply_recommendations_high_impact
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_apply_recommendations_medium_impact
+FAILED tests/test_dataset_recommend.py::TestDatasetRecommender::test_recommendation_impact_levels
+FAILED tests/test_dataset_sampling_v1.py::test_stratified_sampler_sample - As...
+FAILED tests/test_dataset_sampling_v1.py::test_reservoir_sampler_sample - Typ...
+FAILED tests/test_dataset_sampling_v1.py::test_systematic_sampler_sample - Ty...
+FAILED tests/test_dataset_sampling_v1.py::test_weighted_sampler_creation - Ty...
+FAILED tests/test_dataset_sampling_v1.py::test_weighted_sampler_sample - Type...
+FAILED tests/test_dataset_sampling_v1.py::test_sample_validator_creation - Ty...
+FAILED tests/test_dataset_sampling_v1.py::test_sample_validator_validate_size
+FAILED tests/test_dataset_sampling_v1.py::test_dataset_sampler_creation - Typ...
+FAILED tests/test_dataset_sampling_v1.py::test_dataset_sampler_random - TypeE...
+FAILED tests/test_dataset_sampling_v1.py::test_dataset_sampler_stratified - T...
+FAILED tests/test_dataset_sampling_v1.py::test_dataset_sampler_reservoir - Ty...
+FAILED tests/test_dataset_sampling_v1.py::test_dataset_sampler_systematic - T...
+FAILED tests/test_dataset_sampling_v1.py::test_dataset_sampler_weighted - Typ...
+FAILED tests/test_dataset_sampling_v1.py::test_sample_comparator_compare_samples
+FAILED tests/test_dataset_sync.py::TestSyncRecord::test_sync_record_creation
+FAILED tests/test_dataset_sync.py::TestSyncRecord::test_sync_record_to_dict
+FAILED tests/test_dataset_sync.py::TestSyncResult::test_sync_result_creation
+FAILED tests/test_dataset_sync.py::TestSyncResult::test_sync_result_to_json
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_detect_changes
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_sync_with_source_wins
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_sync_with_target_wins
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_sync_with_newest_wins
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_bidirectional_sync
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_get_sync_status
+FAILED tests/test_dataset_sync.py::TestDatasetSynchronizer::test_incremental_sync
+FAILED tests/test_dataset_validation.py::test_dataset_validator_stop_on_error
+FAILED tests/test_dataset_validation.py::test_validation_with_multiple_rules
+FAILED tests/test_dataset_versioning_v1.py::test_version_control_init - Attri...
+FAILED tests/test_dataset_versioning_v1.py::test_list_versions - AssertionErr...
+FAILED tests/test_dataset_versioning_v1.py::test_get_history - AssertionError...
+FAILED tests/test_dataset_versioning_v1.py::test_get_statistics - AssertionEr...
+FAILED tests/test_dataset_versioning_v1.py::test_version_metadata_validation
+FAILED tests/test_dataset_workflow.py::TestWorkflow::test_workflow_validation_missing_dependency
+FAILED tests/test_dataset_workflow.py::TestWorkflowEngine::test_register_invalid_workflow
+FAILED tests/test_diff_review.py::test_cli_diff_json - AttributeError: 'Names...
+FAILED tests/test_diff_review.py::test_cli_diff_markdown_outputs_files - Attr...
+FAILED tests/test_incremental_update.py::test_change_tracker_get_history - As...
+FAILED tests/test_lineage_graphs.py::test_cli_lineage_markdown_output_file - ...
+FAILED tests/test_peachtree.py::test_cli_policy - SystemExit: 2
+FAILED tests/test_performance.py::test_profile_dataset_read - AssertionError:...
+FAILED tests/test_performance.py::test_profile_deduplication - AssertionError...
+FAILED tests/test_performance.py::test_profile_quality_scoring - AssertionErr...
+FAILED tests/test_performance.py::test_profile_report_to_markdown - Assertion...
+FAILED tests/test_performance.py::test_profile_full_pipeline - assert False
+FAILED tests/test_quality_enhancement.py::test_auto_fix_record_line_endings
+FAILED tests/test_quality_trends.py::test_record_snapshot - AttributeError: '...
+FAILED tests/test_quality_trends.py::test_get_trend - AttributeError: 'Datase...
+FAILED tests/test_quality_trends.py::test_snapshot_persistence - AttributeErr...
+FAILED tests/test_quality_trends.py::test_analyze_trend - AttributeError: 'Da...
+FAILED tests/test_quality_trends.py::test_trend_analysis_insights - Attribute...
+FAILED tests/test_quality_trends.py::test_analysis_report_to_markdown - Attri...
+FAILED tests/test_quality_trends.py::test_generate_report - AttributeError: '...
+FAILED tests/test_quality_trends.py::test_compare_periods - AttributeError: '...
+FAILED tests/test_quality_trends.py::test_snapshot_with_metadata - AttributeE...
+FAILED tests/test_quality_trends.py::test_low_quality_insight - AttributeErro...
+FAILED tests/test_security_scanner.py::test_scan_multiple_issues_per_record
+174 failed, 1518 passed, 1997 warnings, 10 errors in 10.21s

@@ -110,6 +110,7 @@ peachtree policy --dataset dataset.jsonl --pack safety
 ## Documentation
 
 Full documentation is available at:
+
 - **📖 [Official Docs](https://0ai-cyberviser.github.io/PeachTree/)** — Complete user guide, API reference, architecture
 - **[Getting Started](docs/getting-started/)** — Installation, quickstart, tutorials
 - **[User Guide](docs/user-guide/)** — CLI reference, workflows, safety gates, policy packs
@@ -122,6 +123,7 @@ Full documentation is available at:
 ### GitHub Pages
 
 Documentation is automatically deployed to GitHub Pages on every push to `main`:
+
 ```bash
 https://0ai-cyberviser.github.io/PeachTree/
 ```
@@ -129,6 +131,7 @@ https://0ai-cyberviser.github.io/PeachTree/
 ### Docker
 
 Run PeachTree in Docker:
+
 ```bash
 # Build image
 docker build -t peachtree:latest .
@@ -190,6 +193,7 @@ peachtree/
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
 - Development setup
 - Testing guidelines
 - Code quality standards
@@ -204,7 +208,7 @@ PeachTree is part of the 0AI / CyberViser project. See LICENSE for details.
 
 - **Issues** — GitHub Issues for bug reports and feature requests
 - **Discussions** — GitHub Discussions for questions
-- **Documentation** — https://0ai-cyberviser.github.io/PeachTree/
+- **Documentation** — [PeachTree Docs](https://0ai-cyberviser.github.io/PeachTree/)
 - **Contributing** — See CONTRIBUTING.md
 
 ## Roadmap
@@ -221,7 +225,10 @@ PeachTree is part of the 0AI / CyberViser project. See LICENSE for details.
 
 **Status:** Active Development | **Version:** 0.9.0 | **Python:** 3.10+
 
-*Built for the 0AI ecosystem by CyberViser*
+### Note
+
+Built for the 0AI ecosystem by CyberViser
+
 - generated datasets are ignored by default until reviewed
 - trainer handoff commands are dry-run unless explicitly promoted outside PeachTree
 
@@ -379,3 +386,39 @@ git add .
 git commit -m "feat: initial PeachTree recursive dataset engine"
 gh repo create 0ai-Cyberviser/PeachTree --public --source=. --remote=origin --push
 ```
+
+## Dataset Compliance
+
+All PeachTree datasets must meet the following conditions before deployment:
+
+### Required Conditions
+
+1. **Internal Use Only** - No public deployment without dataset expansion (100+ records)
+2. **License Compliance** - All records must be MIT licensed
+3. **Human Oversight** - No automated exploitation without human approval
+4. **Responsible Disclosure** - Follow platform-specific disclosure policies
+5. **Production Readiness** - Expand to 100+ records before production use
+6. **Ethical Monitoring** - Implement continuous monitoring for ethical compliance
+
+### Compliance Checking
+
+Run automated compliance checks:
+
+```bash
+# Check a specific dataset
+python scripts/compliance-check.py --dataset data/hancock/unified-bugbounty-training.jsonl --min-records 10
+
+# Strict mode (warnings become errors)
+python scripts/compliance-check.py --dataset data/hancock/unified-bugbounty-training.jsonl --strict
+
+# CI/CD integration
+# Compliance checks run automatically on push to main/dev branches
+# See .github/workflows/compliance.yml for details
+```
+
+### Current Status
+
+- **Seed Training**: ✅ APPROVED (10 records)
+- **Production**: ⏳ BLOCKED until dataset expanded to 100+ records
+
+See [handoff-bundle/SIGNOFF.md](handoff-bundle/SIGNOFF.md) for complete approval documentation.

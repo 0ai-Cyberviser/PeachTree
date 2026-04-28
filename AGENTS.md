@@ -224,6 +224,49 @@ peachtree --version
 
 ---
 
+## Bug Bounty & Security Research
+
+### Cryptocurrency Exchange Vulnerability Patterns
+
+**Supported Platforms**: HackerOne, Bugcrowd (Crypto.com, OKX, Coinbase, Binance)
+
+**Multi-Platform Assessment**:
+- **Web2**: Traditional web vulnerabilities (RCE, SQLi, XSS, CSRF, SSRF)
+- **Web3**: Wallet, smart contract, blockchain-specific issues
+- **Mobile**: iOS/Android app vulnerabilities (report once per vuln type)
+- **Desktop**: Windows/macOS executable security
+- **Browser Extensions**: Chrome/Edge/Safari wallet extensions
+
+**Severity Classification** (Crypto Exchanges):
+```
+Extreme: $30K-$1M+ (fund theft >$1M, mass account takeover, KYC breach)
+Critical: $5K-$30K (RCE, SQLi core DB, admin takeover, wallet compromise)
+High: $2K-$5K (stored XSS, CSRF on critical actions, auth bypass)
+Medium: $600-$2K (reflected XSS, CSRF non-critical, limited auth bypass)
+Low: $50-$600 (open redirects, info leaks, common CSRF)
+```
+
+**Business Risk Multipliers** (OKX model):
+- Static pages: 1.0× | Auth dashboard: 1.2× | Fund actions: 1.4× | Admin: 1.5×
+- Wallet UI: 1.0× | Signature hijack: 1.5× | Smart contract: 1.4×
+
+**Key Patterns**:
+1. **IDOR**: Must demonstrate ID discovery path (not brute force)
+2. **Cross-Platform**: Same vuln across iOS/Android = 1 report
+3. **Wallet Extensions**: Same vuln across Chrome/Edge/Safari = 1 report
+4. **AI Disclosure**: Must disclose AI tool usage in discovery/reporting
+5. **Leaked Credentials**: Report immediately, authenticate once only
+
+**Out of Scope** (Common):
+- Automated scanner reports | Self-XSS | DoS/DDoS
+- Root/jailbreak required | Known vulnerable libraries without PoC
+- Certificate pinning bypass on rooted devices
+- API keys without demonstrated impact
+
+**Tools**: BugBountyAgent, bug-bounty-workflows skill
+
+---
+
 ## Agent Ecosystem Overview
 
 **Created**: April 27, 2026  

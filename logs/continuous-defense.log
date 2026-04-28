@@ -348,3 +348,41 @@ Security Indicators: 0
   Total training records: 657
 [01:15:29] Cycle complete. Sleeping 5 minutes...
 
+[01:20:29] Running defense + fuzzing cycle...
+================================================================================
+ENHANCED AUTONOMOUS DEFENSE - PeachFuzz Integration
+================================================================================
+
+Collecting 11 events (security + fuzzing)...
+Generated 11 Hancock training records
+Saved: data/hancock/autonomous/enhanced_20260428_012029.jsonl
+Enriched: data/hancock/autonomous/enhanced_20260428_012029_enriched.jsonl
+
+Quality Score: 50.73
+Security Indicators: 0
+
+================================================================================
+✅ ENHANCED AUTONOMOUS DEFENSE COMPLETE
+================================================================================
+  Total training records: 687
+[01:20:29] Cycle complete. Sleeping 5 minutes...
+
+[01:25:29] Running defense + fuzzing cycle...
+================================================================================
+ENHANCED AUTONOMOUS DEFENSE - PeachFuzz Integration
+================================================================================
+
+Collecting 11 events (security + fuzzing)...
+Generated 11 Hancock training records
+Saved: data/hancock/autonomous/enhanced_20260428_012529.jsonl
+Enriched: data/hancock/autonomous/enhanced_20260428_012529_enriched.jsonl
+
+Quality Score: 50.73
+Security Indicators: 0
+
+================================================================================
+✅ ENHANCED AUTONOMOUS DEFENSE COMPLETE
+================================================================================
+  Total training records: 717
+[01:25:29] Cycle complete. Sleeping 5 minutes...
+

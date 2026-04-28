@@ -386,3 +386,39 @@ git add .
 git commit -m "feat: initial PeachTree recursive dataset engine"
 gh repo create 0ai-Cyberviser/PeachTree --public --source=. --remote=origin --push
 ```
+
+## Dataset Compliance
+
+All PeachTree datasets must meet the following conditions before deployment:
+
+### Required Conditions
+
+1. **Internal Use Only** - No public deployment without dataset expansion (100+ records)
+2. **License Compliance** - All records must be MIT licensed
+3. **Human Oversight** - No automated exploitation without human approval
+4. **Responsible Disclosure** - Follow platform-specific disclosure policies
+5. **Production Readiness** - Expand to 100+ records before production use
+6. **Ethical Monitoring** - Implement continuous monitoring for ethical compliance
+
+### Compliance Checking
+
+Run automated compliance checks:
+
+```bash
+# Check a specific dataset
+python scripts/compliance-check.py --dataset data/hancock/unified-bugbounty-training.jsonl --min-records 10
+
+# Strict mode (warnings become errors)
+python scripts/compliance-check.py --dataset data/hancock/unified-bugbounty-training.jsonl --strict
+
+# CI/CD integration
+# Compliance checks run automatically on push to main/dev branches
+# See .github/workflows/compliance.yml for details
+```
+
+### Current Status
+
+- **Seed Training**: ✅ APPROVED (10 records)
+- **Production**: ⏳ BLOCKED until dataset expanded to 100+ records
+
+See [handoff-bundle/SIGNOFF.md](handoff-bundle/SIGNOFF.md) for complete approval documentation.
